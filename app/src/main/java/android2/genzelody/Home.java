@@ -266,7 +266,13 @@ public class Home extends AppCompatActivity {
                     JSONObject artist = new JSONObject(response);
                     String id = artist.getString("id");
                     String name = artist.getString("name");
-                    String img = artist.getJSONArray("images").getJSONObject(0).getString("url");
+                    String img = "";
+                    try {
+                        img = artist.getJSONArray("images").getJSONObject(0).getString("url");
+                    }catch (JSONException e){
+                        img = "";
+                    }
+
                     newartist.setId(id);
                     newartist.setName(name);
                     newartist.setImage(img);
