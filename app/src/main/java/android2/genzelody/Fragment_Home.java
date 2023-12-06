@@ -37,7 +37,11 @@ public class Fragment_Home extends Fragment {
     public Fragment_Home() {
         // Required empty public constructor
     }
+
     public Fragment_Home(String accesssToken) {
+        // Required empty public constructor
+    }
+    public Fragment_Home(String accesssToken, ArrayList<Playlists> MyPlayList, ArrayList<Playlists> FeaturePlayList, ArrayList<Track> ListTrack) {
         // Required empty public constructor
         ACCESS_TOKEN = accesssToken;
     }
