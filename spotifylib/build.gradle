@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+dependencies {
+    api files('spotify-app-remote-release-0.8.0.aar')
+    api files('spotify-auth-release-2.1.0.aar')
+}
