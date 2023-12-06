@@ -1,0 +1,25 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Gradient layer -->
+    <item>
+        <shape>
+            <gradient
+                android:startColor="#46000000"
+                android:centerColor="@color/black"
+                android:endColor="#3B333333"
+                android:angle="90" />
+        </shape>
+    </item>
+
+    <!-- Solid color overlay with varying transparency -->
+    <item android:drawable="@color/black">
+        <shape>
+            <gradient
+                android:startColor="#00000000"
+            android:centerColor="#000000"
+            android:endColor="#000000"
+            android:angle="90" />
+        </shape>
+    </item>
+
+</layer-list>

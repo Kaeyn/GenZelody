@@ -8,29 +8,30 @@
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:enableOnBackInvokedCallback="true"
-
         android:supportsRtl="true"
         android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
         android:theme="@style/Theme.GenZelody"
         tools:targetApi="31">
-        <!--        <activity-->
-        <!--            android:name=".Activity_PlayTrack"-->
-        <!--            android:exported="false" />-->
         <activity
-            android:name=".Actitvy_Artist"
+            android:name=".Activity_Detail_Playlist"
+            android:exported="false" />
+        <activity
+            android:name=".Actitvity_Artist"
             android:exported="false" />
         <activity
             android:name=".Activity_PlayTrack"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".Home"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".LoginSpotify"
             android:exported="true"
