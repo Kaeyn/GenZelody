@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -30,6 +32,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Home extends AppCompatActivity {
 
@@ -39,6 +44,9 @@ public class Home extends AppCompatActivity {
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(2);
+
+    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +56,16 @@ public class Home extends AppCompatActivity {
         addEvents();
         Intent intentLogin = getIntent();
         ACCESS_TOKEN = intentLogin.getStringExtra("accessToken");
-        getFeaturePlaylists();
-        getUserPlaylists();
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
         showFullScreenLoader();
+        fetchPlaylistsAsync();
+    }
+
+    private CompletableFuture<Void> fetchPlaylistsAsync() {
+        return CompletableFuture.runAsync(() -> {
+            getUserPlaylists();
+            getFeaturePlaylists();
+        }, trackExecutor);
     }
 
     private void addControls(){
@@ -59,7 +74,6 @@ public class Home extends AppCompatActivity {
     }
 
     private void addEvents(){
-        loadFragment(new Fragment_Home());
         bttNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -99,6 +113,7 @@ public class Home extends AppCompatActivity {
         MyPlayList.add(playlists);
     }
 
+
     private void getFeaturePlaylists() {
         String apiUrl = "https://api.spotify.com/v1/browse/featured-playlists?limit=5";
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
@@ -123,12 +138,10 @@ public class Home extends AppCompatActivity {
                         }
                         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
                         FeaturePlayList.add(playlists);
-                        System.out.println((playlists.getName()));
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-
             }
         }, new com.android.volley.Response.ErrorListener() {
             @Override
@@ -146,9 +159,9 @@ public class Home extends AppCompatActivity {
         };
 
         // Add the request to the Volley queue
-        Volley.newRequestQueue(getApplicationContext()).add(request);
-
+        requestQueue.add(request);
     }
+
 
     private void getUserPlaylists() {
         getUserFavPlayList();
@@ -157,16 +170,21 @@ public class Home extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
+                    String id = "";
+                    String name = "";
+                    String img = "";
+                    String url = "";
+                    ArrayList<Track> tracks;
 
                     JSONObject playLists = new JSONObject(response);
                     JSONArray allPlayLits = playLists.getJSONArray("items");
                     for (int i = 0; i < allPlayLits.length(); i++) {
                         JSONObject playlistObject = allPlayLits.getJSONObject(i);
-                        String id = playlistObject.getString("id");
-                        String name = playlistObject.getString("name");
-                        String img = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
-                        String url = playlistObject.getJSONObject("tracks").getString("href");
-                        ArrayList<Track> tracks = getTracks(url);
+                        id = playlistObject.getString("id");
+                        name = playlistObject.getString("name");
+                        img = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
+                        url = playlistObject.getJSONObject("tracks").getString("href");
+                        tracks = getTracks(url);
                         Boolean isPublic = playlistObject.getBoolean("public");
                         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
                         MyPlayList.add(playlists);
@@ -193,9 +211,8 @@ public class Home extends AppCompatActivity {
             }
         };
 
-        // Add the request to the Volley queue
-        Volley.newRequestQueue(getApplicationContext()).add(request);
-
+                // Add the request to the Volley queue
+        requestQueue.add(request);
     }
 
     private ArrayList<Track> getTracks(String url) {
@@ -206,17 +223,22 @@ public class Home extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
+                    String id = "";
+                    String name = "";
+                    String idAlbum = "";
+                    String img = "";
+                    String previewUrl = "";
                     JSONObject track = new JSONObject(response);
                     JSONArray allTracks = track.getJSONArray("items");
                     for (int i = 0; i < allTracks.length(); i++) {
                         JSONObject trackObject = allTracks.getJSONObject(i);
                         JSONObject trackitem = trackObject.getJSONObject("track");
-                        String id = trackitem.getString("id");
-                        String name = trackitem.getString("name");
-                        String idAlbum = trackitem.getJSONObject("album").getString("id");
-                        String img = trackitem.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                        id = trackitem.getString("id");
+                        name = trackitem.getString("name");
+                        idAlbum = trackitem.getJSONObject("album").getString("id");
+                        img = trackitem.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
                         ArrayList<Artist> artists = getArtists(trackitem.getJSONArray("artists"));
-                        String previewUrl = trackitem.getString("preview_url");
+                        previewUrl = trackitem.getString("preview_url");
                         Track newTrack = new Track(id,name, idAlbum, img,artists, previewUrl);
                         trackArrayList.add(newTrack);
                     }
@@ -241,7 +263,7 @@ public class Home extends AppCompatActivity {
         };
 
         // Add the request to the Volley queue
-        Volley.newRequestQueue(getApplicationContext()).add(request);
+        requestQueue.add(request);
         return trackArrayList;
     }
 
@@ -323,7 +345,12 @@ public class Home extends AppCompatActivity {
         };
 
         // Add the request to the Volley queue
-        Volley.newRequestQueue(getApplicationContext()).add(request);
+        requestQueue.add(request);
         return newartist;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }
