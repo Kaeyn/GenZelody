@@ -1,9 +1,14 @@
 package android2.genzelody;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Track {
+public class Track  implements Parcelable {
 
     private String id;
     private String name;
@@ -25,6 +30,26 @@ public class Track {
     public Track(){
 
     }
+
+    protected Track(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        idAlbum = in.readString();
+        img = in.readString();
+        preview_url = in.readString();
+    }
+
+    public static final Creator<Track> CREATOR = new Creator<Track>() {
+        @Override
+        public Track createFromParcel(Parcel in) {
+            return new Track(in);
+        }
+
+        @Override
+        public Track[] newArray(int size) {
+            return new Track[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -80,4 +105,20 @@ public class Track {
     public void setImg(String img) {
         this.img = img;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(idAlbum);
+        dest.writeString(img);
+        dest.writeString(preview_url);
+    }
+
+
 }
