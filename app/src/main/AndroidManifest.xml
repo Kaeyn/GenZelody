@@ -21,9 +21,6 @@
             android:name=".Activity_Detail_Playlist"
             android:exported="false" />
         <activity
-            android:name=".Actitvity_Artist"
-            android:exported="false" />
-        <activity
             android:name=".Activity_PlayTrack"
             android:exported="false" />
         <activity

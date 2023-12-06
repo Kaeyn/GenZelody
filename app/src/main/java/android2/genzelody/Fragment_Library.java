@@ -96,8 +96,11 @@ public class Fragment_Library extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(getContext(), Activity_Artist.class);
+                Intent intent = new Intent(getContext(), Activity_Detail_Playlist.class);
                 ArrayList<Track> trackList = MyPlayList.get(position).getTracks();
+                intent.putExtra("namePlaylist", MyPlayList.get(position).getName());
+                intent.putExtra("imgPlaylist", MyPlayList.get(position).getImages());
+
                 intent.putParcelableArrayListExtra("tracks", trackList);
                 startActivity(intent);
             }
