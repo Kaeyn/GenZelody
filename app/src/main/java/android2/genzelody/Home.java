@@ -44,7 +44,9 @@ public class Home extends AppCompatActivity {
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
-    ExecutorService trackExecutor = Executors.newFixedThreadPool(2);
+
+    private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(3);
 
     private RequestQueue requestQueue;
 
@@ -65,6 +67,7 @@ public class Home extends AppCompatActivity {
         return CompletableFuture.runAsync(() -> {
             getUserPlaylists();
             getFeaturePlaylists();
+            getRecommendedTrack();
         }, trackExecutor);
     }
 
@@ -82,7 +85,6 @@ public class Home extends AppCompatActivity {
                     loadFragment(new Fragment_Home(ACCESS_TOKEN));
                     return true;
                 } else if (idFrame == R.id.search) {
-                    Log.d("home",ACCESS_TOKEN+"");
                     loadFragment(new Fragment_Search(ACCESS_TOKEN));
                     return true;
                 }
@@ -113,6 +115,50 @@ public class Home extends AppCompatActivity {
         MyPlayList.add(playlists);
     }
 
+    private void getRecommendedTrack(){
+        String apiUrl = "https://api.spotify.com/v1/recommendations?limit=7&market=ES&seed_artists=5HZtdKfC4xU0wvhEyYDWiY";
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    String id = "";
+                    String name = "";
+                    String idAlbum = "";
+                    String img = "";
+                    String previewUrl = "";
+                    JSONObject track = new JSONObject(response);
+                    JSONArray allTracks = track.getJSONArray("tracks");
+                    for (int i = 0; i < allTracks.length(); i++) {
+                        JSONObject trackObject = allTracks.getJSONObject(i);
+                        id = trackObject.getString("id");
+                        name = trackObject.getString("name");
+                        idAlbum = trackObject.getJSONObject("album").getString("id");
+                        img = trackObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                        ArrayList<Artist> artists = getArtists(trackObject.getJSONArray("artists"));
+                        previewUrl = trackObject.getString("preview_url");
+                        Track newTrack = new Track(id,name, idAlbum, img,artists, previewUrl);
+                        RecommendedTrackList.add(newTrack);
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LoginActivity", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
+    }
 
     private void getFeaturePlaylists() {
         String apiUrl = "https://api.spotify.com/v1/browse/featured-playlists?limit=5";
