@@ -46,7 +46,7 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
 
         Picasso.with(this.getApplicationContext()).load(intent.getStringExtra("imgPlaylist")).resize(480, 480).into(imgPlayListDetail);
 
-        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(getApplicationContext(),R.layout.layout_item_list_track_playlist,);
+//        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(getApplicationContext(),R.layout.layout_item_list_track_playlist,);
 
         Picasso.with(this.getApplicationContext()).load(intent.getStringExtra("imgPlaylist")).into(new com.squareup.picasso.Target() {
             @Override
