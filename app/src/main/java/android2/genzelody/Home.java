@@ -45,10 +45,9 @@ public class Home extends AppCompatActivity {
         addEvents();
         Intent intentLogin = getIntent();
         ACCESS_TOKEN = intentLogin.getStringExtra("accessToken");
-        Log.d("keyyyy",ACCESS_TOKEN+" ");
-//        getUserFavPlayList();
+        getFeaturePlaylists();
         getUserPlaylists();
-//        getFeaturePlaylists();
+
     }
 
     private void addControls(){
@@ -121,6 +120,7 @@ public class Home extends AppCompatActivity {
                         }
                         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
                         FeaturePlayList.add(playlists);
+                        System.out.println((playlists.getName()));
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
@@ -204,7 +204,6 @@ public class Home extends AppCompatActivity {
             public void onResponse(String response) {
                 try {
                     JSONObject track = new JSONObject(response);
-                    Log.d("TRACK", track + "");
                     JSONArray allTracks = track.getJSONArray("items");
                     for (int i = 0; i < allTracks.length(); i++) {
                         JSONObject trackObject = allTracks.getJSONObject(i);
