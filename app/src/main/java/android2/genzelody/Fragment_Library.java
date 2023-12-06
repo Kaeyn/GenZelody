@@ -1,9 +1,11 @@
 package android2.genzelody;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
@@ -78,7 +80,7 @@ public class Fragment_Library extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment__library, container, false);
         addControls(rootView);
-        // Inflate the layout for this fragment
+        addEvent();
         custom_lvLib_adapter = new Custom_LVLib_Adapter(getContext(), R.layout.custom_item_lv_playlist_lib, MyPlayList);
         listView.setAdapter(custom_lvLib_adapter);
         return rootView;
@@ -88,6 +90,14 @@ public class Fragment_Library extends Fragment {
         listView = view.findViewById(R.id.listPlayListLibs);
     }
 
+    void addEvent(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getContext(), Activity_Detail_Playlist.class);
+            }
+        });
+    }
 
 
 }
