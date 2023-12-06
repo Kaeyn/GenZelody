@@ -81,9 +81,9 @@ public class Fragment_Library extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment__library, container, false);
         addControls(rootView);
-        addEvent();
         custom_lvLib_adapter = new Custom_LVLib_Adapter(getContext(), R.layout.custom_item_lv_playlist_lib, MyPlayList);
         listView.setAdapter(custom_lvLib_adapter);
+        addEvents();
         return rootView;
     }
 
@@ -91,11 +91,15 @@ public class Fragment_Library extends Fragment {
         listView = view.findViewById(R.id.listPlayListLibs);
     }
 
-    void addEvent(){
+    void addEvents(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Intent intent = new Intent(getContext(), Activity_Artist.class);
+                ArrayList<Track> trackList = MyPlayList.get(position).getTracks();
+                intent.putParcelableArrayListExtra("tracks", trackList);
+                startActivity(intent);
             }
         });
     }
