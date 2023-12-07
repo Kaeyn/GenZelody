@@ -57,6 +57,13 @@ public class Custom_Adapter_Detail_Playlist extends RecyclerView.Adapter<Custom_
         } catch (NumberFormatException e) {
             Picasso.with(this.context).load(track.getImg()).resize(100,100).into(imgTrackOfPlaylist);
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.listOnClick(view, position);
+            }
+        });
     }
 
     @Override
