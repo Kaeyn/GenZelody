@@ -10,11 +10,11 @@
     <ImageView
         android:id="@+id/imgTrackOfPlaylist"
         android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_height="100dp"
         app:srcCompat="@drawable/avt" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="match_parent"
         android:padding="15dp"
         android:orientation="vertical">
@@ -41,8 +41,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="#00FFFFFF"
-        android:translationX="80dp"
-        android:translationY="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
         app:srcCompat="@drawable/baseline_do_disturb_24">
 
     </ImageButton>
