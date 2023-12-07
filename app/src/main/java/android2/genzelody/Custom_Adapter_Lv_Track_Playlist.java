@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 public class Custom_Adapter_Lv_Track_Playlist extends ArrayAdapter {
     Context context;
     ArrayList<Track> arrayListTrack;
+    private AdapterView.OnItemClickListener onItemClickListener;
+
 
     int layoutItem;
 
@@ -29,6 +32,11 @@ public class Custom_Adapter_Lv_Track_Playlist extends ArrayAdapter {
         this.context = context;
         this.layoutItem = resource;
     }
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
 
     @NonNull
     @Override
@@ -44,12 +52,12 @@ public class Custom_Adapter_Lv_Track_Playlist extends ArrayAdapter {
         tvNameTrackOfPlaylist.setText(track.getName());
 
         TextView tvOwnerTrackOfPlaylist = convertView.findViewById(R.id.tvOwnerTrackOfPlaylist);
-//        tvOwnerTrackOfPlaylist.setText(track.getArtists());
         String nameArtist ="";
-                for (Artist artist: artists){
+        for (Artist artist: artists){
+            System.out.println(artist.getName());
             nameArtist += artist.getName();
         }
-            tvOwnerTrackOfPlaylist.setText(nameArtist);
+        tvOwnerTrackOfPlaylist.setText(nameArtist);
 
         ImageView imgTrackOfPlaylist = convertView.findViewById(R.id.imgTrackOfPlaylist);
 

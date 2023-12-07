@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="10dp"
         android:orientation="vertical">
 
@@ -69,9 +69,12 @@
             <ListView
                 android:id="@+id/listPlayListLibs"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:paddingBottom="100dp"/>
 
+        </LinearLayout>
     </LinearLayout>
+
+
 
 </FrameLayout>

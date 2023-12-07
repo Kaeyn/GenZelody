@@ -119,22 +119,15 @@ public class Fragment_Home extends Fragment {
 
         custom_adapter_grid_mainPage = new Custom_Adapter_Grid_MainPage(getContext());
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+
         recGridPlayListCuaBan.setLayoutManager(gridLayoutManager);
-        custom_adapter_grid_mainPage.setData(getArrayListAlbum());
+        ArrayList<Playlists> tempPlaylist = new ArrayList<>(MyPlayList.subList(0, Math.min(MyPlayList.size(), 6)));
+        custom_adapter_grid_mainPage.setData(tempPlaylist);
         recGridPlayListCuaBan.setAdapter(custom_adapter_grid_mainPage);
 
         return rootView;
     }
 
-    private ArrayList<Album> getArrayListAlbum(){
-        ArrayList<Album> albums = new ArrayList<>();
-        albums.add(new Album("Name 1", String.valueOf(R.drawable.johnweak)));
-        albums.add(new Album("Name 2", String.valueOf(R.drawable.johnweak)));
-        albums.add(new Album("Name 3", String.valueOf(R.drawable.johnweak)));
-        albums.add(new Album("Name 4", String.valueOf(R.drawable.johnweak)));
-
-        return albums;
-    }
 
     private void addViewControls(View rootView){
         recViewDanhSachCuaBan = rootView.findViewById(R.id.recViewDanhSachCuaBan);
