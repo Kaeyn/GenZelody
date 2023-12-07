@@ -289,7 +289,7 @@ public class Fragment_Search extends Fragment {
     }
 
     private ArrayList<Track> getSpecificTrackFromAlbum(String id){
-        String apiUrl = "https://api.spotify.com/v1/albums/{id}"+id;
+        String apiUrl = "https://api.spotify.com/v1/albums/"+id;
         ArrayList<Track> theTracks = new ArrayList<>();
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
             @Override
@@ -298,12 +298,13 @@ public class Fragment_Search extends Fragment {
                 searchApiResponse(apiResponse);
                 System.out.println(searchObject);
                 try {
-                    JSONArray itemOfTheTrack = searchObject.getJSONObject("tracks").getJSONArray("items");
-                    for(int i=0;i<itemOfTheTrack.length();i++) {
-                        JSONObject trackObject = itemOfTheTrack.getJSONObject(i);
+                    JSONObject tracks = searchObject.getJSONObject("tracks");
+                    JSONArray tracksItem = tracks.getJSONArray("items");
+                    for(int i=0;i<tracksItem.length();i++) {
+                        JSONObject trackObject = tracksItem.getJSONObject(i);
                         String trackId = trackObject.getString("id");
                         String trackName = trackObject.getString("name");
-                        String idAlbum = String.valueOf(searchObject.getJSONObject("id"));
+                        String idAlbum = id;
                         String trackImg = searchObject.getJSONArray("images").getJSONObject(0).getString("url");
                         ArrayList<Artist> artists = getArtists(trackObject.getJSONArray("artists"));
                         String previewUrl = trackObject.getString("preview_url");
@@ -386,7 +387,7 @@ public class Fragment_Search extends Fragment {
         };
 
         // Add the request to the Volley queue
-        Volley.newRequestQueue(getContext()).add(request);
+        requestQueue.add(request);
         return newartist;
     }
 
