@@ -81,8 +81,8 @@ public class Fragment_Library extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment__library, container, false);
         addControls(rootView);
-        custom_lvLib_adapter = new Custom_LVLib_Adapter(getContext(), R.layout.custom_item_lv_playlist_lib, MyPlayList);
-        listView.setAdapter(custom_lvLib_adapter);
+//        custom_lvLib_adapter = new Custom_LVLib_Adapter(getContext(), R.layout.custom_item_lv_playlist_lib, MyPlayList);
+//        listView.setAdapter(custom_lvLib_adapter);
         addEvents();
         return rootView;
     }
