@@ -422,7 +422,11 @@ public class Home extends AppCompatActivity {
                 try {
                     JSONObject userObject = new JSONObject(response);
                     String userName = userObject.getString("display_name");
-                    String userImg = userObject.getJSONArray("images").getJSONObject(0).getString("url");
+                    String userImg="https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228";
+                    if(userObject.getJSONArray("images").length()>0){
+                        userImg = userObject.getJSONArray("images").getJSONObject(0).getString("url");
+                    }
+                    System.out.println(userImg+"d");
                     newUser.setUserName(userName);
                     newUser.setUserImg(userImg);
 
