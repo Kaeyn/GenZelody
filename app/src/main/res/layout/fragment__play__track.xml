@@ -51,7 +51,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginLeft="350dp"
-                android:background="@drawable/baseline_more_vert_24" />
+                android:background="@drawable/baseline_add_circle_outline_24" />
         </RelativeLayout>
 
 
@@ -80,22 +80,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginVertical="40dp"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="6"
-                android:layout_height="wrap_content"
+                android:layout_height="110dp"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tvNameTrackPlay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+
                     android:textColor="@color/white"
-                    android:textSize="30dp"
+                    android:textSize="27dp"
                     android:textStyle="bold"
                     android:text="À Lôi" />
 
@@ -103,18 +104,13 @@
                     android:id="@+id/tvNameArtistPlay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:textColor="@color/white"
-                    android:textSize="20dp"
+                    android:textSize="18dp"
                     android:text="Double 2T" />
             </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/btnAddLib"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:text=""
-                android:layout_gravity="center"
-                android:background="@drawable/baseline_add_circle_outline_24" />
+
 
         </LinearLayout>
 

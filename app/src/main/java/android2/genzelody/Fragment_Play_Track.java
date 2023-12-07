@@ -139,7 +139,6 @@ public class Fragment_Play_Track extends Fragment {
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
         btnMore = rootView.findViewById(R.id.btnMore);
-        btnAddLib = rootView.findViewById(R.id.btnAddLib);
         //image button
         btnBackTrack = rootView.findViewById(R.id.btnBackTrack);
         btnPauseTrack = rootView.findViewById(R.id.btnPauseTrack);
