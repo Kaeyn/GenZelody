@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -54,6 +56,12 @@ public class Fragment_Search extends Fragment {
     ArrayList<Artist> artistArrayList = new ArrayList<>();
     ArrayList<Album> albumArrayList = new ArrayList<>();
     ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+
+    ListView LvResultSearchTrack, LvResultSearchArtist;
+
+    Custom_Adapter_Grid_Search_Track adapterTrack;
+
+    Custom_Adapter_Grid_Search_Artist adapterArtist;
 
     private RequestQueue requestQueue;
 
@@ -107,6 +115,9 @@ public class Fragment_Search extends Fragment {
 
     private void addViewControls(View view){
         edtInputSearch = view.findViewById(R.id.edtInputSearch);
+        LvResultSearchTrack = view.findViewById(R.id.LvResultSearchTrack);
+        LvResultSearchArtist = view.findViewById(R.id.LvResultSearchArtist);
+
         edtInputSearch.requestFocus();
         showKeyboard();
     }
@@ -135,18 +146,22 @@ public class Fragment_Search extends Fragment {
             JSONObject allTrack = fullJSONObject.getJSONObject("tracks");
             getTrackResult(allTrack);
             Log.d("allTrack", trackArrayList+"\n"+trackArrayList.size());
+            adapterTrack = new Custom_Adapter_Grid_Search_Track(getContext(),R.layout.layout_item_grid_search_track,trackArrayList);
+            LvResultSearchTrack.setAdapter(adapterTrack);
 
             JSONObject allArtist = fullJSONObject.getJSONObject("artists");
             getArtistResult(allArtist);
             Log.d("allArtist",artistArrayList+"\n"+artistArrayList.size());
-
-            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
-            getPlaylistResult(allPlaylist);
-            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
-
-            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
-            getAlbumResult(allAlbum);
-            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
+            adapterArtist = new Custom_Adapter_Grid_Search_Artist(getContext(),R.layout.layout_item_grid_search_artist,artistArrayList);
+            LvResultSearchArtist.setAdapter(adapterArtist);
+//
+//            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
+//            getPlaylistResult(allPlaylist);
+//            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
+//
+//            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
+//            getAlbumResult(allAlbum);
+//            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
 
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -403,7 +418,7 @@ public class Fragment_Search extends Fragment {
         trackArrayList.clear();
 
         String accessToken = ACCESS_TOKEN;
-        String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=10";
+        String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=5";
         Log.d("searchKey", apiUrl);
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
             @Override

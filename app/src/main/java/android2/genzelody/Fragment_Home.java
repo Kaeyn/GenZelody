@@ -23,7 +23,9 @@ public class Fragment_Home extends Fragment {
     Custom_Adapter_RecycleView_Album_MainPage adapter_recycleView_album_mainPage;
     Custom_Adapter_RecycleView_Album_FeaturePlayList adapter_recycleView_tracks_bigger_mainPage;
     Custom_Adapter_RecycleView_Tracks_Popular adapter_recycleView_tracks_popular;
-    RecyclerView recViewDanhSachCuaBan, recViewGoiY, recViewPhoBien;
+
+    Custom_Adapter_Grid_MainPage custom_adapter_grid_mainPage;
+    RecyclerView recViewDanhSachCuaBan, recViewGoiY, recViewPhoBien, recGridPlayListCuaBan;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
