@@ -7,10 +7,13 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,10 +40,12 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     TextView tvNamePlaylist;
     ImageView imgPlayListDetail;
     ListView lvTrackOfPlaylist;
-    Custom_Adapter_Lv_Track_Playlist adapterTrack;
     Playlists playlist;
     String namePlaylist = "", imgPlayList = "";
     ImageButton btnBack;
+    NestedScrollView nestedScrollDetailPlaylist;
+    Custom_Adapter_Detail_Playlist custom_adapter_detail_playlist;
+    RecyclerView rvTrackOfPlaylist;
     ArrayList<Track> playlistTrack;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -93,16 +98,21 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         addControl(rootView);
         addEvent(rootView);
         playlistTrack = playlist.getTracks();
-        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack, (RecyclerViewClickListener) this);
-        lvTrackOfPlaylist.setAdapter(adapterTrack);
+//        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack, (RecyclerViewClickListener) this);
+//        lvTrackOfPlaylist.setAdapter(adapterTrack);
+        LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        rvTrackOfPlaylist.setLayoutManager(layoutManagerPhoBien);
+        custom_adapter_detail_playlist = new Custom_Adapter_Detail_Playlist(getContext(),playlistTrack, this);
+        rvTrackOfPlaylist.setAdapter(custom_adapter_detail_playlist);
         // Inflate the layout for this fragment
         return rootView;
     }
     void addControl(View rootView) {
         tvNamePlaylist = rootView.findViewById(R.id.tvNamePlaylist);
         imgPlayListDetail = rootView.findViewById(R.id.imgPlayListDetail);
-        lvTrackOfPlaylist = rootView.findViewById(R.id.lvTrackOfPlaylist);
+        rvTrackOfPlaylist = rootView.findViewById(R.id.rvTrackOfPlaylist);
         btnBack = rootView.findViewById(R.id.btnBack);
+        nestedScrollDetailPlaylist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
     }
 
     void addEvent(View rootView) {
@@ -110,6 +120,28 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        nestedScrollDetailPlaylist.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // Calculate the scale factor based on the scroll position
+                float scaleFactor = 1.0f - (float) scrollY / (float) getResources().getDimensionPixelSize(R.dimen.image_initial_height) * 0.5f;
+
+                // Limit the scale factor to a minimum value (e.g., 0.5f)
+                scaleFactor = Math.max(scaleFactor, 0.1f);
+
+                // Set the scale factor to the ImageView
+                imgPlayListDetail.setScaleX(scaleFactor);
+                imgPlayListDetail.setScaleY(scaleFactor);
+
+                // Optionally, you can adjust the visibility based on the scroll position
+                if (scaleFactor + 1.0f <= 0.5f) {
+                    imgPlayListDetail.setVisibility(View.GONE);
+                } else {
+                    imgPlayListDetail.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -121,7 +153,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
             imgPlayListDetail.setImageDrawable(drawable);
         } catch (NumberFormatException e) {
             // If the image is not a drawable resource ID (assuming it's a URL)
-            Picasso.with(this.getContext()).load(imgPlayList).resize(100,100).into(imgPlayListDetail);
+            Picasso.with(this.getContext()).load(imgPlayList).resize(300,300).into(imgPlayListDetail);
         }
         tvNamePlaylist.setText(namePlaylist);
 

@@ -124,7 +124,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         custom_adapter_grid_searchPage.setData(trackArrayList);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(custom_adapter_grid_searchPage);
-//        showFullScreenLoader();
+        showFullScreenLoader();
         return view;
     }
 
