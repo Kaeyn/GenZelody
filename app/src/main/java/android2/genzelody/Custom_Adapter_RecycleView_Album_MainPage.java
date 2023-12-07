@@ -7,13 +7,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 import java.util.List;
 public class Custom_Adapter_RecycleView_Album_MainPage extends RecyclerView.Adapter<MyViewHolder> {
     Context context;
-    List<Album> albumList;
-    public Custom_Adapter_RecycleView_Album_MainPage(Context context, List<Album> albumList){
+    ArrayList<Playlists> urPlayList;
+    public Custom_Adapter_RecycleView_Album_MainPage(Context context, ArrayList<Playlists> urPlayList){
             this.context = context;
-            this.albumList = albumList;
+            this.urPlayList = urPlayList;
         }
 
     @NonNull
@@ -25,11 +28,11 @@ public class Custom_Adapter_RecycleView_Album_MainPage extends RecyclerView.Adap
     @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-            holder.tvTitleDanhChoBan.setText(albumList.get(position).getName());
-            holder.imgTrack.setImageResource(Integer.parseInt(albumList.get(position).getImage()));
+            holder.tvTitleDanhChoBan.setText(urPlayList.get(position).getName());
+        Picasso.with(context.getApplicationContext()).load(urPlayList.get(position).getImages()).resize(400,400).into(holder.imgTrack);
         }
         @Override
         public int getItemCount() {
-            return albumList.size();
+            return urPlayList.size();
         }
     }

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 public class Home extends AppCompatActivity {
 
     FrameLayout frameFragmentHome;
@@ -61,6 +60,7 @@ public class Home extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(getApplicationContext());
         showFullScreenLoader();
         fetchPlaylistsAsync();
+        System.out.println(ACCESS_TOKEN);
     }
 
     private CompletableFuture<Void> fetchPlaylistsAsync() {
@@ -113,6 +113,7 @@ public class Home extends AppCompatActivity {
         Boolean isPublic = false;
         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
         MyPlayList.add(playlists);
+
     }
 
     private void getRecommendedTrack(){
@@ -235,7 +236,7 @@ public class Home extends AppCompatActivity {
                         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
                         MyPlayList.add(playlists);
                     }
-
+                    System.out.println(MyPlayList + "");
 
                 } catch (JSONException e) {
                     throw new RuntimeException(e);

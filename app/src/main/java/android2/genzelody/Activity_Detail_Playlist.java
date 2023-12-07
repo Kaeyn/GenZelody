@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,6 +25,7 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
     ListView lvTrackOfPlaylist;
     ArrayList<Track> arrayListTrack = new ArrayList<Track>();
     Custom_Adapter_Lv_Track_Playlist adapterTrack;
+    ImageButton btnBack;
 
 
 
@@ -37,6 +41,7 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
     void addControl() {
         tvNamePlaylist = findViewById(R.id.tvNamePlaylist);
         imgPlayListDetail = findViewById(R.id.imgPlayListDetail);
+        btnBack = findViewById(R.id.btnBack);
         lvTrackOfPlaylist = findViewById(R.id.lvTrackOfPlaylist);
     }
 
@@ -75,6 +80,13 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
         }
         adapterTrack = new Custom_Adapter_Lv_Track_Playlist(getApplicationContext(),R.layout.layout_item_list_track_playlist,arrayListTrack);
         lvTrackOfPlaylist.setAdapter(adapterTrack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Activity_Detail_Playlist.this, Home.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void generatePalette(Bitmap bitmap) {

@@ -20,13 +20,18 @@ import java.util.List;
 public class Fragment_Home extends Fragment {
 
     Custom_Adapter_RecycleView_Album_MainPage adapter_recycleView_album_mainPage;
-    Custom_Adapter_RecycleView_Album_Bigger_MainPage adapter_recycleView_tracks_bigger_mainPage;
-    RecyclerView recViewDanhChoBan, recViewGoiY, recViewPhoBien;
+    Custom_Adapter_RecycleView_Album_FeaturePlayList adapter_recycleView_tracks_bigger_mainPage;
+    RecyclerView recViewDanhSachCuaBan, recViewGoiY, recViewPhoBien;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private ArrayList<Playlists> MyPlayList = new ArrayList<>();
+    private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
+
+    private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -41,9 +46,12 @@ public class Fragment_Home extends Fragment {
     public Fragment_Home(String accesssToken) {
         // Required empty public constructor
     }
-    public Fragment_Home(String accesssToken, ArrayList<Playlists> MyPlayList, ArrayList<Playlists> FeaturePlayList, ArrayList<Track> ListTrack) {
+    public Fragment_Home(String accesssToken, ArrayList<Playlists> myPlayList, ArrayList<Playlists> featurePlayList, ArrayList<Track> listTrack) {
         // Required empty public constructor
         ACCESS_TOKEN = accesssToken;
+        MyPlayList = myPlayList;
+        FeaturePlayList = featurePlayList;
+        RecommendedTrackList = listTrack;
     }
 
 
@@ -82,33 +90,34 @@ public class Fragment_Home extends Fragment {
         addViewControls(rootView);
 
         // Create a list of Track objects with different drawables
-        List<Album> albumList = new ArrayList<>();
-        albumList.add(new Album("Bài hát ưa thích",String.valueOf(R.drawable.yeuthich)));
-        albumList.add(new Album("Tình đầu", String.valueOf(R.drawable.johnweak)));
-        albumList.add(new Album("SOFAR", String.valueOf(R.drawable.johnweak)));
-        albumList.add(new Album("Xe đạp", String.valueOf(R.drawable.johnweak)));
+//        List<Album> albumList = new ArrayList<>();
+//        albumList.add(new Album("Bài hát ưa thích",String.valueOf(R.drawable.yeuthich)));
+//        albumList.add(new Album("Tình đầu", String.valueOf(R.drawable.johnweak)));
+//        albumList.add(new Album("SOFAR", String.valueOf(R.drawable.johnweak)));
+//        albumList.add(new Album("Xe đạp", String.valueOf(R.drawable.johnweak)));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        recViewDanhChoBan.setLayoutManager(layoutManager);
-        adapter_recycleView_album_mainPage = new Custom_Adapter_RecycleView_Album_MainPage(getContext(), albumList);
-        recViewDanhChoBan.setAdapter(adapter_recycleView_album_mainPage);
+        recViewDanhSachCuaBan.setLayoutManager(layoutManager);
+        adapter_recycleView_album_mainPage = new Custom_Adapter_RecycleView_Album_MainPage(getContext(), MyPlayList);
+        recViewDanhSachCuaBan.setAdapter(adapter_recycleView_album_mainPage);
+
 
 
         LinearLayoutManager layoutManagerGoiY = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recViewGoiY.setLayoutManager(layoutManagerGoiY);
-        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Album_Bigger_MainPage(getContext(), albumList);
+        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Album_FeaturePlayList(getContext(), FeaturePlayList);
         recViewGoiY.setAdapter(adapter_recycleView_tracks_bigger_mainPage);
 
-        LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        recViewPhoBien.setLayoutManager(layoutManagerPhoBien);
-        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Album_Bigger_MainPage(getContext(), albumList);
-        recViewPhoBien.setAdapter(adapter_recycleView_tracks_bigger_mainPage);
+//        LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+//        recViewPhoBien.setLayoutManager(layoutManagerPhoBien);
+//        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Tracks_Popular(getContext(), );
+//        recViewPhoBien.setAdapter(adapter_recycleView_tracks_bigger_mainPage);
 
         return rootView;
     }
 
     private void addViewControls(View rootView){
-        recViewDanhChoBan = rootView.findViewById(R.id.recViewDanhSachPhatPhoBien);
+        recViewDanhSachCuaBan = rootView.findViewById(R.id.recViewDanhSachCuaBan);
         recViewGoiY = rootView.findViewById(R.id.recViewGoiY);
         recViewPhoBien = rootView.findViewById(R.id.recViewPhoBien);
     }
