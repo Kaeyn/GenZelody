@@ -7,13 +7,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
-public class Custom_Adapter_RecycleView_Album_Bigger_MainPage extends RecyclerView.Adapter<MyViewHolder> {
+public class Custom_Adapter_RecycleView_Album_FeaturePlayList extends RecyclerView.Adapter<MyViewHolder> {
     Context context;
-    List<Album> albumList;
-    public Custom_Adapter_RecycleView_Album_Bigger_MainPage(Context context, List<Album> albumList){
+    ArrayList<Playlists> playlists;
+    public Custom_Adapter_RecycleView_Album_FeaturePlayList(Context context, ArrayList<Playlists> playlists){
         this.context = context;
-        this.albumList = albumList;
+        this.playlists = playlists;
     }
     @NonNull
     @Override
@@ -22,11 +26,11 @@ public class Custom_Adapter_RecycleView_Album_Bigger_MainPage extends RecyclerVi
     }
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.tvTitleDanhChoBan.setText(albumList.get(position).getName());
-        holder.imgTrack.setImageResource(Integer.parseInt(albumList.get(position).getImage()));
+        holder.tvTitleDanhChoBan.setText(playlists.get(position).getName());
+        Picasso.with(context.getApplicationContext()).load(playlists.get(position).getImages()).resize(400,400).into(holder.imgTrack);
     }
     @Override
     public int getItemCount() {
-        return albumList.size();
+        return playlists.size();
     }
 }
