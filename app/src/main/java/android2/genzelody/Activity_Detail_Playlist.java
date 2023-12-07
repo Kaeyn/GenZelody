@@ -20,7 +20,10 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
     TextView tvNamePlaylist;
     ImageView imgPlayListDetail;
     ListView lvTrackOfPlaylist;
+    ArrayList<Track> arrayListTrack = new ArrayList<Track>();
     Custom_Adapter_Lv_Track_Playlist adapterTrack;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,6 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
 
         Picasso.with(this.getApplicationContext()).load(intent.getStringExtra("imgPlaylist")).resize(480, 480).into(imgPlayListDetail);
 
-//        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(getApplicationContext(),R.layout.layout_item_list_track_playlist,);
 
         Picasso.with(this.getApplicationContext()).load(intent.getStringExtra("imgPlaylist")).into(new com.squareup.picasso.Target() {
             @Override
@@ -67,9 +69,12 @@ public class Activity_Detail_Playlist extends AppCompatActivity {
 
         if (receivedTrackList != null) {
             for (Track track : receivedTrackList) {
+                arrayListTrack.add(track);
                 System.out.println(track.getId() + track.getName() + track.getImg());
             }
         }
+        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(getApplicationContext(),R.layout.layout_item_list_track_playlist,arrayListTrack);
+        lvTrackOfPlaylist.setAdapter(adapterTrack);
     }
 
     private void generatePalette(Bitmap bitmap) {
