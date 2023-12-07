@@ -43,10 +43,9 @@ public class Home extends AppCompatActivity {
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
-
     private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
     ExecutorService trackExecutor = Executors.newFixedThreadPool(3);
-
+    User user = new User();
     private RequestQueue requestQueue;
 
     @Override
@@ -67,15 +66,16 @@ public class Home extends AppCompatActivity {
     private CompletableFuture<Void> fetchPlaylistsAsync() {
         return CompletableFuture.runAsync(() -> {
             try {
-
+                user=getUserInfo();
                 getFeaturePlaylists();
                 Thread.sleep(1500);
                 getUserPlaylists();
                 Thread.sleep(1500);
                 getRecommendedTrack();
                 Thread.sleep(1200);
-                loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
+                loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList,user));
                 Thread.sleep(1000);
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -97,7 +97,7 @@ public class Home extends AppCompatActivity {
                 if(idFrame == R.id.home){
 //                    item.setIcon(R.drawable.baseline_library_music_24);
 //                    bttNav.setBackgroundColor(getResources().getColor(R.color.black));
-                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
+                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList,user));
                     return true;
                 } else if (idFrame == R.id.search) {
                     loadFragment(new Fragment_Search(ACCESS_TOKEN));
@@ -130,6 +130,7 @@ public class Home extends AppCompatActivity {
         MyPlayList.add(playlists);
 
     }
+
 
     private void getRecommendedTrack(){
         String apiUrl = "https://api.spotify.com/v1/recommendations?limit=7&market=ES&seed_artists=5HZtdKfC4xU0wvhEyYDWiY";
@@ -410,6 +411,45 @@ public class Home extends AppCompatActivity {
         // Add the request to the Volley queue
         requestQueue.add(request);
         return newartist;
+    }
+
+    private User getUserInfo()
+    {
+        String apiUrl = "https://api.spotify.com/v1/me";
+        User newUser = new User();
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+                    JSONObject userObject = new JSONObject(response);
+                    String userName = userObject.getString("display_name");
+                    String userImg = userObject.getJSONArray("images").getJSONObject(0).getString("url");
+                    newUser.setUserName(userName);
+                    newUser.setUserImg(userImg);
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LoginActivity", "Failed to get artist. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+
+        // Add the request to the Volley queue
+        requestQueue.add(request);
+        return newUser;
     }
 
     @Override
