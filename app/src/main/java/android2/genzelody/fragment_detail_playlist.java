@@ -14,6 +14,7 @@ import androidx.palette.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -96,6 +97,15 @@ public class fragment_detail_playlist extends Fragment {
     }
 
     void addEvent(View rootView) {
+        ArrayList<Track> playlistTrack = playlist.getTracks();
+        lvTrackOfPlaylist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("dasdasda");
+                loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
+                return true;
+            }
+        });
         namePlaylist = playlist.getName();
         imgPlayList = playlist.getImages();
         try {
@@ -108,10 +118,7 @@ public class fragment_detail_playlist extends Fragment {
         }
         tvNamePlaylist.setText(namePlaylist);
 
-//        Picasso.with(rootView.getContext()).load(imgPlayList).resize(550, 550).into(imgPlayListDetail);
-//
-////        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(getApplicationContext(),R.layout.layout_item_list_track_playlist,);
-//
+
         Picasso.with(rootView.getContext()).load(imgPlayList).into(new com.squareup.picasso.Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -129,8 +136,10 @@ public class fragment_detail_playlist extends Fragment {
             }
         });
 
-        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlist.getTracks());
+        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack);
         lvTrackOfPlaylist.setAdapter(adapterTrack);
+
+
     }
 
     private void generatePalette(View rootView, Bitmap bitmap) {
@@ -143,6 +152,12 @@ public class fragment_detail_playlist extends Fragment {
                 linearLayout.setBackgroundColor(dominantColor);
             }
         });
+    }
+    public void loadFragment(Fragment fragment){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frameFragmentHome, fragment);
+        ft.commit();
     }
 
 }
