@@ -1,8 +1,10 @@
 package android2.genzelody;
 
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -11,11 +13,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -28,8 +34,7 @@ public class Fragment_Play_Track extends Fragment {
     TextView tvNameAlbumPlay, tvNameTrackPlay, tvNameArtistPlay, tvTimeStart, tvTimeEnd;
     ImageView imgTrackPlay;
     SeekBar seekBar;
-    Button btnBackPage, btnMore, btnAddLib;
-    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack;
+    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnMore, btnAddLib;
     MediaPlayer mediaPlayer;
     Handler handler = new Handler();
 
@@ -38,6 +43,7 @@ public class Fragment_Play_Track extends Fragment {
     String nameTrack = "";
     String nameArtists ="";
     String nameAlbum ="";
+    String img_url = "";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -54,6 +60,7 @@ public class Fragment_Play_Track extends Fragment {
         // Required empty public constructor
         preview_url = track.getPreview_url();
         nameTrack = track.getName();
+        img_url = track.getImg();
         for (Artist artist: track.getArtists()) {
             nameArtists += artist.getName()+ " ";
         }
@@ -101,6 +108,15 @@ public class Fragment_Play_Track extends Fragment {
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
+        try {
+            int drawableResourceId = Integer.parseInt(img_url);
+            Drawable drawable = ContextCompat.getDrawable(getContext(), drawableResourceId);
+            imgTrackPlay.setImageDrawable(drawable);
+        } catch (NumberFormatException e) {
+            // If the image is not a drawable resource ID (assuming it's a URL)
+            Picasso.with(this.getContext()).load(img_url).resize(100,100).into(imgTrackPlay);
+        }
+
     }
     private void addControls(View rootView){
         //text view
@@ -126,6 +142,8 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer = new MediaPlayer();
     }
     private void addEvents(){
+        Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
+        imgTrackPlay.startAnimation(animation);
         prepareMediaPlayer();
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override

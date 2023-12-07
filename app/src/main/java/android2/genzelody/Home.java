@@ -44,7 +44,7 @@ public class Home extends AppCompatActivity {
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
     private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
-    ExecutorService trackExecutor = Executors.newFixedThreadPool(3);
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(5);
     User user = new User();
     private RequestQueue requestQueue;
 

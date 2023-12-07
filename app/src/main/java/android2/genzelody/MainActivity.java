@@ -9,8 +9,8 @@ import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CLIENT_ID = "e4f94e9b18314749bf3d8339b47e1034";
-    private static final String REDIRECT_URI = "https://testingspotifyapi2/callback";
+    private static final String CLIENT_ID = "cfa03645cc114bcba8130a960b74107c";
+    private static final String REDIRECT_URI = "https://testingspotifyapi3/callback";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
