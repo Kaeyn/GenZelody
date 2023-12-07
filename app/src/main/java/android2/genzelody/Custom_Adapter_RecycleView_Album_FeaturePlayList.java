@@ -27,7 +27,7 @@ public class Custom_Adapter_RecycleView_Album_FeaturePlayList extends RecyclerVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tvTitleDanhChoBan.setText(playlists.get(position).getName());
-        Picasso.with(context.getApplicationContext()).load(playlists.get(position).getImages()).resize(400,400).into(holder.imgTrack);
+        Picasso.with(context.getApplicationContext()).load(playlists.get(position).getImages()).resize(160,160).into(holder.imgTrack);
     }
     @Override
     public int getItemCount() {
