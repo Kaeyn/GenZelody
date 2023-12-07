@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,6 +22,8 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
 
     private Context context;
     private ArrayList<Playlists> playlists;
+
+    private AdapterView.OnItemClickListener onItemClickListener;
 
     public Custom_Adapter_Grid_MainPage(Context context) {
         this.context = context;
@@ -54,6 +57,11 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
     @Override
     public int getItemCount() {
         return playlists.size();
+    }
+
+    // Set the click listener
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{

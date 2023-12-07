@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -16,10 +17,17 @@ import java.util.List;
 public class Custom_Adapter_RecycleView_Album_MainPage extends RecyclerView.Adapter<MyViewHolder> {
     Context context;
     ArrayList<Playlists> urPlayList;
+    private AdapterView.OnItemClickListener onItemClickListener;
+
     public Custom_Adapter_RecycleView_Album_MainPage(Context context, ArrayList<Playlists> urPlayList){
             this.context = context;
             this.urPlayList = urPlayList;
         }
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
 
     @NonNull
     @Override

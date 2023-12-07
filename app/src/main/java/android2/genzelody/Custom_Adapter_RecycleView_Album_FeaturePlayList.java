@@ -3,6 +3,7 @@ package android2.genzelody;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,10 +16,17 @@ import java.util.List;
 public class Custom_Adapter_RecycleView_Album_FeaturePlayList extends RecyclerView.Adapter<MyViewHolder> {
     Context context;
     ArrayList<Playlists> playlists;
+    private AdapterView.OnItemClickListener onItemClickListener;
+
     public Custom_Adapter_RecycleView_Album_FeaturePlayList(Context context, ArrayList<Playlists> playlists){
         this.context = context;
         this.playlists = playlists;
     }
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

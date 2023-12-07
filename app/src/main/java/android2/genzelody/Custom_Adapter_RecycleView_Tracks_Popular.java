@@ -3,6 +3,7 @@ package android2.genzelody;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,10 +17,16 @@ public class Custom_Adapter_RecycleView_Tracks_Popular extends RecyclerView.Adap
 
     Context context;
     ArrayList<Track> trackList;
+    private AdapterView.OnItemClickListener onItemClickListener;
+
 
     public Custom_Adapter_RecycleView_Tracks_Popular(Context context, ArrayList<Track> trackList){
         this.context = context;
         this.trackList = trackList;
+    }
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
     }
 
 

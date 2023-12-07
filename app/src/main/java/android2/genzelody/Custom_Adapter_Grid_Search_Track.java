@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 public class Custom_Adapter_Grid_Search_Track extends BaseAdapter {
     Context context;
     ArrayList<Track> arrayListResultTrack = new ArrayList<Track>();
+    private AdapterView.OnItemClickListener onItemClickListener;
+
     public Custom_Adapter_Grid_Search_Track(Context context, ArrayList<Track> arrayListResultTrack) {
         this.context = context;
         this.arrayListResultTrack = arrayListResultTrack;
@@ -37,6 +40,11 @@ public class Custom_Adapter_Grid_Search_Track extends BaseAdapter {
         ImageView imgSearchTrack;
         TextView tvNameSearckTrack, tvOwnerSearchTrack;
     }
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
