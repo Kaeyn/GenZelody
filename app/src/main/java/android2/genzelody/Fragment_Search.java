@@ -2,6 +2,7 @@ package android2.genzelody;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -11,11 +12,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -23,6 +26,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,13 +35,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link Fragment_Search#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Fragment_Search extends Fragment {
+public class Fragment_Search extends Fragment implements RecyclerViewClickListener{
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -55,8 +62,18 @@ public class Fragment_Search extends Fragment {
     private JSONObject searchObject;
     ArrayList<Track> trackArrayList = new ArrayList<>();
     ArrayList<Artist> artistArrayList = new ArrayList<>();
-    ArrayList<Album> albumArrayList = new ArrayList<>();
-    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(1);
+//    ArrayList<Album> albumArrayList = new ArrayList<>();
+//    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    ImageView imgUser;
+    TextView nameUser;
+
+    Custom_Adapter_Grid_SearchPage custom_adapter_grid_searchPage;
+    RecyclerView recyclerView;
+
+    User user = new User();
+
+
 
     ListView LvResultSearchTrack, LvResultSearchArtist;
 
@@ -70,9 +87,10 @@ public class Fragment_Search extends Fragment {
         // Required empty public constructor
     }
 
-    public Fragment_Search(String accessToken) {
+    public Fragment_Search(String accessToken, User user, ArrayList<Track> tracks) {
         // Required empty public constructor
         ACCESS_TOKEN = accessToken;
+        this.user = user;
     }
 
     /**
@@ -110,7 +128,13 @@ public class Fragment_Search extends Fragment {
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
         addEvent();
+//        searchThings("a");
 
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        custom_adapter_grid_searchPage = new Custom_Adapter_Grid_SearchPage(getContext(), this);
+//        fetchPlaylistsAsync("a");
+//        showFullScreenLoader();
         return view;
     }
 
@@ -120,6 +144,9 @@ public class Fragment_Search extends Fragment {
         LvResultSearchArtist = view.findViewById(R.id.LvResultSearchArtist);
 
         edtInputSearch.requestFocus();
+        imgUser = view.findViewById(R.id.imgUserSearch);
+        nameUser = view.findViewById(R.id.tvNameUserSearch);
+        recyclerView = view.findViewById(R.id.recGridSearch);
         showKeyboard();
     }
 
@@ -137,7 +164,10 @@ public class Fragment_Search extends Fragment {
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                     // Your function to execute when Enter is pressed
 
-                    searchThings(edtInputSearch.getText().toString());
+                    fetchPlaylistsAsync(edtInputSearch.getText().toString());
+                    InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(edtInputSearch.getWindowToken(), 0);
+
 //                    Log.d("FinalResult", "ohYeah" + fullSearchObject);
 //                    // Return true to indicate that the event has been handled
                     return true;
@@ -146,6 +176,20 @@ public class Fragment_Search extends Fragment {
                 return false;
             }
         });
+
+        Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
+
+    }
+
+    private CompletableFuture<Void> fetchPlaylistsAsync(String search) {
+        return CompletableFuture.runAsync(() -> {
+            searchThings(search);
+//                Thread.sleep(5000);
+            custom_adapter_grid_searchPage.setData(trackArrayList);
+            custom_adapter_grid_searchPage.notifyDataSetChanged();
+            recyclerView.setAdapter(custom_adapter_grid_searchPage);
+
+        }, trackExecutor);
     }
 
     private void filterSearch(JSONObject fullJSONObject)  {
@@ -164,19 +208,6 @@ public class Fragment_Search extends Fragment {
             adapterArtist = new Custom_Adapter_Grid_Search_Artist(getContext(),R.layout.layout_item_grid_search_artist,artistArrayList);
             LvResultSearchArtist.setAdapter(adapterArtist);
 
-
-//            ScrollSynchronizer scrollSynchronizer = new ScrollSynchronizer(LvResultSearchArtist);
-//            ScrollSynchronizer scrollSynchronizer2 = new ScrollSynchronizer(LvResultSearchTrack);
-//
-//            LvResultSearchTrack.setOnScrollListener(scrollSynchronizer);
-//            LvResultSearchArtist.setOnScrollListener(scrollSynchronizer2);
-
-            ScrollSynchronizer scrollSynchronizer = new ScrollSynchronizer(LvResultSearchArtist, LvResultSearchTrack);
-            ScrollSynchronizer scrollSynchronizer2 = new ScrollSynchronizer(LvResultSearchTrack, LvResultSearchArtist);
-
-            LvResultSearchArtist.setOnScrollListener(scrollSynchronizer2);
-            LvResultSearchTrack.setOnScrollListener(scrollSynchronizer);
-//
 //            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
 //            getPlaylistResult(allPlaylist);
 //            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
@@ -230,50 +261,50 @@ public class Fragment_Search extends Fragment {
         return artistArrayList;
     }
 
-    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
-    {
-        try {
-            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+//    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
+//    {
+//        try {
+//            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+//
+//            for (int i = 0; i < allPlaylist.length(); i++) {
+//                JSONObject playlistObject = allPlaylist.getJSONObject(i);
+//                String playlistId = playlistObject.getString("id");
+//                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
+//                String playlistName = playlistObject.getString("name");
+//                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
+//                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
+//                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
+//                playlistsArrayList.add(newPlaylist);
+//            }
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return playlistsArrayList;
+//    }
 
-            for (int i = 0; i < allPlaylist.length(); i++) {
-                JSONObject playlistObject = allPlaylist.getJSONObject(i);
-                String playlistId = playlistObject.getString("id");
-                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
-                String playlistName = playlistObject.getString("name");
-                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
-                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
-                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
-                playlistsArrayList.add(newPlaylist);
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return playlistsArrayList;
-    }
-
-    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
-    {
-        try {
-            JSONArray allAlbum = AlbumObject.getJSONArray("items");
-
-            for (int i = 0; i < allAlbum.length(); i++) {
-                JSONObject albumObject = allAlbum.getJSONObject(i);
-                String albumId = albumObject.getString("id");
-                String albumName = albumObject.getString("name");
-                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
-                String albumReleaseDate = albumObject.getString("release_date");
-                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
-                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
-                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
-                albumArrayList.add(newAlbum);
-            }
-
-        }catch (JSONException e){
-
-        }
-//        System.out.println("hummmmmm "+albumArrayList);
-        return albumArrayList;
-    }
+//    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
+//    {
+//        try {
+//            JSONArray allAlbum = AlbumObject.getJSONArray("items");
+//
+//            for (int i = 0; i < allAlbum.length(); i++) {
+//                JSONObject albumObject = allAlbum.getJSONObject(i);
+//                String albumId = albumObject.getString("id");
+//                String albumName = albumObject.getString("name");
+//                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
+//                String albumReleaseDate = albumObject.getString("release_date");
+//                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
+//                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
+//                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
+//                albumArrayList.add(newAlbum);
+//            }
+//
+//        }catch (JSONException e){
+//
+//        }
+////        System.out.println("hummmmmm "+albumArrayList);
+//        return albumArrayList;
+//    }
 
     private ArrayList<Track> getSpecificTrackFromPlaylist(String id){
         String apiUrl = "https://api.spotify.com/v1/playlists/"+id+"/tracks";
@@ -435,8 +466,8 @@ public class Fragment_Search extends Fragment {
     private void searchThings(String thing) {
 
         artistArrayList.clear();
-        playlistsArrayList.clear();
-        albumArrayList.clear();
+//        playlistsArrayList.clear();
+//        albumArrayList.clear();
         trackArrayList.clear();
 
         String accessToken = ACCESS_TOKEN;
@@ -491,76 +522,37 @@ public class Fragment_Search extends Fragment {
         }
     }
 
-//    private static class ScrollSynchronizer implements AbsListView.OnScrollListener {
-//
-//        private final ListView targetListView1;
-//        private final ListView targetListView2;
-////        private boolean isScrolling = true;
-//
-//        ScrollSynchronizer(ListView targetListView1, ListView targetListView2) {
-//            this.targetListView1 = targetListView1;
-//            this.targetListView2 = targetListView2;
-//        }
-//
-//        @Override
-//        public void onScrollStateChanged(AbsListView view, int scrollState) {
-////            if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-////                isScrolling = true;
-////            } else {
-////                isScrolling = false;
-////            }
-//        }
-//
-////        @Override
-////        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-////            if (isScrolling) {
-////                int top = 0;
-////                if (view.getChildCount() > 0) {
-////                    top = view.getChildAt(0).getTop();
-////                }
-////
-////                if (view == targetListView1) {
-////                    isScrolling = false;
-////                    targetListView2.setSelectionFromTop(firstVisibleItem, top);
-////                } else if (view == targetListView2) {
-////                    isScrolling = false;
-////                    targetListView1.setSelectionFromTop(firstVisibleItem, top);
-////                }
-////            }
-////        }
-////    }
+    private void showFullScreenLoader() {
+        // Inflate the custom layout for the dialog
+        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader_home, null);
 
+        // Create an AlertDialog with a custom layout
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
+        alertDialogBuilder.setView(dialogView);
+        alertDialogBuilder.setCancelable(false); // Prevent dismissal by tapping outside
 
-        private static class ScrollSynchronizer implements AbsListView.OnScrollListener {
+        // Create and show the AlertDialog
+        AlertDialog fullScreenDialog = alertDialogBuilder.create();
+        fullScreenDialog.show();
 
-            private final ListView targetListView;
-            private boolean isScrolling = false;
-
-
-            ScrollSynchronizer(ListView targetListView) {
-                this.targetListView = targetListView;
-            }
-
+        // Use Handler to dismiss the dialog after 5 seconds
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    isScrolling = false;
-                } else {
-                    isScrolling = true;
-                }
+            public void run() {
+                fullScreenDialog.dismiss();
+                // Additional processing if needed
             }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int top = 0;
-                if (view.getChildCount() > 0) {
-                    top = view.getChildAt(0).getTop();
-                }
-                targetListView.setSelectionFromTop(firstVisibleItem, top);
-
-            }
-        }
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
 
 
+    @Override
+    public void onClick(View view, int position, String category) {
 
+    }
+
+    @Override
+    public void listOnClick(View view, int position) {
+
+    }
 }
