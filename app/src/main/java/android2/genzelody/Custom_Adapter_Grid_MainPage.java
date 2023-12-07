@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -42,7 +43,7 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Playlists playlistitem = playlists.get(position);
         holder.tvGridPlayList.setText(playlistitem.getName());
 

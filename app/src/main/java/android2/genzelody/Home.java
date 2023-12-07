@@ -98,7 +98,7 @@ public class Home extends AppCompatActivity {
                     loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList, user));
                     return true;
                 } else if (idFrame == R.id.search) {
-                    loadFragment(new Fragment_Search(ACCESS_TOKEN, user));
+                    loadFragment(new Fragment_Search(ACCESS_TOKEN, user, RecommendedTrackList));
                     return true;
                 }
                 else if (idFrame == R.id.library) {
