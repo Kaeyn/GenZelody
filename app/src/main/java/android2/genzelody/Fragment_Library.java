@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
 
@@ -95,16 +97,15 @@ public class Fragment_Library extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent = new Intent(getContext(), Activity_Detail_Playlist.class);
-                ArrayList<Track> trackList = MyPlayList.get(position).getTracks();
-                intent.putExtra("namePlaylist", MyPlayList.get(position).getName());
-                intent.putExtra("imgPlaylist", MyPlayList.get(position).getImages());
-
-                intent.putParcelableArrayListExtra("tracks", trackList);
-                startActivity(intent);
+                loadFragment(new fragment_detail_playlist(MyPlayList.get(position)));
             }
         });
+    }
+    public void loadFragment(Fragment fragment){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frameFragmentHome, fragment);
+        ft.commit();
     }
 
 }
