@@ -111,7 +111,7 @@ public class Fragment_Play_Track extends Fragment {
             imgTrackPlay.setImageDrawable(drawable);
         } catch (NumberFormatException e) {
             // If the image is not a drawable resource ID (assuming it's a URL)
-            Picasso.with(this.getContext()).load(img_url).resize(100,100).into(imgTrackPlay);
+            Picasso.with(this.getContext()).load(img_url).resize(860,860).into(imgTrackPlay);
         }
         prepareMediaPlayer();
     }
