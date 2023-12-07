@@ -1,17 +1,19 @@
 package android2.genzelody;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -127,6 +129,7 @@ public class Fragment_Home extends Fragment {
         custom_adapter_grid_mainPage.setData(tempPlaylist);
         recGridPlayListCuaBan.setAdapter(custom_adapter_grid_mainPage);
 
+
         return rootView;
     }
 
@@ -137,4 +140,9 @@ public class Fragment_Home extends Fragment {
         recViewPhoBien = rootView.findViewById(R.id.recViewPhoBien);
         recGridPlayListCuaBan = rootView.findViewById(R.id.recGridPlayListCuaBan);
     }
+
+
+
+
+
 }

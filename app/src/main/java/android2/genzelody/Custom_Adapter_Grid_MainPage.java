@@ -59,11 +59,6 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
         return playlists.size();
     }
 
-    // Set the click listener
-    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
-        this.onItemClickListener = listener;
-    }
-
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private ImageView imgGridPlayList;
         private TextView tvGridPlayList;

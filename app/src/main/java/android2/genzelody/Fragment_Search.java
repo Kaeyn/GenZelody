@@ -2,6 +2,7 @@ package android2.genzelody;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
@@ -101,7 +103,7 @@ public class Fragment_Search extends Fragment {
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
         addEvent();
-
+//        showFullScreenLoader();
         return view;
     }
 
@@ -452,6 +454,29 @@ public class Fragment_Search extends Fragment {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void showFullScreenLoader() {
+        // Inflate the custom layout for the dialog
+        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader_home, null);
+
+        // Create an AlertDialog with a custom layout
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
+        alertDialogBuilder.setView(dialogView);
+        alertDialogBuilder.setCancelable(false); // Prevent dismissal by tapping outside
+
+        // Create and show the AlertDialog
+        AlertDialog fullScreenDialog = alertDialogBuilder.create();
+        fullScreenDialog.show();
+
+        // Use Handler to dismiss the dialog after 5 seconds
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fullScreenDialog.dismiss();
+                // Additional processing if needed
+            }
+        }, 5000); // 5000 milliseconds = 5 seconds
     }
 
 
