@@ -98,11 +98,11 @@ public class Home extends AppCompatActivity {
                     loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList, user));
                     return true;
                 } else if (idFrame == R.id.search) {
-                    loadFragment(new Fragment_Search(ACCESS_TOKEN));
+                    loadFragment(new Fragment_Search(ACCESS_TOKEN, user));
                     return true;
                 }
                 else if (idFrame == R.id.library) {
-                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList));
+                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList, user));
                     return true;
                 }
                 return true;
@@ -422,7 +422,11 @@ public class Home extends AppCompatActivity {
                 try {
                     JSONObject userObject = new JSONObject(response);
                     String userName = userObject.getString("display_name");
-                    String userImg = userObject.getJSONArray("images").getJSONObject(0).getString("url");
+                    String userImg="https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228";
+                    if(userObject.getJSONArray("images").length()>0){
+                        userImg = userObject.getJSONArray("images").getJSONObject(0).getString("url");
+                    }
+                    System.out.println(userImg+"d");
                     newUser.setUserName(userName);
                     newUser.setUserImg(userImg);
 

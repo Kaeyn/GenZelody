@@ -175,4 +175,9 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
 
         }
     }
+
+    @Override
+    public void listOnClick(View view, int position) {
+
+    }
 }

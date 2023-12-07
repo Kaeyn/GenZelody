@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -22,6 +23,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +58,10 @@ public class Fragment_Search extends Fragment {
     ArrayList<Artist> artistArrayList = new ArrayList<>();
     ArrayList<Album> albumArrayList = new ArrayList<>();
     ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    ImageView imgUser;
+    TextView nameUser;
+
+    User user = new User();
 
     private RequestQueue requestQueue;
 
@@ -63,9 +69,10 @@ public class Fragment_Search extends Fragment {
         // Required empty public constructor
     }
 
-    public Fragment_Search(String accessToken) {
+    public Fragment_Search(String accessToken, User user ) {
         // Required empty public constructor
         ACCESS_TOKEN = accessToken;
+        this.user = user;
     }
 
     /**
@@ -110,6 +117,8 @@ public class Fragment_Search extends Fragment {
     private void addViewControls(View view){
         edtInputSearch = view.findViewById(R.id.edtInputSearch);
         edtInputSearch.requestFocus();
+        imgUser = view.findViewById(R.id.imgUserSearch);
+        nameUser = view.findViewById(R.id.tvNameUserSearch);
         showKeyboard();
     }
     void addEvent(){
@@ -132,6 +141,10 @@ public class Fragment_Search extends Fragment {
                 return false;
             }
         });
+        Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
+
+
+
     }
 
     private void filterSearch(JSONObject fullJSONObject)  {

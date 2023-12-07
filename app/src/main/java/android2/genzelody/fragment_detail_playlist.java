@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * Use the {@link fragment_detail_playlist#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_detail_playlist extends Fragment {
+public class fragment_detail_playlist extends Fragment implements RecyclerViewClickListener{
     TextView tvNamePlaylist;
     ImageView imgPlayListDetail;
     ListView lvTrackOfPlaylist;
@@ -89,7 +89,7 @@ public class fragment_detail_playlist extends Fragment {
         addControl(rootView);
         addEvent(rootView);
         playlistTrack = playlist.getTracks();
-        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack);
+        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack, (RecyclerViewClickListener) this);
         lvTrackOfPlaylist.setAdapter(adapterTrack);
         // Inflate the layout for this fragment
         return rootView;
@@ -134,13 +134,7 @@ public class fragment_detail_playlist extends Fragment {
         });
 
 
-        lvTrackOfPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("dasdasda");
-                loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
-            }
-        });
+
 
     }
 
@@ -162,4 +156,13 @@ public class fragment_detail_playlist extends Fragment {
         ft.commit();
     }
 
+    @Override
+    public void onClick(View view, int position, String category) {
+
+    }
+
+    @Override
+    public void listOnClick(View view, int position) {
+        loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
+    }
 }
