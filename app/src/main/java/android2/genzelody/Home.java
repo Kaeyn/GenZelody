@@ -83,6 +83,7 @@ public class Home extends AppCompatActivity {
         }, trackExecutor);
     }
 
+
     private void addControls(){
         frameFragmentHome = findViewById(R.id.frameFragmentHome);
         bttNav = findViewById(R.id.bttnav);
