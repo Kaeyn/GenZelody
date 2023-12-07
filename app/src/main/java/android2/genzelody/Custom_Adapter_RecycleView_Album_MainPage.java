@@ -1,10 +1,12 @@
 package android2.genzelody;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -29,8 +31,15 @@ public class Custom_Adapter_RecycleView_Album_MainPage extends RecyclerView.Adap
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
             holder.tvTitleDanhChoBan.setText(urPlayList.get(position).getName());
-        Picasso.with(context.getApplicationContext()).load(urPlayList.get(position).getImages()).resize(400,400).into(holder.imgTrack);
-        }
+            try {
+                int drawableResourceId = Integer.parseInt(urPlayList.get(position).getImages());
+                Drawable drawable = ContextCompat.getDrawable(context, drawableResourceId);
+                holder.imgTrack.setImageDrawable(drawable);
+            } catch (NumberFormatException e) {
+                // If the image is not a drawable resource ID (assuming it's a URL)
+                Picasso.with(context.getApplicationContext()).load(urPlayList.get(position).getImages()).resize(100,100).into(holder.imgTrack);
+            }
+    }
         @Override
         public int getItemCount() {
             return urPlayList.size();

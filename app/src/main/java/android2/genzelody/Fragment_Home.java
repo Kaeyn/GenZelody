@@ -21,6 +21,7 @@ public class Fragment_Home extends Fragment {
 
     Custom_Adapter_RecycleView_Album_MainPage adapter_recycleView_album_mainPage;
     Custom_Adapter_RecycleView_Album_FeaturePlayList adapter_recycleView_tracks_bigger_mainPage;
+    Custom_Adapter_RecycleView_Tracks_Popular adapter_recycleView_tracks_popular;
     RecyclerView recViewDanhSachCuaBan, recViewGoiY, recViewPhoBien;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -108,10 +109,10 @@ public class Fragment_Home extends Fragment {
         adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Album_FeaturePlayList(getContext(), FeaturePlayList);
         recViewGoiY.setAdapter(adapter_recycleView_tracks_bigger_mainPage);
 
-//        LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-//        recViewPhoBien.setLayoutManager(layoutManagerPhoBien);
-//        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Tracks_Popular(getContext(), );
-//        recViewPhoBien.setAdapter(adapter_recycleView_tracks_bigger_mainPage);
+        LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        recViewPhoBien.setLayoutManager(layoutManagerPhoBien);
+        adapter_recycleView_tracks_popular = new Custom_Adapter_RecycleView_Tracks_Popular(getContext(), RecommendedTrackList);
+        recViewPhoBien.setAdapter(adapter_recycleView_tracks_popular);
 
         return rootView;
     }

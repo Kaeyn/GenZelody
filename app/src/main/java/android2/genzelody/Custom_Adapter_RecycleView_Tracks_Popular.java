@@ -7,14 +7,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Custom_Adapter_RecycleView_Tracks_Popular extends RecyclerView.Adapter<MyViewHolder> {
 
     Context context;
-    List<Track> trackList;
+    ArrayList<Track> trackList;
 
-    public Custom_Adapter_RecycleView_Tracks_Popular(Context context, List<Track> trackList){
+    public Custom_Adapter_RecycleView_Tracks_Popular(Context context, ArrayList<Track> trackList){
         this.context = context;
         this.trackList = trackList;
     }
@@ -28,11 +31,9 @@ public class Custom_Adapter_RecycleView_Tracks_Popular extends RecyclerView.Adap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        List<Album> albumList = null;
         holder.tvTitleDanhChoBan.setText(trackList.get(position).getName());
-        holder.imgTrack.setImageResource(Integer.parseInt(trackList.get(position).getAlbumImageById(
-                trackList.get(position).getId(), albumList
-        )));
+        Picasso.with(context.getApplicationContext()).load(trackList.get(position).getImg()).resize(160,160).into(holder.imgTrack);
+
     }
 
     @Override

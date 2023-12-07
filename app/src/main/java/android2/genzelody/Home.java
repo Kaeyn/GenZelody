@@ -52,6 +52,7 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
         addControls();
         addEvents();
@@ -65,9 +66,21 @@ public class Home extends AppCompatActivity {
 
     private CompletableFuture<Void> fetchPlaylistsAsync() {
         return CompletableFuture.runAsync(() -> {
-            getUserPlaylists();
-            getFeaturePlaylists();
-            getRecommendedTrack();
+            try {
+
+                getFeaturePlaylists();
+                Thread.sleep(1500);
+                getUserPlaylists();
+                Thread.sleep(1500);
+                getRecommendedTrack();
+                Thread.sleep(1200);
+                loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+
         }, trackExecutor);
     }
 
@@ -82,7 +95,7 @@ public class Home extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int idFrame = item.getItemId();
                 if(idFrame == R.id.home){
-                    loadFragment(new Fragment_Home(ACCESS_TOKEN));
+                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
                     return true;
                 } else if (idFrame == R.id.search) {
                     loadFragment(new Fragment_Search(ACCESS_TOKEN));
@@ -193,7 +206,7 @@ public class Home extends AppCompatActivity {
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LoginActivity", "Failed to get user playlists. Error: " + error.getMessage());
+                Log.e("LoginActivity", "Failed to get feature playlists. Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -258,7 +271,7 @@ public class Home extends AppCompatActivity {
             }
         };
 
-                // Add the request to the Volley queue
+
         requestQueue.add(request);
     }
 
@@ -297,7 +310,7 @@ public class Home extends AppCompatActivity {
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LoginActivity", "Failed to get user playlists. Error: " + error.getMessage());
+                Log.e("LoginActivity", "Failed to get track . Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -319,7 +332,8 @@ public class Home extends AppCompatActivity {
         try {
             for (int i = 0; i < artistsArray.length(); i++) {
                 JSONObject artistobject = artistsArray.getJSONObject(i);
-                Artist artist = getSpecificArtist(artistobject.getString("href"));
+                Artist artist = new Artist(artistobject.getString("id"), artistobject.getString("name"), null);
+//                Artist artist = getSpecificArtist(artistobject.getString("href"));
                 newArray.add(artist);
             }
         } catch (JSONException e) {
@@ -379,7 +393,7 @@ public class Home extends AppCompatActivity {
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LoginActivity", "Failed to get user playlists. Error: " + error.getMessage());
+                Log.e("LoginActivity", "Failed to get artist. Error: " + error.getMessage());
             }
         }) {
             @Override
