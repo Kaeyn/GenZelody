@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="10dp"
+    android:orientation="vertical">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        app:cardCornerRadius="6dp">
+
+        <ImageView
+            android:id="@+id/imgGridSearch"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@tools:sample/avatars" />
+        <!-- Add other views or content inside the CardView if needed -->
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/txtGridSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="fill|center_vertical"
+        android:text="TextView"
+        android:textAlignment="gravity"
+        android:textColor="#B3B3B3"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/txtArtist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="fill|center_vertical"
+        android:text="TextView"
+        android:textAlignment="gravity"
+        android:textColor="#B3B3B3"
+        android:textSize="18sp" />
+
+</LinearLayout>

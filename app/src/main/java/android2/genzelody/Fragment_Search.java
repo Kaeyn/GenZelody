@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -38,7 +40,7 @@ import java.util.Map;
  * Use the {@link Fragment_Search#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Fragment_Search extends Fragment {
+public class Fragment_Search extends Fragment implements RecyclerViewClickListener{
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -61,7 +63,12 @@ public class Fragment_Search extends Fragment {
     ImageView imgUser;
     TextView nameUser;
 
+    Custom_Adapter_Grid_SearchPage custom_adapter_grid_searchPage;
+    RecyclerView recyclerView;
+
     User user = new User();
+
+
 
     private RequestQueue requestQueue;
 
@@ -69,10 +76,11 @@ public class Fragment_Search extends Fragment {
         // Required empty public constructor
     }
 
-    public Fragment_Search(String accessToken, User user ) {
+    public Fragment_Search(String accessToken, User user, ArrayList<Track> tracks) {
         // Required empty public constructor
         ACCESS_TOKEN = accessToken;
         this.user = user;
+        this.trackArrayList = tracks;
     }
 
     /**
@@ -109,7 +117,13 @@ public class Fragment_Search extends Fragment {
         View view = inflater.inflate(R.layout.fragment__search, container, false);
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
-        addEvent();
+        addEvent(view);
+//        searchThings("a");
+        custom_adapter_grid_searchPage = new Custom_Adapter_Grid_SearchPage(getContext(), this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        custom_adapter_grid_searchPage.setData(trackArrayList);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(custom_adapter_grid_searchPage);
 //        showFullScreenLoader();
         return view;
     }
@@ -119,9 +133,10 @@ public class Fragment_Search extends Fragment {
         edtInputSearch.requestFocus();
         imgUser = view.findViewById(R.id.imgUserSearch);
         nameUser = view.findViewById(R.id.tvNameUserSearch);
+        recyclerView = view.findViewById(R.id.recGridSearch);
         showKeyboard();
     }
-    void addEvent(){
+    void addEvent(View view){
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -132,7 +147,7 @@ public class Fragment_Search extends Fragment {
                     searchThings(edtInputSearch.getText().toString());
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edtInputSearch.getWindowToken(), 0);
-
+                    recyclerView.swapAdapter(custom_adapter_grid_searchPage, true);
 //                    Log.d("FinalResult", "ohYeah" + fullSearchObject);
 //                    // Return true to indicate that the event has been handled
                     return true;
@@ -141,9 +156,8 @@ public class Fragment_Search extends Fragment {
                 return false;
             }
         });
+
         Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
-
-
 
     }
 
@@ -496,6 +510,13 @@ public class Fragment_Search extends Fragment {
     }
 
 
+    @Override
+    public void onClick(View view, int position, String category) {
 
+    }
 
+    @Override
+    public void listOnClick(View view, int position) {
+
+    }
 }

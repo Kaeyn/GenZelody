@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-                redirectHostName: "TestingSpotifyAPI2",
+                redirectHostName: "TestingSpotifyAPI3",
                 redirectSchemeName: "https"
         ]
     }

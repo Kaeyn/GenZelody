@@ -37,7 +37,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="testingspotifyapi2"
+                    android:host="testingspotifyapi3"
                     android:scheme="https" />
             </intent-filter>
         </activity>

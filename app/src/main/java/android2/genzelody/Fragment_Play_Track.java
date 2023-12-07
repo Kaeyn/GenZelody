@@ -1,8 +1,10 @@
 package android2.genzelody;
 
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -11,11 +13,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -28,16 +34,13 @@ public class Fragment_Play_Track extends Fragment {
     TextView tvNameAlbumPlay, tvNameTrackPlay, tvNameArtistPlay, tvTimeStart, tvTimeEnd;
     ImageView imgTrackPlay;
     SeekBar seekBar;
-    Button btnBackPage, btnMore, btnAddLib;
-    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack;
+    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnMore, btnAddLib;
     MediaPlayer mediaPlayer;
     Handler handler = new Handler();
 
     //later set
-    String preview_url = "https://p.scdn.co/mp3-preview/dd79198f4b4c43aef9c8e8e1c4708a402862dd0e?cid=f628b685017b4db5bacd292385fd7f50";
-    String nameTrack = "";
-    String nameArtists ="";
-    String nameAlbum ="";
+    String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -54,6 +57,7 @@ public class Fragment_Play_Track extends Fragment {
         // Required empty public constructor
         preview_url = track.getPreview_url();
         nameTrack = track.getName();
+        img_url = track.getImg();
         for (Artist artist: track.getArtists()) {
             nameArtists += artist.getName()+ " ";
         }
@@ -93,14 +97,23 @@ public class Fragment_Play_Track extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
         // Inflate the layout for this fragment
         addControls(rootView);
-        addEvents();
         setTrackInfo();
+        addEvents();
         return rootView;
     }
     private void setTrackInfo(){
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
+        try {
+            int drawableResourceId = Integer.parseInt(img_url);
+            Drawable drawable = ContextCompat.getDrawable(getContext(), drawableResourceId);
+            imgTrackPlay.setImageDrawable(drawable);
+        } catch (NumberFormatException e) {
+            // If the image is not a drawable resource ID (assuming it's a URL)
+            Picasso.with(this.getContext()).load(img_url).resize(100,100).into(imgTrackPlay);
+        }
+        prepareMediaPlayer();
     }
     private void addControls(View rootView){
         //text view
@@ -125,19 +138,25 @@ public class Fragment_Play_Track extends Fragment {
         //media player
         mediaPlayer = new MediaPlayer();
     }
+    private void startTrack(){
+        mediaPlayer.start();
+        Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
+        imgTrackPlay.startAnimation(animation);
+        btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
+        updateSeekbar();
+    }
     private void addEvents(){
-        prepareMediaPlayer();
+        startTrack();
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mediaPlayer.isPlaying()){
                     handler.removeCallbacks(updater);
                     mediaPlayer.pause();
+                    imgTrackPlay.clearAnimation();
                     btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
                 }else{
-                    mediaPlayer.start();
-                    btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
-                    updateSeekbar();
+                    startTrack();
                 }
             }
         });
@@ -169,16 +188,12 @@ public class Fragment_Play_Track extends Fragment {
                 return false;
             }
         });
-        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                seekBar.setSecondaryProgress(percent);
-            }
-        });
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 seekBar.setProgress(0);
+                imgTrackPlay.clearAnimation();
                 btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
                 tvTimeStart.setText("0:00");
                 mediaPlayer.reset();
@@ -200,17 +215,23 @@ public class Fragment_Play_Track extends Fragment {
         @Override
         public void run() {
             updateSeekbar();
-
-
         }
     };
     private  void updateSeekbar(){
-        if(mediaPlayer.isPlaying()){
+        if (mediaPlayer.isPlaying()) {
             long currentDuration = mediaPlayer.getCurrentPosition();
+            System.out.println(mediaPlayer.getCurrentPosition());
             tvTimeStart.setText(milliSecondToTimer(currentDuration));
-            seekBar.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));
-            handler.postDelayed(updater,1000);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    seekBar.setProgress((int) (((float) currentDuration / mediaPlayer.getDuration()) * 100));
+                }
+            });
         }
+
+        handler.postDelayed(updater, 1);
     }
     private String milliSecondToTimer(long milliSecond){
         String timeString = "";

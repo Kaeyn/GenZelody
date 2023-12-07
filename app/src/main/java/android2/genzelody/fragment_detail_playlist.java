@@ -169,7 +169,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
     @Override
     public void listOnClick(View view, int position) {
-        System.out.println("dasdasda");
         loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
     }
 }
