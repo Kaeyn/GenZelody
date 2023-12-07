@@ -21,21 +21,18 @@ import java.util.ArrayList;
 public class Custom_Adapter_Lv_Track_Playlist extends ArrayAdapter {
     Context context;
     ArrayList<Track> arrayListTrack;
-    private AdapterView.OnItemClickListener onItemClickListener;
 
-
+    RecyclerViewClickListener mListener;
     int layoutItem;
 
-    public Custom_Adapter_Lv_Track_Playlist(@NonNull Context context, int resource, @NonNull ArrayList<Track> arrayListTrack) {
+    public Custom_Adapter_Lv_Track_Playlist(@NonNull Context context, int resource, @NonNull ArrayList<Track> arrayListTrack, RecyclerViewClickListener listener) {
         super(context, resource, arrayListTrack);
         this.arrayListTrack = arrayListTrack;
         this.context = context;
         this.layoutItem = resource;
+        this.mListener = listener;
     }
 
-    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
-        this.onItemClickListener = listener;
-    }
 
 
     @NonNull
@@ -69,6 +66,12 @@ public class Custom_Adapter_Lv_Track_Playlist extends ArrayAdapter {
             Picasso.with(this.getContext()).load(track.getImg()).resize(100,100).into(imgTrackOfPlaylist);
         }
 
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.listOnClick(view, position);
+            }
+        });
 
         return convertView;
     }
