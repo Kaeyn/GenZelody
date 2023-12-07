@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:text="Đang phát nhạc từ album" />
+                    android:text="Đang phát nhạc từ " />
                 <TextView
                     android:id="@+id/tvNameAlbumPlay"
                     android:layout_width="match_parent"

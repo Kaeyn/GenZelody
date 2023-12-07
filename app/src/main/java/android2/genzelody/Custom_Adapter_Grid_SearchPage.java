@@ -22,6 +22,7 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
 
     private Context context;
     private ArrayList<Track> tracks;
+    private ArrayList<Artist> artists;
 
     RecyclerViewClickListener mListener;
 
@@ -30,8 +31,10 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
         this.mListener = listener;
     }
 
-    public void setData(ArrayList<Track> trackArrayList){
+    public void setData(ArrayList<Track> trackArrayList,ArrayList<Artist> artistArrayList){
         this.tracks = trackArrayList;
+        this.artists = artistArrayList;
+        Log.d("ListArtist", "setData: "+artistArrayList);
         notifyDataSetChanged();
     }
 
@@ -43,22 +46,30 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Track track = tracks.get(position);
+        int adjustedPosition = position / 2;
 
-//        if(position % 2 == 0){
-//            holder.tvGridSearch.setText(artist.getName());
-//            Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(50,50).into(holder.imgGridSearcht);
-//            holder.artist.setText("");
-//        }else{
+        if (position % 2 == 0) {
+            // Even position, display artist information
+            Track track = tracks.get(adjustedPosition);
             holder.tvGridSearch.setText(track.getName());
-            Picasso.with(context.getApplicationContext()).load(track.getImg()).resize(50,50).into(holder.imgGridSearcht);
-            String artistStr = "";
-            for (Artist artistItem: track.getArtists()) {
-                artistStr += " - " + artistItem.getName();
-            }
-            holder.artist.setText(artistStr);
+            Picasso.with(context.getApplicationContext()).load(track.getImg()).resize(320, 320).into(holder.imgGridSearcht);
 
-//        }
+            String artistStr = "";
+            for (Artist artistItem : track.getArtists()) {
+                Log.d("nameartist", "onBindViewHolder: "+artistItem);
+                artistStr += artistItem.getName()+" - ";
+            }
+            holder.artist.setText(artistStr.substring(0,artistStr.length()-3));
+
+        } else {
+
+
+            Artist artist = artists.get(adjustedPosition);
+            holder.tvGridSearch.setText(artist.getName());
+            holder.artist.setText("Nghệ sĩ");
+            Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(320, 320).into(holder.imgGridSearcht);
+        }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +81,7 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
 
     @Override
     public int getItemCount() {
-        return tracks.size();
+        return Math.min(artists.size(), tracks.size()) * 2;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -81,8 +92,8 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
         public MyViewHolder(@NonNull View view){
             super(view);
 
-            imgGridSearcht = view.findViewById(R.id.imgGridPlayList);
-            tvGridSearch = view.findViewById(R.id.tvGridPlayList);
+            imgGridSearcht = view.findViewById(R.id.imgGridSearch);
+            tvGridSearch = view.findViewById(R.id.txtGridSearch);
             artist = view.findViewById(R.id.txtArtist);
         }
     }
