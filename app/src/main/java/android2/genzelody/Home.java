@@ -44,7 +44,7 @@ public class Home extends AppCompatActivity {
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
     private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
-    ExecutorService trackExecutor = Executors.newFixedThreadPool(3);
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(5);
     User user = new User();
     private RequestQueue requestQueue;
 
@@ -95,7 +95,7 @@ public class Home extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int idFrame = item.getItemId();
                 if(idFrame == R.id.home){
-                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
+                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList, user));
                     return true;
                 } else if (idFrame == R.id.search) {
                     loadFragment(new Fragment_Search(ACCESS_TOKEN));
