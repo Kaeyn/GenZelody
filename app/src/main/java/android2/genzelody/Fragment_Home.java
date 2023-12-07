@@ -137,4 +137,7 @@ public class Fragment_Home extends Fragment {
         recViewPhoBien = rootView.findViewById(R.id.recViewPhoBien);
         recGridPlayListCuaBan = rootView.findViewById(R.id.recGridPlayListCuaBan);
     }
+
+    void addEvents(){
+    }
 }
