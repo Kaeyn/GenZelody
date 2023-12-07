@@ -5,10 +5,20 @@ public class Artist {
     private String name;
     private String image;
 
+
+    private String followers;
+
     public Artist(String id, String name, String image) {
         this.id = id;
         this.name = name;
         this.image = image;
+    }
+
+    public Artist(String id, String name, String image, String followers) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.followers = followers;
     }
 
     public Artist(){
@@ -37,5 +47,13 @@ public class Artist {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(String followers) {
+        this.followers = followers;
     }
 }

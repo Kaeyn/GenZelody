@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginRight="10dp"
     android:layout_marginTop="10dp"
+    android:padding="10dp"
     android:orientation="vertical">
 
 
@@ -22,7 +23,6 @@
             android:layout_height="160dp"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/avatars" />
-        <!-- Add other views or content inside the CardView if needed -->
 
     </androidx.cardview.widget.CardView>
 
@@ -34,8 +34,9 @@
         android:gravity="fill|center_vertical"
         android:text="TextView"
         android:textAlignment="gravity"
-        android:textColor="#B3B3B3"
-        android:textSize="18sp" />
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="17sp" />
     <TextView
         android:id="@+id/txtArtist"
         android:layout_width="match_parent"
@@ -44,7 +45,7 @@
         android:gravity="fill|center_vertical"
         android:text="TextView"
         android:textAlignment="gravity"
-        android:textColor="#B3B3B3"
-        android:textSize="18sp" />
+        android:textColor="#AEAEAE"
+        android:textSize="14sp" />
 
 </LinearLayout>

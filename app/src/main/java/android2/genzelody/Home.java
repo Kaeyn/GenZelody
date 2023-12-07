@@ -114,6 +114,7 @@ public class Home extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
+        ft.addToBackStack()
         ft.commit();
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Handler;
 import android.util.Log;
@@ -18,12 +19,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,9 +40,10 @@ public class Fragment_Play_Track extends Fragment {
     ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnMore, btnAddLib;
     MediaPlayer mediaPlayer;
     Handler handler = new Handler();
-
+    int index = 0;
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
+    ArrayList<Track> tracks = new ArrayList<>();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,14 +57,10 @@ public class Fragment_Play_Track extends Fragment {
     public Fragment_Play_Track() {
         // Required empty public constructor
     }
-    public Fragment_Play_Track(Track track, String name) {
+    public Fragment_Play_Track(ArrayList<Track> tracks, String name, int index) {
         // Required empty public constructor
-        preview_url = track.getPreview_url();
-        nameTrack = track.getName();
-        img_url = track.getImg();
-        for (Artist artist: track.getArtists()) {
-            nameArtists += artist.getName()+ " ";
-        }
+        this.tracks = tracks;
+        this.index = index;
         nameAlbum = name;
     }
 
@@ -102,6 +102,15 @@ public class Fragment_Play_Track extends Fragment {
         return rootView;
     }
     private void setTrackInfo(){
+        preview_url = tracks.get(index).getPreview_url();
+        nameTrack = tracks.get(index).getName();
+        img_url = tracks.get(index).getImg();
+        nameArtists = "";
+        tvTimeStart.setText("0:00");
+        seekBar.setProgress(0);
+        for (Artist artist: tracks.get(index).getArtists()) {
+            nameArtists += artist.getName()+ " ";
+        }
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
@@ -111,7 +120,7 @@ public class Fragment_Play_Track extends Fragment {
             imgTrackPlay.setImageDrawable(drawable);
         } catch (NumberFormatException e) {
             // If the image is not a drawable resource ID (assuming it's a URL)
-            Picasso.with(this.getContext()).load(img_url).resize(100,100).into(imgTrackPlay);
+            Picasso.with(this.getContext()).load(img_url).resize(860,860).into(imgTrackPlay);
         }
         prepareMediaPlayer();
     }
@@ -126,7 +135,7 @@ public class Fragment_Play_Track extends Fragment {
         imgTrackPlay = rootView.findViewById(R.id.imgTrackPlay);
         //seekbar
         seekBar = rootView.findViewById(R.id.seekBar);
-        seekBar.setMax(100);
+
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
         btnMore = rootView.findViewById(R.id.btnMore);
@@ -145,16 +154,19 @@ public class Fragment_Play_Track extends Fragment {
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
         updateSeekbar();
     }
+    private void stopTrack(){
+        handler.removeCallbacks(updater);
+        mediaPlayer.pause();
+        imgTrackPlay.clearAnimation();
+        btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+    }
     private void addEvents(){
         startTrack();
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mediaPlayer.isPlaying()){
-                    handler.removeCallbacks(updater);
-                    mediaPlayer.pause();
-                    imgTrackPlay.clearAnimation();
-                    btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+                    stopTrack();
                 }else{
                     startTrack();
                 }
@@ -192,23 +204,67 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                seekBar.setProgress(0);
-                imgTrackPlay.clearAnimation();
-                btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
-                tvTimeStart.setText("0:00");
-                mediaPlayer.reset();
-                prepareMediaPlayer();
+                nextTrack();
+            }
+        });
+        btnBackPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBack();
+            }
+        });
+        btnBackTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(0 == index){
+                    index = tracks.size() - 1;
+                }else {
+                    index--;
+                }
+                stopTrack();
+                setTrackInfo();
+                startTrack();
+            }
+        });
+        btnNextTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextTrack();
             }
         });
     }
-
+private void nextTrack(){
+    if(tracks.size() - 1 == index){
+        index = 0;
+    }else {
+        index++;
+    }
+    stopTrack();
+    setTrackInfo();
+    startTrack();
+}
     private void prepareMediaPlayer(){
         try {
+            mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(preview_url);
             mediaPlayer.prepare();
             tvTimeEnd.setText(milliSecondToTimer(mediaPlayer.getDuration()));
         } catch (IOException e) {
             Log.d("prepareMediaPlayer: ", ""+e);
+        }
+    }
+    public void goBack() {
+        // Get the FragmentManager
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
+        // Check if there are fragments in the back stack
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Pop the top fragment off the back stack
+            stopTrack();
+            fragmentManager.popBackStack();
+        } else {
+            // If the back stack is empty, you may want to handle this situation
+            // For example, you can navigate to a different activity or finish the current activity
         }
     }
     private Runnable updater = new Runnable() {
@@ -220,18 +276,20 @@ public class Fragment_Play_Track extends Fragment {
     private  void updateSeekbar(){
         if (mediaPlayer.isPlaying()) {
             long currentDuration = mediaPlayer.getCurrentPosition();
-            System.out.println(mediaPlayer.getCurrentPosition());
             tvTimeStart.setText(milliSecondToTimer(currentDuration));
-
+            final int progress = (int) (((float) (currentDuration * 100) / mediaPlayer.getDuration()));
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    seekBar.setProgress((int) (((float) currentDuration / mediaPlayer.getDuration()) * 100));
+
+                    seekBar.setProgress(progress);
                 }
             });
+
+            handler.postDelayed(updater, 10); // Update every second
         }
 
-        handler.postDelayed(updater, 1);
+
     }
     private String milliSecondToTimer(long milliSecond){
         String timeString = "";
@@ -250,5 +308,11 @@ public class Fragment_Play_Track extends Fragment {
         }
         timeString += minutes + ":" + secondString;
         return  timeString;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(updater);
     }
 }

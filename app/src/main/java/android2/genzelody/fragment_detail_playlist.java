@@ -191,6 +191,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -201,6 +202,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
     @Override
     public void listOnClick(View view, int position) {
-        loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
+        loadFragment(new Fragment_Play_Track(playlistTrack, playlist.getName(), position));
     }
 }
