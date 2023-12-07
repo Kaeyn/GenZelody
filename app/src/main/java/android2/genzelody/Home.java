@@ -98,11 +98,11 @@ public class Home extends AppCompatActivity {
                     loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList, user));
                     return true;
                 } else if (idFrame == R.id.search) {
-                    loadFragment(new Fragment_Search(ACCESS_TOKEN));
+                    loadFragment(new Fragment_Search(ACCESS_TOKEN, user));
                     return true;
                 }
                 else if (idFrame == R.id.library) {
-                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList));
+                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList, user));
                     return true;
                 }
                 return true;

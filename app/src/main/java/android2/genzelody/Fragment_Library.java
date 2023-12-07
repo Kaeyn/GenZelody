@@ -7,11 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -37,14 +41,18 @@ public class Fragment_Library extends Fragment {
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
 
     Custom_LVLib_Adapter custom_lvLib_adapter;
+    ImageView imgUser;
+    TextView nameUser;
+    User user = new User();
 
     public Fragment_Library() {
         // Required empty public constructor
     }
-    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList) {
+    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList, User user) {
         // Required empty public constructor
         ACCESS_TOKEN = accesssToken;
         MyPlayList = myPlayList;
+        this.user = user;
     }
 
 
@@ -91,6 +99,8 @@ public class Fragment_Library extends Fragment {
 
     void addControls(View view){
         listView = view.findViewById(R.id.listPlayListLibs);
+        imgUser = view.findViewById(R.id.imgUserLib);
+        nameUser = view.findViewById(R.id.tvNameUserLib);
     }
 
     void addEvents(){
@@ -100,6 +110,7 @@ public class Fragment_Library extends Fragment {
                 loadFragment(new fragment_detail_playlist(MyPlayList.get(position)));
             }
         });
+        Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
     }
     public void loadFragment(Fragment fragment){
         FragmentManager fm = getActivity().getSupportFragmentManager();

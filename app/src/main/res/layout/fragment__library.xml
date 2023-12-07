@@ -39,7 +39,7 @@
                         app:cardCornerRadius="35dp">
 
                         <ImageView
-                            android:id="@+id/imgUser"
+                            android:id="@+id/imgUserLib"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
@@ -47,7 +47,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <TextView
-                        android:id="@+id/tvNameUser"
+                        android:id="@+id/tvNameUserLib"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
