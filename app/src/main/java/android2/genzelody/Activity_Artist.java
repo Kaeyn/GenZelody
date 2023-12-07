@@ -12,6 +12,6 @@ public class Activity_Artist extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_actitvy_artist);
+        setContentView(R.layout.activity_activity_artist);
     }
 }
