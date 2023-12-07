@@ -37,6 +37,7 @@ public class fragment_detail_playlist extends Fragment {
     Custom_Adapter_Lv_Track_Playlist adapterTrack;
     Playlists playlist;
     String namePlaylist = "", imgPlayList = "";
+    ArrayList<Track> playlistTrack;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -87,6 +88,9 @@ public class fragment_detail_playlist extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail_playlist, container, false);
         addControl(rootView);
         addEvent(rootView);
+        playlistTrack = playlist.getTracks();
+        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack);
+        lvTrackOfPlaylist.setAdapter(adapterTrack);
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -97,15 +101,8 @@ public class fragment_detail_playlist extends Fragment {
     }
 
     void addEvent(View rootView) {
-        ArrayList<Track> playlistTrack = playlist.getTracks();
-        lvTrackOfPlaylist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("dasdasda");
-                loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
-                return true;
-            }
-        });
+
+
         namePlaylist = playlist.getName();
         imgPlayList = playlist.getImages();
         try {
@@ -136,9 +133,14 @@ public class fragment_detail_playlist extends Fragment {
             }
         });
 
-        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack);
-        lvTrackOfPlaylist.setAdapter(adapterTrack);
 
+        lvTrackOfPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("dasdasda");
+                loadFragment(new Fragment_Play_Track(playlistTrack.get(position),playlist.getName()));
+            }
+        });
 
     }
 
