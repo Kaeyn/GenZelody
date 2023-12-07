@@ -18,10 +18,10 @@
         android:theme="@style/Theme.GenZelody"
         tools:targetApi="31">
         <activity
-            android:name=".Activity_Artist"
+            android:name=".Loader_Frag"
             android:exported="false" />
         <activity
-            android:name=".Activity_PlayTrack"
+            android:name=".Activity_Artist"
             android:exported="false" />
         <activity
             android:name=".Home"

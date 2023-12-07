@@ -1,12 +1,16 @@
 package android2.genzelody;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -14,8 +18,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,10 +43,12 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    TextView userName;
+    ImageView userImg;
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
-
     private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
+    User user = new User();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -56,12 +63,13 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
     public Fragment_Home(String accesssToken) {
         // Required empty public constructor
     }
-    public Fragment_Home(String accesssToken, ArrayList<Playlists> myPlayList, ArrayList<Playlists> featurePlayList, ArrayList<Track> listTrack) {
+    public Fragment_Home(String accesssToken, ArrayList<Playlists> myPlayList, ArrayList<Playlists> featurePlayList, ArrayList<Track> listTrack, User user) {
         // Required empty public constructor
         ACCESS_TOKEN = accesssToken;
         MyPlayList = myPlayList;
         FeaturePlayList = featurePlayList;
         RecommendedTrackList = listTrack;
+        this.user = user;
     }
 
 
@@ -107,11 +115,13 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
 //        albumList.add(new Album("SOFAR", String.valueOf(R.drawable.johnweak)));
 //        albumList.add(new Album("Xe đạp", String.valueOf(R.drawable.johnweak)));
 
+        Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(userImg);
+        userName.setText(user.getUserName());
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recViewDanhSachCuaBan.setLayoutManager(layoutManager);
         adapter_recycleView_album_mainPage = new Custom_Adapter_RecycleView_Album_MainPage(getContext(), MyPlayList, this);
         recViewDanhSachCuaBan.setAdapter(adapter_recycleView_album_mainPage);
-
 
         LinearLayoutManager layoutManagerGoiY = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recViewGoiY.setLayoutManager(layoutManagerGoiY);
@@ -136,6 +146,8 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
 
 
     private void addViewControls(View rootView){
+        userImg = rootView.findViewById(R.id.imgUser);
+        userName = rootView.findViewById(R.id.tvNameUser);
         recViewDanhSachCuaBan = rootView.findViewById(R.id.recViewDanhSachCuaBan);
         recViewGoiY = rootView.findViewById(R.id.recViewGoiY);
         recViewPhoBien = rootView.findViewById(R.id.recViewPhoBien);
