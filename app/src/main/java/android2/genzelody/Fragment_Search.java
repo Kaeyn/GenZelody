@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -47,13 +48,14 @@ public class Fragment_Search extends Fragment {
     private String ACCESS_TOKEN = "";
     EditText edtInputSearch;
     String apiResponse = "";
-
     private JSONObject fullSearchObject;
-
+    private JSONObject searchObject;
     ArrayList<Track> trackArrayList = new ArrayList<>();
     ArrayList<Artist> artistArrayList = new ArrayList<>();
     ArrayList<Album> albumArrayList = new ArrayList<>();
     ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+
+    private RequestQueue requestQueue;
 
     public Fragment_Search() {
         // Required empty public constructor
@@ -96,6 +98,7 @@ public class Fragment_Search extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment__search, container, false);
+        requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
         addEvent();
 
@@ -130,18 +133,21 @@ public class Fragment_Search extends Fragment {
         Log.d("ApiResponse", "true");
         try {
             JSONObject allTrack = fullJSONObject.getJSONObject("tracks");
-
             getTrackResult(allTrack);
-            Log.d("allTrack", trackArrayList+"");
+            Log.d("allTrack", trackArrayList+"\n"+trackArrayList.size());
 
-            JSONObject allPlalist = fullJSONObject.getJSONObject("playlist");
-            Log.d("allPlalist",allPlalist+"");
+            JSONObject allArtist = fullJSONObject.getJSONObject("artists");
+            getArtistResult(allArtist);
+            Log.d("allArtist",artistArrayList+"\n"+artistArrayList.size());
 
-            JSONObject allArtist = fullJSONObject.getJSONObject("artist");
-            Log.d("allArtist",allArtist+"");
+            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
+            getPlaylistResult(allPlaylist);
+            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
 
-            JSONObject allAlbum = fullJSONObject.getJSONObject("album");
-            Log.d("allAlbum",allAlbum+"");
+            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
+            getAlbumResult(allAlbum);
+            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
+
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -150,26 +156,187 @@ public class Fragment_Search extends Fragment {
     {
         try {
             JSONArray allTracks = TrackObject.getJSONArray("items");
-//            for (int i = 0; i < allTracks.length(); i++) {
-//                JSONObject trackObject = allTracks.getJSONObject(i);
-//                JSONObject trackitem = trackObject.getJSONObject("track");
-//                String id = trackitem.getString("id");
-//                String name = trackitem.getString("name");
-//                String idAlbum = trackitem.getJSONObject("album").getString("id");
-//                String img = trackitem.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-//                ArrayList<Artist> artists = getArtists(trackitem.getJSONArray("artists"));
-//                String previewUrl = trackitem.getString("preview_url");
-//                Track newTrack = new Track(id,name, idAlbum, img,artists, previewUrl);
-//                trackArrayList.add(newTrack);
-//            }
+
+            for (int i = 0; i < allTracks.length(); i++) {
+                JSONObject trackObject = allTracks.getJSONObject(i);
+                String trackId = trackObject.getString("id");
+                String trackName = trackObject.getString("name");
+                String idAlbum = trackObject.getJSONObject("album").getString("id");
+                String trackImg = trackObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                ArrayList<Artist> artists = getArtists(trackObject.getJSONArray("artists"));
+                String previewUrl = trackObject.getString("preview_url");
+                Track newTrack = new Track(trackId,trackName, idAlbum, trackImg,artists, previewUrl);
+                trackArrayList.add(newTrack);
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
         return trackArrayList;
     }
 
+    private ArrayList<Artist> getArtistResult (JSONObject ArtistObject) throws JSONException {
 
+        JSONArray allArtist = ArtistObject.getJSONArray("items");
+        for(int i = 0; i < allArtist.length(); i++) {
+            JSONObject artistObject = allArtist.getJSONObject(i);
+            String artistId =  artistObject.getString("id");
+            String artistName = artistObject.getString("name");
+            JSONArray imagesArray = artistObject.getJSONArray("images");
+            String artistImage = "";
+            if (imagesArray.length() > 0) {
+                artistImage = imagesArray.getJSONObject(0).getString("url");
+            }
+//            System.out.println(artistId+" "+artistName+" "+artistImage);
+            Artist newArtist = new Artist(artistId,artistName,artistImage);
+            artistArrayList.add(newArtist);
+        }
+        return artistArrayList;
+    }
 
+    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
+    {
+        try {
+            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+
+            for (int i = 0; i < allPlaylist.length(); i++) {
+                JSONObject playlistObject = allPlaylist.getJSONObject(i);
+                String playlistId = playlistObject.getString("id");
+                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
+                String playlistName = playlistObject.getString("name");
+                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
+                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
+                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
+                playlistsArrayList.add(newPlaylist);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return playlistsArrayList;
+    }
+
+    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
+    {
+        try {
+            JSONArray allAlbum = AlbumObject.getJSONArray("items");
+
+            for (int i = 0; i < allAlbum.length(); i++) {
+                JSONObject albumObject = allAlbum.getJSONObject(i);
+                String albumId = albumObject.getString("id");
+                String albumName = albumObject.getString("name");
+                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
+                String albumReleaseDate = albumObject.getString("release_date");
+                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
+                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
+                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
+                albumArrayList.add(newAlbum);
+            }
+
+        }catch (JSONException e){
+
+        }
+//        System.out.println("hummmmmm "+albumArrayList);
+        return albumArrayList;
+    }
+
+    private ArrayList<Track> getSpecificTrackFromPlaylist(String id){
+        String apiUrl = "https://api.spotify.com/v1/playlists/"+id+"/tracks";
+        ArrayList<Track> theTracks = new ArrayList<>();
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                apiResponse = response;
+                searchApiResponse(apiResponse);
+                System.out.println(searchObject);
+                try {
+                    JSONArray itemsArray = searchObject.getJSONArray("items");
+
+                    for (int i = 0; i < itemsArray.length(); i++) {
+                        JSONObject trackObject = itemsArray.getJSONObject(i);
+                        JSONObject trackOfPlaylist = trackObject.getJSONObject("track");
+                        String trackId = trackOfPlaylist.getString("id");
+                        String trackName = trackOfPlaylist.getString("name");
+                        String idAlbum = trackOfPlaylist.getJSONObject("album").getString("id");
+                        String trackImg = trackOfPlaylist.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                        ArrayList<Artist> artists = getArtists(trackOfPlaylist.getJSONArray("artists"));
+                        String previewUrl = trackOfPlaylist.getString("preview_url");
+
+                        Track newTrack = new Track(trackId, trackName, idAlbum, trackImg, artists, previewUrl);
+                        theTracks.add(newTrack);
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+//                System.out.println("DONEEE   "+theTracks);
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Search", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+        // Add the request to the Volley queue
+        requestQueue.add(request);
+
+        return theTracks;
+    }
+
+    private ArrayList<Track> getSpecificTrackFromAlbum(String id){
+        String apiUrl = "https://api.spotify.com/v1/albums/"+id;
+        ArrayList<Track> theTracks = new ArrayList<>();
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                apiResponse = response;
+                searchApiResponse(apiResponse);
+                System.out.println(searchObject);
+                try {
+                    JSONObject tracks = searchObject.getJSONObject("tracks");
+                    JSONArray tracksItem = tracks.getJSONArray("items");
+                    for(int i=0;i<tracksItem.length();i++) {
+                        JSONObject trackObject = tracksItem.getJSONObject(i);
+                        String trackId = trackObject.getString("id");
+                        String trackName = trackObject.getString("name");
+                        String idAlbum = id;
+                        String trackImg = searchObject.getJSONArray("images").getJSONObject(0).getString("url");
+                        ArrayList<Artist> artists = getArtists(trackObject.getJSONArray("artists"));
+                        String previewUrl = trackObject.getString("preview_url");
+                        Track newTrack = new Track(trackId,trackName, idAlbum, trackImg,artists, previewUrl);
+                        theTracks.add(newTrack);
+                    }
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Search", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+
+        // Add the request to the Volley queue
+        requestQueue.add(request);
+//        System.out.println("DONEEE "+theTracks);
+        return theTracks;
+    }
 
     private ArrayList<Artist> getArtists(JSONArray artistsArray) {
         ArrayList<Artist> newArray = new ArrayList<>();
@@ -207,7 +374,7 @@ public class Fragment_Search extends Fragment {
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LoginActivity", "Failed to get user playlists. Error: " + error.getMessage());
+                Log.e("Search", "Failed to get user playlists. Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -220,7 +387,7 @@ public class Fragment_Search extends Fragment {
         };
 
         // Add the request to the Volley queue
-        Volley.newRequestQueue(getContext()).add(request);
+        requestQueue.add(request);
         return newartist;
     }
 
@@ -230,10 +397,13 @@ public class Fragment_Search extends Fragment {
     }
     private void searchThings(String thing) {
 
+        artistArrayList.clear();
+        playlistsArrayList.clear();
+        albumArrayList.clear();
+        trackArrayList.clear();
+
         String accessToken = ACCESS_TOKEN;
-
-        String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist";
-
+        String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=10";
         Log.d("searchKey", apiUrl);
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
             @Override
@@ -259,14 +429,12 @@ public class Fragment_Search extends Fragment {
         };
 
         // Add the request to the Volley queue
-        Volley.newRequestQueue(getContext()).add(request);
+        requestQueue.add(request);
 
     }
 
-    // Example method to process the API response
     private void processApiResponse(String response) {
         // You can handle the response here or pass it to another method
-//
         try {
             fullSearchObject = new JSONObject(response);
 
@@ -276,6 +444,14 @@ public class Fragment_Search extends Fragment {
 //        Log.d("ApiResponse", fullSearchObject+"");
         filterSearch(fullSearchObject);
         // Add your logic to handle the response
+    }
+
+    private void searchApiResponse(String response) {
+        try {
+            searchObject = new JSONObject(response);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
