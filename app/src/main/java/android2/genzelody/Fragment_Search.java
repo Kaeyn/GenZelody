@@ -75,7 +75,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
 
 
-    ListView LvResultSearchTrack, LvResultSearchArtist;
 
     Custom_Adapter_Grid_Search_Track adapterTrack;
 
@@ -140,8 +139,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     private void addViewControls(View view){
         edtInputSearch = view.findViewById(R.id.edtInputSearch);
-        LvResultSearchTrack = view.findViewById(R.id.LvResultSearchTrack);
-        LvResultSearchArtist = view.findViewById(R.id.LvResultSearchArtist);
 
         edtInputSearch.requestFocus();
         imgUser = view.findViewById(R.id.imgUserSearch);
@@ -151,12 +148,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     }
 
     void addEvent(){
-        LvResultSearchTrack.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
-            }
-        });
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -185,9 +177,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         return CompletableFuture.runAsync(() -> {
             searchThings(search);
 //                Thread.sleep(5000);
-            custom_adapter_grid_searchPage.setData(trackArrayList);
-            custom_adapter_grid_searchPage.notifyDataSetChanged();
-            recyclerView.setAdapter(custom_adapter_grid_searchPage);
+
 
         }, trackExecutor);
     }
@@ -199,14 +189,17 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             getTrackResult(allTrack);
             Log.d("allTrack", trackArrayList+"\n"+trackArrayList.size());
             adapterTrack = new Custom_Adapter_Grid_Search_Track(getContext(),R.layout.layout_item_grid_search_track,trackArrayList);
-            LvResultSearchTrack.setAdapter(adapterTrack);
 
 
             JSONObject allArtist = fullJSONObject.getJSONObject("artists");
             getArtistResult(allArtist);
             Log.d("allArtist",artistArrayList+"\n"+artistArrayList.size());
             adapterArtist = new Custom_Adapter_Grid_Search_Artist(getContext(),R.layout.layout_item_grid_search_artist,artistArrayList);
-            LvResultSearchArtist.setAdapter(adapterArtist);
+            Log.d("artistArrayList", "fetchPlaylistsAsync: "+artistArrayList);
+
+            Thread.sleep(1000);
+            custom_adapter_grid_searchPage.setData(trackArrayList,artistArrayList);
+            recyclerView.setAdapter(custom_adapter_grid_searchPage);
 
 //            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
 //            getPlaylistResult(allPlaylist);
@@ -217,6 +210,8 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 //            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
 
         } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -256,6 +251,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             }
 //            System.out.println(artistId+" "+artistName+" "+artistImage);
             Artist newArtist = new Artist(artistId,artistName,artistImage);
+            Log.d("ARTIST", "getArtistResult: "+newArtist.getName());
             artistArrayList.add(newArtist);
         }
         return artistArrayList;
@@ -471,7 +467,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         trackArrayList.clear();
 
         String accessToken = ACCESS_TOKEN;
-        String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=5";
+        String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=10";
         Log.d("searchKey", apiUrl);
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
             @Override
