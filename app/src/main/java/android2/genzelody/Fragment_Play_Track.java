@@ -126,7 +126,7 @@ public class Fragment_Play_Track extends Fragment {
         imgTrackPlay = rootView.findViewById(R.id.imgTrackPlay);
         //seekbar
         seekBar = rootView.findViewById(R.id.seekBar);
-        seekBar.setMax(100);
+
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
         btnMore = rootView.findViewById(R.id.btnMore);
@@ -189,17 +189,7 @@ public class Fragment_Play_Track extends Fragment {
             }
         });
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                seekBar.setProgress(0);
-                imgTrackPlay.clearAnimation();
-                btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
-                tvTimeStart.setText("0:00");
-                mediaPlayer.reset();
-                prepareMediaPlayer();
-            }
-        });
+
     }
 
     private void prepareMediaPlayer(){
@@ -220,18 +210,20 @@ public class Fragment_Play_Track extends Fragment {
     private  void updateSeekbar(){
         if (mediaPlayer.isPlaying()) {
             long currentDuration = mediaPlayer.getCurrentPosition();
-            System.out.println(mediaPlayer.getCurrentPosition());
             tvTimeStart.setText(milliSecondToTimer(currentDuration));
-
+            final int progress = (int) (((float) (currentDuration * 100) / mediaPlayer.getDuration()));
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    seekBar.setProgress((int) (((float) currentDuration / mediaPlayer.getDuration()) * 100));
+
+                    seekBar.setProgress(progress);
                 }
             });
+
+            handler.postDelayed(updater, 10); // Update every second
         }
 
-        handler.postDelayed(updater, 1);
+
     }
     private String milliSecondToTimer(long milliSecond){
         String timeString = "";
@@ -251,4 +243,6 @@ public class Fragment_Play_Track extends Fragment {
         timeString += minutes + ":" + secondString;
         return  timeString;
     }
+
+
 }
