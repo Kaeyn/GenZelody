@@ -67,7 +67,6 @@ public class Home extends AppCompatActivity {
     private CompletableFuture<Void> fetchPlaylistsAsync() {
         return CompletableFuture.runAsync(() -> {
             try {
-
                 getFeaturePlaylists();
                 Thread.sleep(1500);
                 getUserPlaylists();
@@ -84,6 +83,7 @@ public class Home extends AppCompatActivity {
         }, trackExecutor);
     }
 
+
     private void addControls(){
         frameFragmentHome = findViewById(R.id.frameFragmentHome);
         bttNav = findViewById(R.id.bttnav);
@@ -95,8 +95,6 @@ public class Home extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int idFrame = item.getItemId();
                 if(idFrame == R.id.home){
-//                    item.setIcon(R.drawable.baseline_library_music_24);
-//                    bttNav.setBackgroundColor(getResources().getColor(R.color.black));
                     loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
                     return true;
                 } else if (idFrame == R.id.search) {

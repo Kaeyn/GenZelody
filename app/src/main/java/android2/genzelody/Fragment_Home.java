@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +22,7 @@ import java.util.List;
  * Use the {@link Fragment_Home#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Fragment_Home extends Fragment {
+public class Fragment_Home extends Fragment implements RecyclerViewClickListener{
 
     Custom_Adapter_RecycleView_Album_MainPage adapter_recycleView_album_mainPage;
     Custom_Adapter_RecycleView_Album_FeaturePlayList adapter_recycleView_tracks_bigger_mainPage;
@@ -95,6 +99,7 @@ public class Fragment_Home extends Fragment {
 
         addViewControls(rootView);
 
+
         // Create a list of Track objects with different drawables
 //        List<Album> albumList = new ArrayList<>();
 //        albumList.add(new Album("Bài hát ưa thích",String.valueOf(R.drawable.yeuthich)));
@@ -104,29 +109,28 @@ public class Fragment_Home extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recViewDanhSachCuaBan.setLayoutManager(layoutManager);
-        adapter_recycleView_album_mainPage = new Custom_Adapter_RecycleView_Album_MainPage(getContext(), MyPlayList);
+        adapter_recycleView_album_mainPage = new Custom_Adapter_RecycleView_Album_MainPage(getContext(), MyPlayList, this);
         recViewDanhSachCuaBan.setAdapter(adapter_recycleView_album_mainPage);
-
 
 
         LinearLayoutManager layoutManagerGoiY = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recViewGoiY.setLayoutManager(layoutManagerGoiY);
-        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Album_FeaturePlayList(getContext(), FeaturePlayList);
+        adapter_recycleView_tracks_bigger_mainPage = new Custom_Adapter_RecycleView_Album_FeaturePlayList(getContext(), FeaturePlayList, this);
         recViewGoiY.setAdapter(adapter_recycleView_tracks_bigger_mainPage);
 
         LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recViewPhoBien.setLayoutManager(layoutManagerPhoBien);
-        adapter_recycleView_tracks_popular = new Custom_Adapter_RecycleView_Tracks_Popular(getContext(), RecommendedTrackList);
+        adapter_recycleView_tracks_popular = new Custom_Adapter_RecycleView_Tracks_Popular(getContext(), RecommendedTrackList,this);
         recViewPhoBien.setAdapter(adapter_recycleView_tracks_popular);
 
-        custom_adapter_grid_mainPage = new Custom_Adapter_Grid_MainPage(getContext());
+        custom_adapter_grid_mainPage = new Custom_Adapter_Grid_MainPage(getContext(),this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
 
         recGridPlayListCuaBan.setLayoutManager(gridLayoutManager);
         ArrayList<Playlists> tempPlaylist = new ArrayList<>(MyPlayList.subList(0, Math.min(MyPlayList.size(), 6)));
         custom_adapter_grid_mainPage.setData(tempPlaylist);
         recGridPlayListCuaBan.setAdapter(custom_adapter_grid_mainPage);
-
+        addEvents();
         return rootView;
     }
 
@@ -139,5 +143,24 @@ public class Fragment_Home extends Fragment {
     }
 
     void addEvents(){
+    }
+
+    public void loadFragment(Fragment fragment){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frameFragmentHome, fragment);
+        ft.commit();
+    }
+
+
+    @Override
+    public void onClick(View view, int position, String category) {
+        if(category.equals("myplaylist")){
+            loadFragment(new fragment_detail_playlist(MyPlayList.get(position)));
+        } else if (category.equals("feature")) {
+            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position)));
+        }else{
+
+        }
     }
 }

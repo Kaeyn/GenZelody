@@ -23,10 +23,11 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
     private Context context;
     private ArrayList<Playlists> playlists;
 
-    private AdapterView.OnItemClickListener onItemClickListener;
+    RecyclerViewClickListener mListener;
 
-    public Custom_Adapter_Grid_MainPage(Context context) {
+    public Custom_Adapter_Grid_MainPage(Context context, RecyclerViewClickListener listener) {
         this.context = context;
+        this.mListener = listener;
     }
 
     public void setData(ArrayList<Playlists> playlists){
@@ -53,6 +54,13 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
             // If the image is not a drawable resource ID (assuming it's a URL)
             Picasso.with(context.getApplicationContext()).load(playlistitem.getImages()).resize(50,50).into(holder.imgGridPlayList);
         }
+        String category = "myplaylist";
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onClick(view, position, category);
+            }
+        });
     }
     @Override
     public int getItemCount() {
@@ -60,9 +68,6 @@ public class Custom_Adapter_Grid_MainPage extends RecyclerView.Adapter<Custom_Ad
     }
 
     // Set the click listener
-    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
-        this.onItemClickListener = listener;
-    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private ImageView imgGridPlayList;

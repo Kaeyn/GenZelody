@@ -1,7 +1,9 @@
 package android2.genzelody;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
@@ -17,18 +19,15 @@ public class Custom_Adapter_RecycleView_Tracks_Popular extends RecyclerView.Adap
 
     Context context;
     ArrayList<Track> trackList;
-    private AdapterView.OnItemClickListener onItemClickListener;
+    private RecyclerViewClickListener mListener;
 
 
-    public Custom_Adapter_RecycleView_Tracks_Popular(Context context, ArrayList<Track> trackList){
+
+    public Custom_Adapter_RecycleView_Tracks_Popular(Context context, ArrayList<Track> trackList, RecyclerViewClickListener listener){
         this.context = context;
         this.trackList = trackList;
+        this.mListener = listener;
     }
-
-    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
-        this.onItemClickListener = listener;
-    }
-
 
     @NonNull
     @Override
@@ -37,10 +36,16 @@ public class Custom_Adapter_RecycleView_Tracks_Popular extends RecyclerView.Adap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvTitleDanhChoBan.setText(trackList.get(position).getName());
         Picasso.with(context.getApplicationContext()).load(trackList.get(position).getImg()).resize(160,160).into(holder.imgTrack);
-
+        String category = "populartrack";
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onClick(view, position, category);
+            }
+        });
     }
 
     @Override
