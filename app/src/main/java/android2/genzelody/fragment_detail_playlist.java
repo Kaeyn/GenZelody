@@ -5,16 +5,19 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.palette.graphics.Palette;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,6 +40,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     Custom_Adapter_Lv_Track_Playlist adapterTrack;
     Playlists playlist;
     String namePlaylist = "", imgPlayList = "";
+    ImageButton btnBack;
     ArrayList<Track> playlistTrack;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -98,10 +102,16 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         tvNamePlaylist = rootView.findViewById(R.id.tvNamePlaylist);
         imgPlayListDetail = rootView.findViewById(R.id.imgPlayListDetail);
         lvTrackOfPlaylist = rootView.findViewById(R.id.lvTrackOfPlaylist);
+        btnBack = rootView.findViewById(R.id.btnBack);
     }
 
     void addEvent(View rootView) {
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
 
         namePlaylist = playlist.getName();
         imgPlayList = playlist.getImages();
@@ -132,10 +142,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
             }
         });
-
-
-
-
     }
 
     private void generatePalette(View rootView, Bitmap bitmap) {

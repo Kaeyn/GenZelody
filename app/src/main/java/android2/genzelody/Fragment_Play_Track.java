@@ -39,11 +39,8 @@ public class Fragment_Play_Track extends Fragment {
     Handler handler = new Handler();
 
     //later set
-    String preview_url = "https://p.scdn.co/mp3-preview/dd79198f4b4c43aef9c8e8e1c4708a402862dd0e?cid=f628b685017b4db5bacd292385fd7f50";
-    String nameTrack = "";
-    String nameArtists ="";
-    String nameAlbum ="";
-    String img_url = "";
+    String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -100,8 +97,8 @@ public class Fragment_Play_Track extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
         // Inflate the layout for this fragment
         addControls(rootView);
-        addEvents();
         setTrackInfo();
+        addEvents();
         return rootView;
     }
     private void setTrackInfo(){
@@ -114,9 +111,9 @@ public class Fragment_Play_Track extends Fragment {
             imgTrackPlay.setImageDrawable(drawable);
         } catch (NumberFormatException e) {
             // If the image is not a drawable resource ID (assuming it's a URL)
-            Picasso.with(this.getContext()).load(img_url).resize(100,100).into(imgTrackPlay);
+            Picasso.with(this.getContext()).load(img_url).resize(860,860).into(imgTrackPlay);
         }
-
+        prepareMediaPlayer();
     }
     private void addControls(View rootView){
         //text view
@@ -141,21 +138,25 @@ public class Fragment_Play_Track extends Fragment {
         //media player
         mediaPlayer = new MediaPlayer();
     }
-    private void addEvents(){
+    private void startTrack(){
+        mediaPlayer.start();
         Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
         imgTrackPlay.startAnimation(animation);
-        prepareMediaPlayer();
+        btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
+        updateSeekbar();
+    }
+    private void addEvents(){
+        startTrack();
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mediaPlayer.isPlaying()){
                     handler.removeCallbacks(updater);
                     mediaPlayer.pause();
+                    imgTrackPlay.clearAnimation();
                     btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
                 }else{
-                    mediaPlayer.start();
-                    btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
-                    updateSeekbar();
+                    startTrack();
                 }
             }
         });
@@ -187,16 +188,12 @@ public class Fragment_Play_Track extends Fragment {
                 return false;
             }
         });
-        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                seekBar.setSecondaryProgress(percent);
-            }
-        });
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 seekBar.setProgress(0);
+                imgTrackPlay.clearAnimation();
                 btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
                 tvTimeStart.setText("0:00");
                 mediaPlayer.reset();
@@ -218,17 +215,23 @@ public class Fragment_Play_Track extends Fragment {
         @Override
         public void run() {
             updateSeekbar();
-
-
         }
     };
     private  void updateSeekbar(){
-        if(mediaPlayer.isPlaying()){
+        if (mediaPlayer.isPlaying()) {
             long currentDuration = mediaPlayer.getCurrentPosition();
+            System.out.println(mediaPlayer.getCurrentPosition());
             tvTimeStart.setText(milliSecondToTimer(currentDuration));
-            seekBar.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));
-            handler.postDelayed(updater,1000);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    seekBar.setProgress((int) (((float) currentDuration / mediaPlayer.getDuration()) * 100));
+                }
+            });
         }
+
+        handler.postDelayed(updater, 1);
     }
     private String milliSecondToTimer(long milliSecond){
         String timeString = "";
