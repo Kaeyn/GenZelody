@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -114,12 +115,29 @@ public class Fragment_Home extends Fragment {
         adapter_recycleView_tracks_popular = new Custom_Adapter_RecycleView_Tracks_Popular(getContext(), RecommendedTrackList);
         recViewPhoBien.setAdapter(adapter_recycleView_tracks_popular);
 
+        custom_adapter_grid_mainPage = new Custom_Adapter_Grid_MainPage(getContext());
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        recGridPlayListCuaBan.setLayoutManager(gridLayoutManager);
+        custom_adapter_grid_mainPage.setData(getArrayListAlbum());
+        recGridPlayListCuaBan.setAdapter(custom_adapter_grid_mainPage);
+
         return rootView;
+    }
+
+    private ArrayList<Album> getArrayListAlbum(){
+        ArrayList<Album> albums = new ArrayList<>();
+        albums.add(new Album("Name 1", String.valueOf(R.drawable.johnweak)));
+        albums.add(new Album("Name 2", String.valueOf(R.drawable.johnweak)));
+        albums.add(new Album("Name 3", String.valueOf(R.drawable.johnweak)));
+        albums.add(new Album("Name 4", String.valueOf(R.drawable.johnweak)));
+
+        return albums;
     }
 
     private void addViewControls(View rootView){
         recViewDanhSachCuaBan = rootView.findViewById(R.id.recViewDanhSachCuaBan);
         recViewGoiY = rootView.findViewById(R.id.recViewGoiY);
         recViewPhoBien = rootView.findViewById(R.id.recViewPhoBien);
+        recGridPlayListCuaBan = rootView.findViewById(R.id.recGridPlayListCuaBan);
     }
 }

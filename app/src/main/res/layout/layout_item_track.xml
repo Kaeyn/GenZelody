@@ -11,15 +11,15 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:elevation="8dp"
         app:cardCornerRadius="6dp">
 
         <ImageView
             android:id="@+id/imgTrack"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/avatars" />
         <!-- Add other views or content inside the CardView if needed -->
