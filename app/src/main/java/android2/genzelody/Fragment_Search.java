@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -121,7 +122,14 @@ public class Fragment_Search extends Fragment {
         edtInputSearch.requestFocus();
         showKeyboard();
     }
+
     void addEvent(){
+        LvResultSearchTrack.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+            }
+        });
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -149,11 +157,25 @@ public class Fragment_Search extends Fragment {
             adapterTrack = new Custom_Adapter_Grid_Search_Track(getContext(),R.layout.layout_item_grid_search_track,trackArrayList);
             LvResultSearchTrack.setAdapter(adapterTrack);
 
+
             JSONObject allArtist = fullJSONObject.getJSONObject("artists");
             getArtistResult(allArtist);
             Log.d("allArtist",artistArrayList+"\n"+artistArrayList.size());
             adapterArtist = new Custom_Adapter_Grid_Search_Artist(getContext(),R.layout.layout_item_grid_search_artist,artistArrayList);
             LvResultSearchArtist.setAdapter(adapterArtist);
+
+
+//            ScrollSynchronizer scrollSynchronizer = new ScrollSynchronizer(LvResultSearchArtist);
+//            ScrollSynchronizer scrollSynchronizer2 = new ScrollSynchronizer(LvResultSearchTrack);
+//
+//            LvResultSearchTrack.setOnScrollListener(scrollSynchronizer);
+//            LvResultSearchArtist.setOnScrollListener(scrollSynchronizer2);
+
+            ScrollSynchronizer scrollSynchronizer = new ScrollSynchronizer(LvResultSearchArtist, LvResultSearchTrack);
+            ScrollSynchronizer scrollSynchronizer2 = new ScrollSynchronizer(LvResultSearchTrack, LvResultSearchArtist);
+
+            LvResultSearchArtist.setOnScrollListener(scrollSynchronizer2);
+            LvResultSearchTrack.setOnScrollListener(scrollSynchronizer);
 //
 //            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
 //            getPlaylistResult(allPlaylist);
@@ -469,6 +491,75 @@ public class Fragment_Search extends Fragment {
         }
     }
 
+//    private static class ScrollSynchronizer implements AbsListView.OnScrollListener {
+//
+//        private final ListView targetListView1;
+//        private final ListView targetListView2;
+////        private boolean isScrolling = true;
+//
+//        ScrollSynchronizer(ListView targetListView1, ListView targetListView2) {
+//            this.targetListView1 = targetListView1;
+//            this.targetListView2 = targetListView2;
+//        }
+//
+//        @Override
+//        public void onScrollStateChanged(AbsListView view, int scrollState) {
+////            if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+////                isScrolling = true;
+////            } else {
+////                isScrolling = false;
+////            }
+//        }
+//
+////        @Override
+////        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+////            if (isScrolling) {
+////                int top = 0;
+////                if (view.getChildCount() > 0) {
+////                    top = view.getChildAt(0).getTop();
+////                }
+////
+////                if (view == targetListView1) {
+////                    isScrolling = false;
+////                    targetListView2.setSelectionFromTop(firstVisibleItem, top);
+////                } else if (view == targetListView2) {
+////                    isScrolling = false;
+////                    targetListView1.setSelectionFromTop(firstVisibleItem, top);
+////                }
+////            }
+////        }
+////    }
+
+
+        private static class ScrollSynchronizer implements AbsListView.OnScrollListener {
+
+            private final ListView targetListView;
+            private boolean isScrolling = false;
+
+
+            ScrollSynchronizer(ListView targetListView) {
+                this.targetListView = targetListView;
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    isScrolling = false;
+                } else {
+                    isScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                int top = 0;
+                if (view.getChildCount() > 0) {
+                    top = view.getChildAt(0).getTop();
+                }
+                targetListView.setSelectionFromTop(firstVisibleItem, top);
+
+            }
+        }
 
 
 
