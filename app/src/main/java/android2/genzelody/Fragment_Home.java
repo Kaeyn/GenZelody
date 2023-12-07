@@ -161,6 +161,7 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -173,6 +174,7 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
             loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position)));
         }else{
 
+            loadFragment(new Fragment_Play_Track(RecommendedTrackList,"Danh sách phổ biến", position));
         }
     }
 
