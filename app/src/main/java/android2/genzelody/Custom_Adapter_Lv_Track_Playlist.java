@@ -52,12 +52,12 @@ public class Custom_Adapter_Lv_Track_Playlist extends ArrayAdapter {
         tvNameTrackOfPlaylist.setText(track.getName());
 
         TextView tvOwnerTrackOfPlaylist = convertView.findViewById(R.id.tvOwnerTrackOfPlaylist);
-//        tvOwnerTrackOfPlaylist.setText(track.getArtists());
         String nameArtist ="";
-                for (Artist artist: artists){
+        for (Artist artist: artists){
+            System.out.println(artist.getName());
             nameArtist += artist.getName();
         }
-            tvOwnerTrackOfPlaylist.setText(nameArtist);
+        tvOwnerTrackOfPlaylist.setText(nameArtist);
 
         ImageView imgTrackOfPlaylist = convertView.findViewById(R.id.imgTrackOfPlaylist);
 
