@@ -121,6 +121,9 @@ public class Fragment_Search extends Fragment {
                     // Your function to execute when Enter is pressed
 
                     searchThings(edtInputSearch.getText().toString());
+                    InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(edtInputSearch.getWindowToken(), 0);
+
 //                    Log.d("FinalResult", "ohYeah" + fullSearchObject);
 //                    // Return true to indicate that the event has been handled
                     return true;
