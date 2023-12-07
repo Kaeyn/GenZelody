@@ -34,6 +34,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,8 +61,9 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     private JSONObject searchObject;
     ArrayList<Track> trackArrayList = new ArrayList<>();
     ArrayList<Artist> artistArrayList = new ArrayList<>();
-    ArrayList<Album> albumArrayList = new ArrayList<>();
-    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(1);
+//    ArrayList<Album> albumArrayList = new ArrayList<>();
+//    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
     ImageView imgUser;
     TextView nameUser;
 
@@ -80,7 +84,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         // Required empty public constructor
         ACCESS_TOKEN = accessToken;
         this.user = user;
-        this.trackArrayList = tracks;
     }
 
     /**
@@ -117,13 +120,13 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         View view = inflater.inflate(R.layout.fragment__search, container, false);
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
-        addEvent(view);
+        addEvent();
 //        searchThings("a");
-        custom_adapter_grid_searchPage = new Custom_Adapter_Grid_SearchPage(getContext(), this);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-        custom_adapter_grid_searchPage.setData(trackArrayList);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(custom_adapter_grid_searchPage);
+        custom_adapter_grid_searchPage = new Custom_Adapter_Grid_SearchPage(getContext(), this);
+//        fetchPlaylistsAsync("a");
 //        showFullScreenLoader();
         return view;
     }
@@ -136,7 +139,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         recyclerView = view.findViewById(R.id.recGridSearch);
         showKeyboard();
     }
-    void addEvent(View view){
+    void addEvent(){
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -144,10 +147,10 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                     // Your function to execute when Enter is pressed
 
-                    searchThings(edtInputSearch.getText().toString());
+                    fetchPlaylistsAsync(edtInputSearch.getText().toString());
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edtInputSearch.getWindowToken(), 0);
-                    recyclerView.swapAdapter(custom_adapter_grid_searchPage, true);
+
 //                    Log.d("FinalResult", "ohYeah" + fullSearchObject);
 //                    // Return true to indicate that the event has been handled
                     return true;
@@ -161,6 +164,17 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     }
 
+    private CompletableFuture<Void> fetchPlaylistsAsync(String search) {
+        return CompletableFuture.runAsync(() -> {
+            searchThings(search);
+//                Thread.sleep(5000);
+            custom_adapter_grid_searchPage.setData(trackArrayList);
+            custom_adapter_grid_searchPage.notifyDataSetChanged();
+            recyclerView.setAdapter(custom_adapter_grid_searchPage);
+
+        }, trackExecutor);
+    }
+
     private void filterSearch(JSONObject fullJSONObject)  {
         Log.d("ApiResponse", "true");
         try {
@@ -172,13 +186,13 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             getArtistResult(allArtist);
             Log.d("allArtist",artistArrayList+"\n"+artistArrayList.size());
 
-            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
-            getPlaylistResult(allPlaylist);
-            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
-
-            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
-            getAlbumResult(allAlbum);
-            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
+//            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
+//            getPlaylistResult(allPlaylist);
+//            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
+//
+//            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
+//            getAlbumResult(allAlbum);
+//            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
 
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -225,50 +239,50 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         return artistArrayList;
     }
 
-    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
-    {
-        try {
-            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+//    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
+//    {
+//        try {
+//            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+//
+//            for (int i = 0; i < allPlaylist.length(); i++) {
+//                JSONObject playlistObject = allPlaylist.getJSONObject(i);
+//                String playlistId = playlistObject.getString("id");
+//                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
+//                String playlistName = playlistObject.getString("name");
+//                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
+//                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
+//                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
+//                playlistsArrayList.add(newPlaylist);
+//            }
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return playlistsArrayList;
+//    }
 
-            for (int i = 0; i < allPlaylist.length(); i++) {
-                JSONObject playlistObject = allPlaylist.getJSONObject(i);
-                String playlistId = playlistObject.getString("id");
-                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
-                String playlistName = playlistObject.getString("name");
-                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
-                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
-                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
-                playlistsArrayList.add(newPlaylist);
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return playlistsArrayList;
-    }
-
-    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
-    {
-        try {
-            JSONArray allAlbum = AlbumObject.getJSONArray("items");
-
-            for (int i = 0; i < allAlbum.length(); i++) {
-                JSONObject albumObject = allAlbum.getJSONObject(i);
-                String albumId = albumObject.getString("id");
-                String albumName = albumObject.getString("name");
-                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
-                String albumReleaseDate = albumObject.getString("release_date");
-                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
-                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
-                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
-                albumArrayList.add(newAlbum);
-            }
-
-        }catch (JSONException e){
-
-        }
-//        System.out.println("hummmmmm "+albumArrayList);
-        return albumArrayList;
-    }
+//    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
+//    {
+//        try {
+//            JSONArray allAlbum = AlbumObject.getJSONArray("items");
+//
+//            for (int i = 0; i < allAlbum.length(); i++) {
+//                JSONObject albumObject = allAlbum.getJSONObject(i);
+//                String albumId = albumObject.getString("id");
+//                String albumName = albumObject.getString("name");
+//                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
+//                String albumReleaseDate = albumObject.getString("release_date");
+//                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
+//                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
+//                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
+//                albumArrayList.add(newAlbum);
+//            }
+//
+//        }catch (JSONException e){
+//
+//        }
+////        System.out.println("hummmmmm "+albumArrayList);
+//        return albumArrayList;
+//    }
 
     private ArrayList<Track> getSpecificTrackFromPlaylist(String id){
         String apiUrl = "https://api.spotify.com/v1/playlists/"+id+"/tracks";
@@ -430,8 +444,8 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     private void searchThings(String thing) {
 
         artistArrayList.clear();
-        playlistsArrayList.clear();
-        albumArrayList.clear();
+//        playlistsArrayList.clear();
+//        albumArrayList.clear();
         trackArrayList.clear();
 
         String accessToken = ACCESS_TOKEN;
