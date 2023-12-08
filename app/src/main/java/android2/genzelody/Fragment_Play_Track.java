@@ -81,6 +81,7 @@ public class Fragment_Play_Track extends Fragment {
     private String mParam1;
     private String mParam2;
     String ACCESS_TOKEN="";
+    View rootView;
     
 
     public Fragment_Play_Track() {
@@ -137,11 +138,17 @@ public class Fragment_Play_Track extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
+        rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
         requestQueue = Volley.newRequestQueue(rootView.getContext());
         // Inflate the layout for this fragment
         addControls(rootView);
         setTrackInfo();
+        addEvents(rootView);
+        return rootView;
+    }
+
+    private void setTrackInfo(){
+        StringImgTrack = tracks.get(index).getImg();
         Picasso.with(rootView.getContext()).load(StringImgTrack).into(new com.squareup.picasso.Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -158,11 +165,6 @@ public class Fragment_Play_Track extends Fragment {
 
             }
         });
-        addEvents(rootView);
-        return rootView;
-    }
-
-    private void setTrackInfo(){
         checkTrackInLibrary(tracks.get(index).getId());
 
         StringImgTrack = tracks.get(index).getImg();
@@ -176,8 +178,9 @@ public class Fragment_Play_Track extends Fragment {
         tvTimeStart.setText("0:00");
         seekBar.setProgress(0);
         for (Artist artist: tracks.get(index).getArtists()) {
-            nameArtists += artist.getName()+ " ";
+            nameArtists += artist.getName()+ ", ";
         }
+        nameArtists = (nameArtists.substring(0, nameArtists.length() - 2));
         slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
@@ -215,6 +218,9 @@ public class Fragment_Play_Track extends Fragment {
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
         btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
         btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
+        tvNameTrackPlay.setSelected(true);
+        tvNameArtistPlay.setSelected(true);
+
         //media player
         mediaPlayer = new MediaPlayer();
     }

@@ -111,6 +111,8 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         slidingUpPanelLayout = findViewById(R.id.slidingUpPanel);
         txtCurTrack = findViewById(R.id.txtTrackNameCurPlay);
         txtcurTrackArtist = findViewById(R.id.txtTrackArtistCurPlay);
+        txtcurTrackArtist.setSelected(true);
+        txtCurTrack.setSelected(true);
         imgCurTrack = findViewById(R.id.imgCurPlay);
         btnStopnPlayTrack = findViewById(R.id.btnStopnPlay);
         musicBox = findViewById(R.id.musicBox);

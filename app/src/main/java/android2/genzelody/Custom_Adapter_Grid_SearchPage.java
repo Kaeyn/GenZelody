@@ -52,7 +52,7 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
             // Even position, display artist information
             Track track = tracks.get(adjustedPosition);
             holder.tvGridSearch.setText(track.getName());
-            Picasso.with(context.getApplicationContext()).load(track.getImg()).resize(320, 320).into(holder.imgGridSearcht);
+            Picasso.with(context.getApplicationContext()).load(track.getImg()).resize(400, 400).into(holder.imgGridSearcht);
 
             String artistStr = "";
             for (Artist artistItem : track.getArtists()) {
@@ -73,7 +73,7 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
             holder.artist.setText("Nghệ sĩ");
             Log.d("ImgArtist", "onBindViewHolder: "+artist.getImage());
             if(artist.getImage()!=""){
-                Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(320, 320).into(holder.imgGridSearcht);
+                Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(400, 400).into(holder.imgGridSearcht);
             } else {
                 holder.imgGridSearcht.setImageResource(R.drawable.avt);
             }

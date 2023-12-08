@@ -61,7 +61,6 @@
                     android:layout_height="300dp"
                     android:scrollbars="vertical"
                     android:layout_marginTop="10dp" />
-                />
                 <TextView
                     android:id="@+id/txtTitleRec"
                     android:layout_width="match_parent"
