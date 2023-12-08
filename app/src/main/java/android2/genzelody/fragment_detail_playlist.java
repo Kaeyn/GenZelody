@@ -56,13 +56,15 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     private String mParam1;
     private String mParam2;
     private SlidingPanelToggleListener slidingPanelToggleListener;
+    String ACCESS_TOKEN;
 
     public fragment_detail_playlist() {
         // Required empty public constructor
     }
-    public fragment_detail_playlist(Playlists playlist) {
+    public fragment_detail_playlist(Playlists playlist, String accessToken) {
         // Required empty public constructor
         this.playlist = playlist;
+        this.ACCESS_TOKEN = accessToken;
     }
 
     public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track) {
