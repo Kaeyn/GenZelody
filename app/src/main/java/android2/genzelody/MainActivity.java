@@ -21,4 +21,10 @@ public class MainActivity extends AppCompatActivity {
         AuthorizationRequest request = builder.build();
         AuthorizationClient.openLoginInBrowser(this, request);
     }
+    
+    @Override
+    protected void onDestroy() {
+        System.exit(0);
+        super.onDestroy();
+    }
 }

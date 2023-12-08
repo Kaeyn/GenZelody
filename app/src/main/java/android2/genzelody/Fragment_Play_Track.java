@@ -170,7 +170,6 @@ public class Fragment_Play_Track extends Fragment {
 
     private void setTrackInfo(){
         StringImgTrack = tracks.get(index).getImg();
-        Log.d("StringImgTrack", "setTrackInfo: " +StringImgTrack);
 
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
@@ -223,7 +222,6 @@ public class Fragment_Play_Track extends Fragment {
     private void startTrack(){
         mediaPlayer.start();
         checkTrackInLibrary(tracks.get(index).getId());
-        Log.d("Check",isExisted+" whyyyyyyyy");
         Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
         imgTrackPlay.startAnimation(animation);
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
@@ -351,6 +349,14 @@ public class Fragment_Play_Track extends Fragment {
                     }else{
                         nextTrack();
                     }
+                    handler.removeCallbacks(updater);
+                    mediaPlayer.pause();
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                    imgTrackPlay.clearAnimation();
+                    btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+                    setTrackInfo();
+                    startTrack();
                 }
             }
         });
@@ -425,9 +431,6 @@ public class Fragment_Play_Track extends Fragment {
             System.out.println(randomIndex);
         }
         index = randomIndex;
-        stopTrack();
-        setTrackInfo();
-        startTrack();
     }
     private void nextTrack(){
         if(tracks.size() - 1 == index){
@@ -435,13 +438,9 @@ public class Fragment_Play_Track extends Fragment {
         }else {
             index++;
         }
-        stopTrack();
-        setTrackInfo();
-        startTrack();
     }
     private void prepareMediaPlayer(){
         try {
-            mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(preview_url);
             mediaPlayer.prepare();
             tvTimeEnd.setText(milliSecondToTimer(mediaPlayer.getDuration()));
@@ -468,7 +467,7 @@ public class Fragment_Play_Track extends Fragment {
                 }
             });
 
-            handler.postDelayed(updater, 10); // Update every second
+            handler.postDelayed(updater, 1); // Update every second
         }
     }
     private String milliSecondToTimer(long milliSecond){
@@ -612,6 +611,15 @@ public class Fragment_Play_Track extends Fragment {
     private int darkerColor(int color) {
         float factor = 1.0f;
         return ColorUtils.blendARGB(color, Color.BLACK, factor);
+    }
+
+    public boolean onBackPressed() {
+        // Your custom logic here
+        // For example, you can check the current state and decide what action to take
+
+        // If you want to perform the default back action (like popping the fragment from the back stack),
+        // you should call super.onBackPressed()
+        return true;
     }
 
 
