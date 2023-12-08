@@ -103,7 +103,6 @@
                     android:scrollHorizontally="true"
                     android:ellipsize="marquee"
                     android:marqueeRepeatLimit ="marquee_forever"/>
-                    />
 
                 <TextView
                     android:id="@+id/txtTrackArtistCurPlay"
@@ -122,7 +121,7 @@
 
 
             <ImageButton
-                android:id="@+id/btnBackPlay"
+                android:id="@+id/btnAddToFav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#00000000"
