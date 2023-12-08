@@ -44,6 +44,7 @@ public class Fragment_Library extends Fragment {
     ImageView imgUser;
     TextView nameUser;
     User user = new User();
+    ArrayList<Track> tracksRCM;
 
     public Fragment_Library() {
         // Required empty public constructor
@@ -53,6 +54,14 @@ public class Fragment_Library extends Fragment {
         ACCESS_TOKEN = accesssToken;
         MyPlayList = myPlayList;
         this.user = user;
+    }
+
+    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList, User user, ArrayList<Track> tracks) {
+        // Required empty public constructor
+        ACCESS_TOKEN = accesssToken;
+        MyPlayList = myPlayList;
+        this.user = user;
+        tracksRCM = tracks;
     }
 
 
@@ -107,7 +116,7 @@ public class Fragment_Library extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                loadFragment(new fragment_detail_playlist(MyPlayList.get(position)));
+                loadFragment(new fragment_detail_playlist(MyPlayList.get(position), tracksRCM));
             }
         });
         Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
