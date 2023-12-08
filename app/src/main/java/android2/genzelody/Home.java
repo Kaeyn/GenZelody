@@ -160,6 +160,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
             }
         });
 
+
     }
 
     private void toggleSlidingPanel(){
@@ -190,6 +191,13 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         if (fragment instanceof SlidingPanelToggleListener) {
             slidingPanelToggleListener = (SlidingPanelToggleListener) fragment;
         }
+        btnStopnPlayTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ((Fragment_Play_Track) fragment).togglePlayTrack();
+            }
+        });
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         ft.replace(R.id.frameForPlayTrack, fragment);

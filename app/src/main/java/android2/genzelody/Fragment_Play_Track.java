@@ -209,11 +209,19 @@ public class Fragment_Play_Track extends Fragment {
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
         updateSeekbar();
     }
-    private void stopTrack(){
+    public void stopTrack(){
         handler.removeCallbacks(updater);
         mediaPlayer.pause();
         imgTrackPlay.clearAnimation();
         btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+    }
+
+    public void togglePlayTrack(){
+        if(mediaPlayer.isPlaying()){
+            stopTrack();
+        }else{
+            startTrack();
+        }
     }
     private void applyGradientBackground(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
@@ -246,6 +254,8 @@ public class Fragment_Play_Track extends Fragment {
         return ColorUtils.blendARGB(color, Color.WHITE, factor);
     }
 
+
+
     private void addEvents(View rootView){
         startTrack();
         btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
@@ -277,11 +287,7 @@ public class Fragment_Play_Track extends Fragment {
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isPlaying()){
-                    stopTrack();
-                }else{
-                    startTrack();
-                }
+                togglePlayTrack();
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
