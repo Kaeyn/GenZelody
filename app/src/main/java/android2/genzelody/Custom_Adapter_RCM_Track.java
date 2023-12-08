@@ -62,7 +62,7 @@ public class Custom_Adapter_RCM_Track extends RecyclerView.Adapter<Custom_Adapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.listOnClick(view, position);
+                mListener.reclistOnClick(view, position);
             }
         });
     }

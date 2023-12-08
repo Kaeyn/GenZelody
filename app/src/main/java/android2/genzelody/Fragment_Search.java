@@ -537,6 +537,11 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     }
 
+    @Override
+    public void reclistOnClick(View view, int position) {
+
+    }
+
     private void showFullScreenLoader() {
         lottieAnimationView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
