@@ -69,6 +69,7 @@ public class Fragment_Play_Track extends Fragment {
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
+    RequestQueue requestQueue;
     Boolean isSuffle = false, isLoop = false;
     private static final long DELAY_TIME = 5000;
 
@@ -84,8 +85,7 @@ public class Fragment_Play_Track extends Fragment {
     private String mParam1;
     private String mParam2;
     String ACCESS_TOKEN="";
-
-    RequestQueue requestQueue;
+    
 
     public Fragment_Play_Track() {
         // Required empty public constructor
@@ -186,8 +186,6 @@ public class Fragment_Play_Track extends Fragment {
         //seekbar
         seekBar = rootView.findViewById(R.id.seekBar);
         linearLayout = rootView.findViewById(R.id.lnPlayTrack);
-
-
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
         btnAddToLibrary = rootView.findViewById(R.id.btnAddToLibrary);
@@ -209,11 +207,19 @@ public class Fragment_Play_Track extends Fragment {
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
         updateSeekbar();
     }
-    private void stopTrack(){
+    public void stopTrack(){
         handler.removeCallbacks(updater);
         mediaPlayer.pause();
         imgTrackPlay.clearAnimation();
         btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+    }
+
+    public void togglePlayTrack(){
+        if(mediaPlayer.isPlaying()){
+            stopTrack();
+        }else{
+            startTrack();
+        }
     }
     private void applyGradientBackground(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
@@ -246,6 +252,8 @@ public class Fragment_Play_Track extends Fragment {
         return ColorUtils.blendARGB(color, Color.WHITE, factor);
     }
 
+
+
     private void addEvents(View rootView){
         startTrack();
         btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
@@ -277,11 +285,7 @@ public class Fragment_Play_Track extends Fragment {
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isPlaying()){
-                    stopTrack();
-                }else{
-                    startTrack();
-                }
+                togglePlayTrack();
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -359,12 +363,13 @@ public class Fragment_Play_Track extends Fragment {
             public void onClick(View view) {
                 if(!isExisted){
                     addTrackToLibrary(tracks.get(index).getId());
-                    checkTrackInLibrary(tracks.get(index).getId());
+                    isExisted=true;
                     Toast.makeText(getContext(),"Them OK",Toast.LENGTH_SHORT).show();
+
                 }
                 else{
                     removeTrackFromLibrary((tracks.get(index).getId()));
-                    checkTrackInLibrary(tracks.get(index).getId());
+                    isExisted=false;
                     Toast.makeText(getContext(),"Xoa OK",Toast.LENGTH_SHORT).show();
                 };
             }
@@ -488,7 +493,7 @@ public class Fragment_Play_Track extends Fragment {
         super.onPause();
         stopTrack();
     }
-    private boolean checkTrackInLibrary(String idTrack)
+    private void checkTrackInLibrary(String idTrack)
     {
         String apiUrl = "https://api.spotify.com/v1/me/tracks/contains?ids="+idTrack;
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
@@ -520,7 +525,6 @@ public class Fragment_Play_Track extends Fragment {
             }
         };
         requestQueue.add(request);
-        return isExisted;
     }
 
     private void addTrackToLibrary(String idTrack)

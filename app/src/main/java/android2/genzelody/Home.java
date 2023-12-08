@@ -160,6 +160,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
             }
         });
 
+
     }
 
     private void toggleSlidingPanel(){
@@ -190,6 +191,13 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         if (fragment instanceof SlidingPanelToggleListener) {
             slidingPanelToggleListener = (SlidingPanelToggleListener) fragment;
         }
+        btnStopnPlayTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ((Fragment_Play_Track) fragment).togglePlayTrack();
+            }
+        });
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         ft.replace(R.id.frameForPlayTrack, fragment);
@@ -212,7 +220,6 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
         MyPlayList.add(playlists);
     }
-
 
     private void getRecommendedTrack(){
         String apiUrl = "https://api.spotify.com/v1/recommendations?limit=7&market=ES&seed_artists=5HZtdKfC4xU0wvhEyYDWiY";
