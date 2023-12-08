@@ -59,13 +59,15 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    String ACCESS_TOKEN;
 
     public fragment_detail_playlist() {
         // Required empty public constructor
     }
-    public fragment_detail_playlist(Playlists playlist) {
+    public fragment_detail_playlist(Playlists playlist, String accessToken) {
         // Required empty public constructor
         this.playlist = playlist;
+        this.ACCESS_TOKEN = accessToken;
     }
 
     public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track) {
@@ -251,6 +253,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
     @Override
     public void listOnClick(View view, int position) {
-        loadFragment(new Fragment_Play_Track(playlistTrack, playlist.getName(), position));
+        loadFragment(new Fragment_Play_Track(playlistTrack, playlist.getName(), position,ACCESS_TOKEN));
     }
 }

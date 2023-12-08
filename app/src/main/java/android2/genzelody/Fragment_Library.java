@@ -34,7 +34,7 @@ public class Fragment_Library extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String ACCESS_TOKEN = "";
+    String ACCESS_TOKEN = "";
 
     private ListView listView;
 
@@ -45,6 +45,7 @@ public class Fragment_Library extends Fragment {
     TextView nameUser;
     User user = new User();
     ArrayList<Track> tracksRCM;
+
 
     public Fragment_Library() {
         // Required empty public constructor
@@ -116,7 +117,7 @@ public class Fragment_Library extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                loadFragment(new fragment_detail_playlist(MyPlayList.get(position), tracksRCM));
+                loadFragment(new fragment_detail_playlist(MyPlayList.get(position),ACCESS_TOKEN));
             }
         });
         Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
