@@ -444,7 +444,12 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
                     JSONObject artist = new JSONObject(response);
                     String id = artist.getString("id");
                     String name = artist.getString("name");
-                    String img = artist.getJSONArray("images").getJSONObject(0).getString("url");
+                    String img="";
+                    try{
+                        img = artist.getJSONArray("images").getJSONObject(0).getString("url");
+                    } catch (Exception e){
+                        img = "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228";
+                    }
                     newartist.setId(id);
                     newartist.setName(name);
                     newartist.setImage(img);
@@ -602,7 +607,8 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     @Override
     public void listOnClick(View view, int position) {
-
+        ArrayList<Track> trackOfTheAritst = getArtistTopTracks(artistArrayList.get(position).getId());
+        loadFragment(new Fragment_Detail_Artist(trackOfTheAritst,artistArrayList.get(position),ACCESS_TOKEN));
     }
 
     @Override
@@ -630,4 +636,11 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         }, 2500);
     }
 
+    public void loadFragment(Fragment fragment){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frameFragmentHome, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
 }
