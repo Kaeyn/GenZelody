@@ -316,8 +316,11 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                System.out.println(isLoop);
+                System.out.println(isSuffle);
                 if(!isLoop){
                     if(isSuffle){
+                        System.out.println(mp.getCurrentPosition());
                         randomTrack();
                     }else{
                         nextTrack();
@@ -399,16 +402,16 @@ public class Fragment_Play_Track extends Fragment {
         setTrackInfo();
         startTrack();
     }
-private void nextTrack(){
-    if(tracks.size() - 1 == index){
-        index = 0;
-    }else {
-        index++;
+    private void nextTrack(){
+        if(tracks.size() - 1 == index){
+            index = 0;
+        }else {
+            index++;
+        }
+        stopTrack();
+        setTrackInfo();
+        startTrack();
     }
-    stopTrack();
-    setTrackInfo();
-    startTrack();
-}
     private void prepareMediaPlayer(){
         try {
             mediaPlayer = new MediaPlayer();
