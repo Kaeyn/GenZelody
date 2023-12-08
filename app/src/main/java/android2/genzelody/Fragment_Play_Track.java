@@ -167,8 +167,6 @@ public class Fragment_Play_Track extends Fragment {
         });
         checkTrackInLibrary(tracks.get(index).getId());
 
-        StringImgTrack = tracks.get(index).getImg();
-
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
         img_url = tracks.get(index).getImg();
