@@ -131,7 +131,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         showFullScreenLoader();
         fetchPlaylistsAsync("a");
         addEvent();
-        lottieAnimationView.setVisibility(View.INVISIBLE);
 //        searchThings("a");
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -471,8 +470,10 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 //        playlistsArrayList.clear();
 //        albumArrayList.clear();
         trackArrayList.clear();
-
+//https://api.spotify.com/v1/search?query=tung+la+cua+nhau&type=track&market=ES&locale=vi-VN%2Cvi%3Bq%3D0.9%2Cfr-FR%3Bq%3D0.8%2Cfr%3Bq%3D0.7%2Cen-US%3Bq%3D0.6%2Cen%3Bq%3D0.5&offset=0&limit=20",
         String accessToken = ACCESS_TOKEN;
+//String apiUrl = "https://api.spotify.com/v1/search?query=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&market=ES&locale=vi-VN%2Cvi%3Bq%3D0.9%2Cfr-FR%3Bq%3D0.8%2Cfr%3Bq%3D0.7%2Cen-US%3Bq%3D0.6%2Cen%3Bq%3D0.5&offset=0&limit=10";
+
         String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=10";
         Log.d("searchKey", apiUrl);
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {

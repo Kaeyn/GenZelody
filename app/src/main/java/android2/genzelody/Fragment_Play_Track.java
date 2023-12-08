@@ -182,8 +182,9 @@ public class Fragment_Play_Track extends Fragment {
         tvTimeStart.setText("0:00");
         seekBar.setProgress(0);
         for (Artist artist: tracks.get(index).getArtists()) {
-            nameArtists += artist.getName()+ " ";
+            nameArtists += artist.getName()+ ", ";
         }
+        nameArtists = (nameArtists.substring(0, nameArtists.length() - 2));
         slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
