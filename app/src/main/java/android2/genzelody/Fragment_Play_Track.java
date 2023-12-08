@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -7,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
@@ -72,6 +74,8 @@ public class Fragment_Play_Track extends Fragment {
     private static final long DELAY_TIME = 5000;
 
 
+    private SlidingPanelToggleListener slidingPanelToggleListener;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,6 +85,8 @@ public class Fragment_Play_Track extends Fragment {
     private String mParam1;
     private String mParam2;
     String ACCESS_TOKEN="";
+
+    RequestQueue requestQueue;
 
     public Fragment_Play_Track() {
         // Required empty public constructor
@@ -121,6 +127,19 @@ public class Fragment_Play_Track extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
+        }
+    }
+
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
@@ -142,6 +161,7 @@ public class Fragment_Play_Track extends Fragment {
         for (Artist artist: tracks.get(index).getArtists()) {
             nameArtists += artist.getName()+ " ";
         }
+        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
@@ -296,9 +316,7 @@ public class Fragment_Play_Track extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if(!isLoop){
-                    if(isSuffle){                       
-//                        nextTrack();
-
+                    if(isSuffle){
                         randomTrack();
                     }else{
                         nextTrack();
@@ -369,9 +387,12 @@ public class Fragment_Play_Track extends Fragment {
     }
     private void randomTrack(){
         Random r = new Random();
-        int randomIndex = r.nextInt(tracks.size() - 1);
+        int randomIndex = r.nextInt((tracks.size() - 1) +1) + 1;
+        System.out.println(tracks.size());
+        System.out.println(randomIndex);
         while (index == randomIndex){
             randomIndex = r.nextInt(tracks.size());
+            System.out.println(randomIndex);
         }
         index = randomIndex;
         stopTrack();
@@ -456,7 +477,13 @@ private void nextTrack(){
     @Override
     public void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(updater);
+        stopTrack();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopTrack();
     }
     private void checkTrackInLibrary(String idTrack)
     {

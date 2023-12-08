@@ -1,13 +1,13 @@
 package android2.genzelody;
 
-import android.content.Intent;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
@@ -18,16 +18,12 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -59,6 +55,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private SlidingPanelToggleListener slidingPanelToggleListener;
     String ACCESS_TOKEN;
 
     public fragment_detail_playlist() {
@@ -101,6 +98,16 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
         }
     }
 
@@ -253,6 +260,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
     @Override
     public void listOnClick(View view, int position) {
-        loadFragment(new Fragment_Play_Track(playlistTrack, playlist.getName(), position,ACCESS_TOKEN));
+        slidingPanelToggleListener.setTrackLists(playlistTrack, playlist.getName(), position);
     }
 }
