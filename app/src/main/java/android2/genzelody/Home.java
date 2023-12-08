@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
 
     TextView txtCurTrack, txtcurTrackArtist;
     ImageView imgCurTrack;
-    Button btnStopnPlayTrack;
+    ImageButton btnStopnPlayTrack;
     Boolean isFisrtLoaded = true;
 
     @Override
@@ -111,8 +112,10 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         slidingUpPanelLayout = findViewById(R.id.slidingUpPanel);
         txtCurTrack = findViewById(R.id.txtTrackNameCurPlay);
         txtcurTrackArtist = findViewById(R.id.txtTrackArtistCurPlay);
+        txtcurTrackArtist.setSelected(true);
+        txtCurTrack.setSelected(true);
         imgCurTrack = findViewById(R.id.imgCurPlay);
-        btnStopnPlayTrack = findViewById(R.id.btnStopnPlay);
+        btnStopnPlayTrack = findViewById(R.id.btnPausePlay);
         musicBox = findViewById(R.id.musicBox);
     }
 

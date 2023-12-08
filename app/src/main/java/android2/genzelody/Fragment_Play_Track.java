@@ -165,11 +165,13 @@ public class Fragment_Play_Track extends Fragment {
 
             }
         });
+        checkTrackInLibrary(tracks.get(index).getId());
 
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
         img_url = tracks.get(index).getImg();
         nameArtists = "";
+
 
         tvTimeStart.setText("0:00");
         seekBar.setProgress(0);
@@ -181,6 +183,7 @@ public class Fragment_Play_Track extends Fragment {
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
+
         try {
             int drawableResourceId = Integer.parseInt(img_url);
             Drawable drawable = ContextCompat.getDrawable(getContext(), drawableResourceId);
@@ -190,6 +193,7 @@ public class Fragment_Play_Track extends Fragment {
             Picasso.with(this.getContext()).load(img_url).resize(860,860).into(imgTrackPlay);
         }
         prepareMediaPlayer();
+
     }
     private void addControls(View rootView){
         //text view
@@ -212,12 +216,14 @@ public class Fragment_Play_Track extends Fragment {
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
         btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
         btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
+        tvNameTrackPlay.setSelected(true);
+        tvNameArtistPlay.setSelected(true);
+
         //media player
         mediaPlayer = new MediaPlayer();
     }
     private void startTrack(){
         mediaPlayer.start();
-        checkTrackInLibrary(tracks.get(index).getId());
         Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
         imgTrackPlay.startAnimation(animation);
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
@@ -275,12 +281,15 @@ public class Fragment_Play_Track extends Fragment {
         btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(isSuffle){
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
                     isSuffle = false;
                 } else {
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
                     isSuffle = true;
+                    Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.shake);
+                    btnSuffleTracks.startAnimation(animation);
                     if(isLoop){
                         btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
                         mediaPlayer.setLooping(false);
@@ -293,6 +302,8 @@ public class Fragment_Play_Track extends Fragment {
         btnLoopTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate_once);
+                btnLoopTracks.startAnimation(animation);
                 if(isLoop){
                     btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
                     mediaPlayer.setLooping(false);
@@ -346,8 +357,6 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                System.out.println(isLoop);
-                System.out.println(isSuffle);
                 if(!isLoop){
                     if(isSuffle){
                         System.out.println(mp.getCurrentPosition());
@@ -390,13 +399,13 @@ public class Fragment_Play_Track extends Fragment {
                 if(!isExisted){
                     addTrackToLibrary(tracks.get(index).getId());
                     isExisted=true;
-                    Toast.makeText(getContext(),"Them OK",Toast.LENGTH_SHORT).show();
+                    btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
 
                 }
                 else{
                     removeTrackFromLibrary((tracks.get(index).getId()));
                     isExisted=false;
-                    Toast.makeText(getContext(),"Xoa OK",Toast.LENGTH_SHORT).show();
+                    btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
                 };
             }
         });
@@ -518,8 +527,10 @@ public class Fragment_Play_Track extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     if (jsonArray.getBoolean(0)) {
                         isExisted = jsonArray.getBoolean(0);
+                        btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
                     } else {
                         isExisted = false;
+                        btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
