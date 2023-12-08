@@ -39,7 +39,7 @@
             android:id="@+id/frameForPlayTrack"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white">
+            >
 
             <!-- Your content for the sliding-up panel -->
         </FrameLayout>
@@ -50,10 +50,60 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="65dp"
-        android:background="@color/white">
+        android:layout_marginBottom="60dp"
+        android:background="@color/black">
 
         <!-- Add music name, image, or any other content here -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imgCurPlay"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    tools:srcCompat="@tools:sample/avatars" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtTrackNameCurPlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TenBaiHat" />
+
+                <TextView
+                    android:id="@+id/txtTrackArtistCurPlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="NgheSi" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnStopnPlay"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="Button" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </FrameLayout>
 

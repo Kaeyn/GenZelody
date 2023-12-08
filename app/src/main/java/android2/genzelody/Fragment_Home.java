@@ -2,17 +2,13 @@ package android2.genzelody;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -186,7 +182,8 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         } else if (category.equals("feature")) {
             loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position), RecommendedTrackList));
         }else{
-            slidingPanelToggleListener.onToggleSlidingPanel(RecommendedTrackList, "Danh sách phổ biến", position);
+            slidingPanelToggleListener.setTrackLists(RecommendedTrackList, "Danh sách phổ biến", position);
+
         }
     }
 

@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -53,6 +54,7 @@ public class Fragment_Play_Track extends Fragment {
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
 
+    private SlidingPanelToggleListener slidingPanelToggleListener;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -100,6 +102,17 @@ public class Fragment_Play_Track extends Fragment {
         }
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
+        }
+    }
+
 
 
     @Override
@@ -122,6 +135,7 @@ public class Fragment_Play_Track extends Fragment {
         for (Artist artist: tracks.get(index).getArtists()) {
             nameArtists += artist.getName()+ " ";
         }
+        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
@@ -375,6 +389,12 @@ private void nextTrack(){
     @Override
     public void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(updater);
+        stopTrack();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopTrack();
     }
 }
