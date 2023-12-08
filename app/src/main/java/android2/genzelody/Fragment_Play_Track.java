@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -44,6 +45,8 @@ public class Fragment_Play_Track extends Fragment {
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
+    private static final long DELAY_TIME = 5000;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -99,8 +102,11 @@ public class Fragment_Play_Track extends Fragment {
         addControls(rootView);
         setTrackInfo();
         addEvents();
+
+
         return rootView;
     }
+
     private void setTrackInfo(){
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
@@ -314,4 +320,5 @@ private void nextTrack(){
         super.onDestroy();
         handler.removeCallbacks(updater);
     }
+
 }
