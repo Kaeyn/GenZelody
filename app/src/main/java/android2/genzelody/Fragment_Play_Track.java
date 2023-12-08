@@ -245,6 +245,11 @@ public class Fragment_Play_Track extends Fragment {
             startTrack();
         }
     }
+
+    public void NextTrack(){
+        nextTrackIndex();
+        startNewTrack();
+    }
     private void applyGradientBackground(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             @Override

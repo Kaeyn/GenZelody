@@ -65,7 +65,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
 
     TextView txtCurTrack, txtcurTrackArtist;
     ImageView imgCurTrack;
-    ImageButton btnStopnPlayTrack;
+    ImageButton btnStopnPlayTrack, btnAddToFav, btnNextPlay;
     Boolean isFisrtLoaded = true;
 
     @Override
@@ -116,6 +116,8 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         txtCurTrack.setSelected(true);
         imgCurTrack = findViewById(R.id.imgCurPlay);
         btnStopnPlayTrack = findViewById(R.id.btnPausePlay);
+        btnAddToFav = findViewById(R.id.btnAddToFav);
+        btnNextPlay = findViewById(R.id.btnNextPlay);
         musicBox = findViewById(R.id.musicBox);
     }
 
@@ -200,6 +202,18 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
             public void onClick(View v) {
 
                 ((Fragment_Play_Track) fragment).togglePlayTrack();
+            }
+        });
+        btnNextPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((Fragment_Play_Track) fragment).NextTrack();
+            }
+        });
+        btnAddToFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
         fm = getSupportFragmentManager();
