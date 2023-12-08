@@ -503,6 +503,57 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     }
 
+    private ArrayList<Track> getArtistTopTracks(String idArtist){
+        String accessToken = ACCESS_TOKEN;
+        String apiUrl = "https://api.spotify.com/v1/artists/"+idArtist+"/top-tracks?market=es";
+
+        ArrayList<Track> artistTrack = new ArrayList<>();
+        Log.d("searchKey", apiUrl);
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // Store the response in the variable
+                apiResponse = response;
+                searchApiResponse(apiResponse);
+                System.out.println(searchObject);
+                try {
+                    JSONArray itemsArray = searchObject.getJSONArray("tracks");
+                    for (int i = 0; i < itemsArray.length(); i++) {
+                        JSONObject trackObject = itemsArray.getJSONObject(i);
+                        String trackId = trackObject.getString("id");
+                        String trackName = trackObject.getString("name");
+                        String idAlbum = trackObject.getJSONObject("album").getString("id");
+                        String trackImg = trackObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                        ArrayList<Artist> artists = getArtists(trackObject.getJSONArray("artists"));
+                        String previewUrl = trackObject.getString("preview_url");
+                        Track newTrack = new Track(trackId, trackName, idAlbum, trackImg, artists, previewUrl);
+                        artistTrack.add(newTrack);
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Handle error response
+                Log.e("Search", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        // Add the request to the Volley queue
+        requestQueue.add(request);
+        return artistTrack;
+    }
+
     private void processApiResponse(String response) {
         // You can handle the response here or pass it to another method
         try {
@@ -523,6 +574,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             throw new RuntimeException(e);
         }
     }
+//    
 
 
     @Override
@@ -536,6 +588,8 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         }
 
     }
+
+
 
 
     @Override
