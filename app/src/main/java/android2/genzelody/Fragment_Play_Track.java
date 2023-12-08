@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.palette.graphics.Palette;
 
 import android.os.Handler;
@@ -72,6 +73,7 @@ public class Fragment_Play_Track extends Fragment {
     RequestQueue requestQueue;
     Boolean isSuffle = false, isLoop = false;
     private static final long DELAY_TIME = 5000;
+    String StringImgTrack;
 
 
     private SlidingPanelToggleListener slidingPanelToggleListener;
@@ -146,15 +148,35 @@ public class Fragment_Play_Track extends Fragment {
         // Inflate the layout for this fragment
         addControls(rootView);
         setTrackInfo();
+        Picasso.with(rootView.getContext()).load(StringImgTrack).into(new com.squareup.picasso.Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                generatePalette(rootView, bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
         addEvents(rootView);
         return rootView;
     }
 
     private void setTrackInfo(){
+        StringImgTrack = tracks.get(index).getImg();
+        Log.d("StringImgTrack", "setTrackInfo: " +StringImgTrack);
+
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
         img_url = tracks.get(index).getImg();
         nameArtists = "";
+
         tvTimeStart.setText("0:00");
         seekBar.setProgress(0);
         for (Artist artist: tracks.get(index).getArtists()) {
@@ -320,8 +342,11 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                System.out.println(isLoop);
+                System.out.println(isSuffle);
                 if(!isLoop){
                     if(isSuffle){
+                        System.out.println(mp.getCurrentPosition());
                         randomTrack();
                     }else{
                         nextTrack();
@@ -404,16 +429,16 @@ public class Fragment_Play_Track extends Fragment {
         setTrackInfo();
         startTrack();
     }
-private void nextTrack(){
-    if(tracks.size() - 1 == index){
-        index = 0;
-    }else {
-        index++;
+    private void nextTrack(){
+        if(tracks.size() - 1 == index){
+            index = 0;
+        }else {
+            index++;
+        }
+        stopTrack();
+        setTrackInfo();
+        startTrack();
     }
-    stopTrack();
-    setTrackInfo();
-    startTrack();
-}
     private void prepareMediaPlayer(){
         try {
             mediaPlayer = new MediaPlayer();
@@ -575,5 +600,33 @@ private void nextTrack(){
         };
         requestQueue.add(request);
     }
+
+    private void generatePalette(View rootView, Bitmap bitmap) {
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(Palette palette) {
+                int defaultColor = getResources().getColor(com.google.android.material.R.color.design_default_color_background);
+
+                int dominantColor = palette.getDominantColor(defaultColor);
+
+                GradientDrawable gradientDrawable = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{dominantColor, darkerColor(dominantColor)}
+                );
+
+                gradientDrawable.setCornerRadius(0f);
+                gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+
+                LinearLayout linearLayout = rootView.findViewById(R.id.lnPlayTrack);
+                linearLayout.setBackground(gradientDrawable);
+            }
+        });
+    }
+
+    private int darkerColor(int color) {
+        float factor = 1.0f;
+        return ColorUtils.blendARGB(color, Color.BLACK, factor);
+    }
+
 
 }
