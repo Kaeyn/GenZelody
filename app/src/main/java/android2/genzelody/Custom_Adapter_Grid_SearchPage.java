@@ -60,6 +60,12 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
                 artistStr += artistItem.getName()+" - ";
             }
             holder.artist.setText(artistStr.substring(0,artistStr.length()-3));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.reclistOnClick(view, adjustedPosition);
+                }
+            });
 
         } else {
             Artist artist = artists.get(adjustedPosition);
@@ -71,14 +77,15 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
             } else {
                 holder.imgGridSearcht.setImageResource(R.drawable.avt);
             }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.listOnClick(view, adjustedPosition);
+                }
+            });
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.listOnClick(view, position);
-            }
-        });
+
     }
 
 

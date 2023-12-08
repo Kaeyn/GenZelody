@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -82,6 +83,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     Custom_Adapter_Grid_Search_Artist adapterArtist;
     private RequestQueue requestQueue;
 
+    private SlidingPanelToggleListener slidingPanelToggleListener;
 
 
     public Fragment_Search() {
@@ -118,6 +120,17 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
         }
     }
 
@@ -504,6 +517,57 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     }
 
+    private ArrayList<Track> getArtistTopTracks(String idArtist){
+        String accessToken = ACCESS_TOKEN;
+        String apiUrl = "https://api.spotify.com/v1/artists/"+idArtist+"/top-tracks?market=es";
+
+        ArrayList<Track> artistTrack = new ArrayList<>();
+        Log.d("searchKey", apiUrl);
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // Store the response in the variable
+                apiResponse = response;
+                searchApiResponse(apiResponse);
+                System.out.println(searchObject);
+                try {
+                    JSONArray itemsArray = searchObject.getJSONArray("tracks");
+                    for (int i = 0; i < itemsArray.length(); i++) {
+                        JSONObject trackObject = itemsArray.getJSONObject(i);
+                        String trackId = trackObject.getString("id");
+                        String trackName = trackObject.getString("name");
+                        String idAlbum = trackObject.getJSONObject("album").getString("id");
+                        String trackImg = trackObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                        ArrayList<Artist> artists = getArtists(trackObject.getJSONArray("artists"));
+                        String previewUrl = trackObject.getString("preview_url");
+                        Track newTrack = new Track(trackId, trackName, idAlbum, trackImg, artists, previewUrl);
+                        artistTrack.add(newTrack);
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Handle error response
+                Log.e("Search", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        // Add the request to the Volley queue
+        requestQueue.add(request);
+        return artistTrack;
+    }
+
     private void processApiResponse(String response) {
         // You can handle the response here or pass it to another method
         try {
@@ -524,19 +588,16 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             throw new RuntimeException(e);
         }
     }
+//    
 
 
     @Override
     public void onClick(View view, int position, String category) {
-        if(position % 2 != 0)
-        {
 
-        }
-        else {
-
-        }
 
     }
+
+
 
 
     @Override
@@ -546,7 +607,10 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     @Override
     public void reclistOnClick(View view, int position) {
-
+        System.out.println("index "+position);
+        ArrayList<Track> tracks = new ArrayList<>() ;
+        tracks.add(trackArrayList.get(position));
+        slidingPanelToggleListener.setTrackLists(tracks, "Từ tìm kiếm",0);
     }
 
     private void showFullScreenLoader() {

@@ -572,4 +572,21 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         toggleSlidingPanel();
     }
 
+    @Override
+    public void onBackPressed() {
+        Fragment_Play_Track fragmentPlayTrack = (Fragment_Play_Track) getSupportFragmentManager().findFragmentById(R.id.frameForPlayTrack);
+
+        if (fragmentPlayTrack != null && fragmentPlayTrack.onBackPressed() == true) {
+                toggleSlideUP();
+            return;
+        }else{
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+            System.exit(0);
+        }
+        super.onBackPressed();
+    }
 }
