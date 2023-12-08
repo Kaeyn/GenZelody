@@ -85,8 +85,7 @@ public class Fragment_Play_Track extends Fragment {
     private String mParam1;
     private String mParam2;
     String ACCESS_TOKEN="";
-
-    RequestQueue requestQueue;
+    
 
     public Fragment_Play_Track() {
         // Required empty public constructor
