@@ -51,8 +51,8 @@
                 android:id="@+id/btnAddToLibrary"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginLeft="350dp"
-                android:background="@drawable/outline_do_disturb_on_24" />
+                android:layout_marginLeft="340dp"
+                android:background="#00000000"/>
         </RelativeLayout>
 
 
