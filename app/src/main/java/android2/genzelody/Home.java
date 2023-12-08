@@ -23,7 +23,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,11 +37,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements SlidingPanelToggleListener {
 
     FrameLayout frameFragmentHome;
     BottomNavigationView bttNav;
     private String ACCESS_TOKEN = "";
+    private SlidingUpPanelLayout slidingUpPanelLayout;
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
@@ -47,6 +50,10 @@ public class Home extends AppCompatActivity {
     ExecutorService trackExecutor = Executors.newFixedThreadPool(5);
     User user = new User();
     private RequestQueue requestQueue;
+
+    private SlidingPanelToggleListener slidingPanelToggleListener;
+    FragmentManager fm;
+    FragmentTransaction ft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,8 @@ public class Home extends AppCompatActivity {
         showFullScreenLoader();
         fetchPlaylistsAsync();
         System.out.println(ACCESS_TOKEN);
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
     }
 
     private CompletableFuture<Void> fetchPlaylistsAsync() {
@@ -87,6 +96,7 @@ public class Home extends AppCompatActivity {
     private void addControls(){
         frameFragmentHome = findViewById(R.id.frameFragmentHome);
         bttNav = findViewById(R.id.bttnav);
+        slidingUpPanelLayout = findViewById(R.id.slidingUpPanel);
     }
 
     private void addEvents(){
@@ -108,13 +118,39 @@ public class Home extends AppCompatActivity {
                 return true;
             }
         });
+
+    }
+
+    private void toggleSlidingPanel(ArrayList<Track> tracks, String name, int index){
+        runOnUiThread(() -> {
+            if (slidingUpPanelLayout != null) {
+                if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    loadPlayTrackFragment(tracks, name, index);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                } else {
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            }
+        });
     }
 
     public void loadFragment(Fragment fragment){
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
-        ft.addToBackStack()
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    public void loadPlayTrackFragment(ArrayList<Track> tracks, String name, int index) {
+        Fragment fragment = new Fragment_Play_Track(tracks, name, index);
+        if (fragment instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) fragment;
+        }
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        ft.replace(R.id.frameForPlayTrack, fragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -458,5 +494,10 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onToggleSlidingPanel(ArrayList<Track> tracks, String name, int index) {
+        toggleSlidingPanel(tracks,name,index);
     }
 }

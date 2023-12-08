@@ -1,27 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Home">
 
-    <FrameLayout
-        android:id="@+id/frameFragmentHome"
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/slidingUpPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="MissingConstraints">
+        android:gravity="bottom"
+        app:umanoPanelHeight="0dp"
+        app:umanoShadowHeight="4dp">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bttnav"
-            android:background="@drawable/gradient_background"
+        <FrameLayout
+            android:id="@+id/frameFragmentHome"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:itemIconTint="@color/color_item_bottom_nav"
-            app:itemTextColor="@color/color_item_bottom_nav"
-            tools:ignore="MissingConstraints"
-            app:menu="@menu/bottom_navigation"
-            />
+            android:layout_height="match_parent"
+            tools:ignore="MissingConstraints">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bttnav"
+                android:background="@drawable/gradient_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                app:itemIconTint="@color/color_item_bottom_nav"
+                app:itemTextColor="@color/color_item_bottom_nav"
+                tools:ignore="MissingConstraints"
+                app:menu="@menu/bottom_navigation"
+                />
+
+        </FrameLayout>
+        <!-- Your sliding-up panel content goes here -->
+        <FrameLayout
+            android:id="@+id/frameForPlayTrack"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+
+            <!-- Your content for the sliding-up panel -->
+        </FrameLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    <FrameLayout
+        android:id="@+id/musicBox"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="65dp"
+        android:background="@color/white">
+
+        <!-- Add music name, image, or any other content here -->
+
     </FrameLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
