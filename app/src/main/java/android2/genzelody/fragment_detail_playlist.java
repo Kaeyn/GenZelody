@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
@@ -18,6 +19,7 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -279,4 +281,5 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     public void reclistOnClick(View view, int position) {
         slidingPanelToggleListener.setTrackLists(rcmTrack, playlist.getName(), position);
     }
+
 }
