@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -82,6 +83,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     Custom_Adapter_Grid_Search_Artist adapterArtist;
     private RequestQueue requestQueue;
 
+    private SlidingPanelToggleListener slidingPanelToggleListener;
 
 
     public Fragment_Search() {
@@ -118,6 +120,17 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
         }
     }
 
@@ -527,13 +540,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     @Override
     public void onClick(View view, int position, String category) {
-        if(position % 2 != 0)
-        {
 
-        }
-        else {
-
-        }
 
     }
 
@@ -545,7 +552,10 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     @Override
     public void reclistOnClick(View view, int position) {
-
+        System.out.println("index "+position);
+        ArrayList<Track> tracks = new ArrayList<>() ;
+        tracks.add(trackArrayList.get(position));
+        slidingPanelToggleListener.setTrackLists(tracks, "Từ tìm kiếm",0);
     }
 
     private void showFullScreenLoader() {

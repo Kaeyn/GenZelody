@@ -57,7 +57,6 @@ public class Custom_Adapter_Grid_Search_Track extends ArrayAdapter {
             Picasso.with(this.getContext()).load(track.getImg()).resize(100,100).into(imgPlaylist);
         }
 
-
         return convertView;
     }
 
