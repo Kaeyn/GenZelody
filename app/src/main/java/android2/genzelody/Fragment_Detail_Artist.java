@@ -1,11 +1,13 @@
 package android2.genzelody;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
@@ -92,6 +94,17 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
         }
     }
 
@@ -212,13 +225,7 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
         float factor = 1.0f; // Adjust the factor based on how much you want to lighten the color
         return ColorUtils.blendARGB(color, Color.BLACK, factor);
     }
-    public void loadFragment(Fragment fragment){
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.frameFragmentHome, fragment);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
+
 
     public void goBack() {
         // Get the FragmentManager
@@ -246,6 +253,7 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
 
     @Override
     public void reclistOnClick(View view, int position) {
-        slidingPanelToggleListener.setTrackLists(artistTrack, artist.getName(), position);
+
     }
+
 }
