@@ -1,12 +1,17 @@
 package android2.genzelody;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.palette.graphics.Palette;
 
 import android.os.Handler;
 import android.util.Log;
@@ -19,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -40,6 +46,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.RandomAccess;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,15 +58,18 @@ public class Fragment_Play_Track extends Fragment {
     TextView tvNameAlbumPlay, tvNameTrackPlay, tvNameArtistPlay, tvTimeStart, tvTimeEnd;
     ImageView imgTrackPlay;
     SeekBar seekBar;
-    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnAddToLibrary;
+    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnAddToLibrary, btnSuffleTracks, btnLoopTracks;
     MediaPlayer mediaPlayer;
     Handler handler = new Handler();
-    private RequestQueue requestQueue;
+    LinearLayout linearLayout;
     int index = 0;
     boolean isExisted =false;
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
+    Boolean isSuffle = false, isLoop = false;
+    private static final long DELAY_TIME = 5000;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -116,9 +127,10 @@ public class Fragment_Play_Track extends Fragment {
         // Inflate the layout for this fragment
         addControls(rootView);
         setTrackInfo();
-        addEvents();
+        addEvents(rootView);
         return rootView;
     }
+
     private void setTrackInfo(){
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
@@ -153,6 +165,8 @@ public class Fragment_Play_Track extends Fragment {
         imgTrackPlay = rootView.findViewById(R.id.imgTrackPlay);
         //seekbar
         seekBar = rootView.findViewById(R.id.seekBar);
+        linearLayout = rootView.findViewById(R.id.lnPlayTrack);
+
 
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
@@ -161,6 +175,8 @@ public class Fragment_Play_Track extends Fragment {
         btnBackTrack = rootView.findViewById(R.id.btnBackTrack);
         btnPauseTrack = rootView.findViewById(R.id.btnPauseTrack);
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
+        btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
+        btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
         //media player
         mediaPlayer = new MediaPlayer();
     }
@@ -179,8 +195,65 @@ public class Fragment_Play_Track extends Fragment {
         imgTrackPlay.clearAnimation();
         btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
     }
-    private void addEvents(){
+    private void applyGradientBackground(Bitmap bitmap) {
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(Palette palette) {
+                int defaultColor = getResources().getColor(com.google.android.material.R.color.design_default_color_background);
+
+                // Get the dominant color, or use the default color if not available
+                int dominantColor = palette.getDominantColor(defaultColor);
+
+                // Create a GradientDrawable with a gradient from the dominant color to a lighter shade
+                GradientDrawable gradientDrawable = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{dominantColor, lightenColor(dominantColor)}
+                );
+
+                // Set corner radius and other properties if needed
+                gradientDrawable.setCornerRadius(0f);
+                gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+
+                // Set the GradientDrawable as the background of the LinearLayout
+                linearLayout.setBackground(gradientDrawable);
+            }
+        });
+    }
+
+    // Method to lighten a color
+    private int lightenColor(int color) {
+        float factor = 0.8f; // Adjust the factor based on how much you want to lighten the color
+        return ColorUtils.blendARGB(color, Color.WHITE, factor);
+    }
+
+    private void addEvents(View rootView){
         startTrack();
+        btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isSuffle){
+                    btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
+                    isSuffle = false;
+                } else {
+                    btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
+                    isSuffle = true;
+                }
+            }
+        });
+        btnLoopTracks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isLoop){
+                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+                    mediaPlayer.setLooping(false);
+                    isLoop = false;
+                } else {
+                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
+                    mediaPlayer.setLooping(true);
+                    isLoop = true;
+                }
+            }
+        });
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -223,7 +296,15 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                nextTrack();
+                if(!isLoop){
+                    if(isSuffle){                       
+//                        nextTrack();
+
+                        randomTrack();
+                    }else{
+                        nextTrack();
+                    }
+                }
             }
         });
         btnBackPage.setOnClickListener(new View.OnClickListener() {
@@ -267,6 +348,35 @@ public class Fragment_Play_Track extends Fragment {
                 };
             }
         });
+        Picasso.with(rootView.getContext()).load(String.valueOf(imgTrackPlay)).into(new com.squareup.picasso.Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                applyGradientBackground(bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                // Handle failure if needed
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                // Handle preparation if needed
+            }
+        });
+
+
+    }
+    private void randomTrack(){
+        Random r = new Random();
+        int randomIndex = r.nextInt(tracks.size() - 1);
+        while (index == randomIndex){
+            randomIndex = r.nextInt(tracks.size());
+        }
+        index = randomIndex;
+        stopTrack();
+        setTrackInfo();
+        startTrack();
     }
 private void nextTrack(){
     if(tracks.size() - 1 == index){

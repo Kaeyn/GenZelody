@@ -44,6 +44,7 @@ public class Fragment_Library extends Fragment {
     ImageView imgUser;
     TextView nameUser;
     User user = new User();
+    ArrayList<Track> tracksRCM;
 
 
     public Fragment_Library() {
@@ -54,6 +55,14 @@ public class Fragment_Library extends Fragment {
         ACCESS_TOKEN = accesssToken;
         MyPlayList = myPlayList;
         this.user = user;
+    }
+
+    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList, User user, ArrayList<Track> tracks) {
+        // Required empty public constructor
+        ACCESS_TOKEN = accesssToken;
+        MyPlayList = myPlayList;
+        this.user = user;
+        tracksRCM = tracks;
     }
 
 
