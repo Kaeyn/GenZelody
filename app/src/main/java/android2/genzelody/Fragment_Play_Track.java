@@ -277,9 +277,7 @@ public class Fragment_Play_Track extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if(!isLoop){
-                    if(isSuffle){                       
-//                        nextTrack();
-
+                    if(isSuffle){
                         randomTrack();
                     }else{
                         nextTrack();
@@ -334,9 +332,12 @@ public class Fragment_Play_Track extends Fragment {
     }
     private void randomTrack(){
         Random r = new Random();
-        int randomIndex = r.nextInt(tracks.size() - 1);
+        int randomIndex = r.nextInt((tracks.size() - 1) +1) + 1;
+        System.out.println(tracks.size());
+        System.out.println(randomIndex);
         while (index == randomIndex){
             randomIndex = r.nextInt(tracks.size());
+            System.out.println(randomIndex);
         }
         index = randomIndex;
         stopTrack();
