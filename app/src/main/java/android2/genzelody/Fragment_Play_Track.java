@@ -179,7 +179,7 @@ public class Fragment_Play_Track extends Fragment {
             nameArtists += artist.getName()+ ", ";
         }
         nameArtists = (nameArtists.substring(0, nameArtists.length() - 2));
-        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
+
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
@@ -193,7 +193,7 @@ public class Fragment_Play_Track extends Fragment {
             Picasso.with(this.getContext()).load(img_url).resize(860,860).into(imgTrackPlay);
         }
         prepareMediaPlayer();
-
+        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists, isExisted);
     }
     private void addControls(View rootView){
         //text view
@@ -242,6 +242,18 @@ public class Fragment_Play_Track extends Fragment {
         }else{
             startTrack();
         }
+    }
+    public Boolean checkIsPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
+    public Boolean checkIsFavorite(){
+        return isExisted;
+    }
+
+    public void NextTrack(){
+        nextTrackIndex();
+        startNewTrack();
     }
     private void applyGradientBackground(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
@@ -396,17 +408,7 @@ public class Fragment_Play_Track extends Fragment {
         btnAddToLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isExisted){
-                    addTrackToLibrary(tracks.get(index).getId());
-                    isExisted=true;
-                    btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
-
-                }
-                else{
-                    removeTrackFromLibrary((tracks.get(index).getId()));
-                    isExisted=false;
-                    btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
-                };
+                AddToFav();
             }
         });
         Picasso.with(rootView.getContext()).load(String.valueOf(imgTrackPlay)).into(new com.squareup.picasso.Target() {
@@ -517,6 +519,8 @@ public class Fragment_Play_Track extends Fragment {
         super.onPause();
         stopTrack();
     }
+
+
     private void checkTrackInLibrary(String idTrack)
     {
         String apiUrl = "https://api.spotify.com/v1/me/tracks/contains?ids="+idTrack;
@@ -630,6 +634,20 @@ public class Fragment_Play_Track extends Fragment {
     private int darkerColor(int color) {
         float factor = 1.0f;
         return ColorUtils.blendARGB(color, Color.BLACK, factor);
+    }
+
+    public void AddToFav(){
+        if(!isExisted){
+            addTrackToLibrary(tracks.get(index).getId());
+            isExisted=true;
+            btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
+
+        }
+        else{
+            removeTrackFromLibrary((tracks.get(index).getId()));
+            isExisted=false;
+            btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
+        };
     }
 
     public boolean onBackPressed() {
