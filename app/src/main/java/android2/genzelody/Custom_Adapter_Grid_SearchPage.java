@@ -62,8 +62,6 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
             holder.artist.setText(artistStr.substring(0,artistStr.length()-3));
 
         } else {
-
-
             Artist artist = artists.get(adjustedPosition);
             holder.tvGridSearch.setText(artist.getName());
             holder.artist.setText("Nghệ sĩ");

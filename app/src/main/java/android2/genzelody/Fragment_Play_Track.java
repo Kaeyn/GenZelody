@@ -359,7 +359,7 @@ public class Fragment_Play_Track extends Fragment {
         btnBackPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goBack();
+                slidingPanelToggleListener.toggleSlideUP();
             }
         });
         btnBackTrack.setOnClickListener(new View.OnClickListener() {
@@ -449,20 +449,6 @@ public class Fragment_Play_Track extends Fragment {
             tvTimeEnd.setText(milliSecondToTimer(mediaPlayer.getDuration()));
         } catch (IOException e) {
             Log.d("prepareMediaPlayer: ", ""+e);
-        }
-    }
-    public void goBack() {
-        // Get the FragmentManager
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-
-        // Check if there are fragments in the back stack
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            // Pop the top fragment off the back stack
-            stopTrack();
-            fragmentManager.popBackStack();
-        } else {
-            // If the back stack is empty, you may want to handle this situation
-            // For example, you can navigate to a different activity or finish the current activity
         }
     }
     private Runnable updater = new Runnable() {

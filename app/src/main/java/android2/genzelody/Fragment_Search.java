@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,24 +69,17 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     ExecutorService trackExecutor = Executors.newFixedThreadPool(1);
 //    ArrayList<Album> albumArrayList = new ArrayList<>();
 //    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    FragmentManager fm;
+    FragmentTransaction ft;
     ImageView imgUser;
     TextView nameUser;
     TextView tvhttgd;
-
     LottieAnimationView lottieAnimationView;
-
     Custom_Adapter_Grid_SearchPage custom_adapter_grid_searchPage;
     RecyclerView recyclerView;
-
     User user = new User();
-
-
-
-
     Custom_Adapter_Grid_Search_Track adapterTrack;
-
     Custom_Adapter_Grid_Search_Artist adapterArtist;
-
     private RequestQueue requestQueue;
 
 
@@ -133,9 +128,10 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         View view = inflater.inflate(R.layout.fragment__search, container, false);
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
+        showFullScreenLoader();
+        fetchPlaylistsAsync("a");
         addEvent();
         lottieAnimationView.setVisibility(View.INVISIBLE);
-
 //        searchThings("a");
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -158,12 +154,16 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     void addEvent(){
 
+
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        actionId == EditorInfo.IME_ACTION_SEARCH ||
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    // Your function to execute when Enter is pressed
+                    // Your code here
+                 // Your function to execute when Enter is pressed
                     showFullScreenLoader();
 
                     fetchPlaylistsAsync(edtInputSearch.getText().toString());
@@ -184,11 +184,9 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     }
 
     private CompletableFuture<Void> fetchPlaylistsAsync(String search) {
+        Log.d("dsd","runnn");
         return CompletableFuture.runAsync(() -> {
             searchThings(search);
-//                Thread.sleep(5000);
-
-
         }, trackExecutor);
     }
 
@@ -208,8 +206,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             Log.d("artistArrayList", "fetchPlaylistsAsync: "+artistArrayList);
 
             Thread.sleep(2000);
-
-
 
 //            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
 //            getPlaylistResult(allPlaylist);
@@ -531,8 +527,16 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     @Override
     public void onClick(View view, int position, String category) {
+        if(position % 2 != 0)
+        {
+
+        }
+        else {
+
+        }
 
     }
+
 
     @Override
     public void listOnClick(View view, int position) {
