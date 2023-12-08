@@ -99,7 +99,8 @@
                     android:focusableInTouchMode="true"
                     android:singleLine="true"
                     android:scrollHorizontally="true"
-                    android:marqueeRepeatLimit ="marquee_forever"/>/>
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit ="marquee_forever"/>
 
                 <TextView
                     android:id="@+id/tvNameArtistPlay"
@@ -113,7 +114,8 @@
                     android:focusableInTouchMode="true"
                     android:singleLine="true"
                     android:scrollHorizontally="true"
-                    android:marqueeRepeatLimit ="marquee_forever"/>/>
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit ="marquee_forever"/>
             </LinearLayout>
 
 

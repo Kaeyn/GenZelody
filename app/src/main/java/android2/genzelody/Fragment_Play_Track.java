@@ -149,8 +149,6 @@ public class Fragment_Play_Track extends Fragment {
 
     private void setTrackInfo(){
         StringImgTrack = tracks.get(index).getImg();
-        Log.d("StringImgTrack", "setTrackInfo: " +StringImgTrack);
-
         Picasso.with(rootView.getContext()).load(StringImgTrack).into(new com.squareup.picasso.Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -167,12 +165,6 @@ public class Fragment_Play_Track extends Fragment {
 
             }
         });
-        addEvents(rootView);
-        return rootView;
-    }
-
-    private void setTrackInfo(){
-        StringImgTrack = tracks.get(index).getImg();
 
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
@@ -220,6 +212,9 @@ public class Fragment_Play_Track extends Fragment {
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
         btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
         btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
+        tvNameTrackPlay.setSelected(true);
+        tvNameArtistPlay.setSelected(true);
+
         //media player
         mediaPlayer = new MediaPlayer();
     }

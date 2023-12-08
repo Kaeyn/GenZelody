@@ -97,6 +97,12 @@
                     android:textSize="15dp"
                     android:textStyle="bold"
                     android:text="TenBaiHat"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit ="marquee_forever"/>
                     />
 
                 <TextView
@@ -105,6 +111,12 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="15dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit ="marquee_forever"
                     android:text="NgheSi" />
             </LinearLayout>
 
