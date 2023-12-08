@@ -67,6 +67,9 @@
             android:background="@color/white"
             android:paddingLeft="15dp"
             android:drawablePadding="8dp"
+            android:maxLines="1"
+            android:inputType="textNoSuggestions"
+            android:imeOptions="actionDone"
             android:drawableLeft="@drawable/baseline_search_24"
             />
 

@@ -134,6 +134,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
         addEvent();
+
         lottieAnimationView.setVisibility(View.INVISIBLE);
 
 //        searchThings("a");
@@ -157,13 +158,18 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     }
 
     void addEvent(){
+        showFullScreenLoader();
+        fetchPlaylistsAsync("a");
 
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH ||
+
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        actionId == EditorInfo.IME_ACTION_SEARCH ||
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    // Your function to execute when Enter is pressed
+                    // Your code here
+                 // Your function to execute when Enter is pressed
                     showFullScreenLoader();
 
                     fetchPlaylistsAsync(edtInputSearch.getText().toString());
@@ -184,11 +190,9 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     }
 
     private CompletableFuture<Void> fetchPlaylistsAsync(String search) {
+        Log.d("dsd","runnn");
         return CompletableFuture.runAsync(() -> {
             searchThings(search);
-//                Thread.sleep(5000);
-
-
         }, trackExecutor);
     }
 
@@ -208,8 +212,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             Log.d("artistArrayList", "fetchPlaylistsAsync: "+artistArrayList);
 
             Thread.sleep(2000);
-
-
 
 //            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
 //            getPlaylistResult(allPlaylist);
