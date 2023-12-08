@@ -613,5 +613,14 @@ public class Fragment_Play_Track extends Fragment {
         return ColorUtils.blendARGB(color, Color.BLACK, factor);
     }
 
+    public boolean onBackPressed() {
+        // Your custom logic here
+        // For example, you can check the current state and decide what action to take
+
+        // If you want to perform the default back action (like popping the fragment from the back stack),
+        // you should call super.onBackPressed()
+        return true;
+    }
+
 
 }
