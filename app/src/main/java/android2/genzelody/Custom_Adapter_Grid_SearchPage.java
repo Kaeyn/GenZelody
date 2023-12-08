@@ -56,6 +56,7 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
 
             String artistStr = "";
             for (Artist artistItem : track.getArtists()) {
+                Log.d("nameartist", "onBindViewHolder: "+artistItem);
                 artistStr += artistItem.getName()+" - ";
             }
             holder.artist.setText(artistStr.substring(0,artistStr.length()-3));
@@ -66,7 +67,12 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
             Artist artist = artists.get(adjustedPosition);
             holder.tvGridSearch.setText(artist.getName());
             holder.artist.setText("Nghệ sĩ");
-            Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(320, 320).into(holder.imgGridSearcht);
+            Log.d("ImgArtist", "onBindViewHolder: "+artist.getImage());
+            if(artist.getImage()!=""){
+                Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(320, 320).into(holder.imgGridSearcht);
+            } else {
+                holder.imgGridSearcht.setImageResource(R.drawable.avt);
+            }
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

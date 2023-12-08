@@ -180,7 +180,7 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         if(category.equals("myplaylist")){
             loadFragment(new fragment_detail_playlist(MyPlayList.get(position),ACCESS_TOKEN));
         } else if (category.equals("feature")) {
-            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position),ACCESS_TOKEN));
+            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position), RecommendedTrackList,ACCESS_TOKEN));
         }else{
             slidingPanelToggleListener.setTrackLists(RecommendedTrackList, "Danh sách phổ biến", position);
         }
@@ -188,6 +188,11 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
 
     @Override
     public void listOnClick(View view, int position) {
+
+    }
+
+    @Override
+    public void reclistOnClick(View view, int position) {
 
     }
 }

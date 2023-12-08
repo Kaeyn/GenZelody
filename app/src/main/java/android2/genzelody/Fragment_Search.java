@@ -69,6 +69,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 //    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
     ImageView imgUser;
     TextView nameUser;
+    TextView tvhttgd;
 
     LottieAnimationView lottieAnimationView;
 
@@ -151,6 +152,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         imgUser = view.findViewById(R.id.imgUserSearch);
         nameUser = view.findViewById(R.id.tvNameUserSearch);
         recyclerView = view.findViewById(R.id.recGridSearch);
+        tvhttgd = view.findViewById(R.id.tvhttgd);
         showKeyboard();
     }
 
@@ -537,9 +539,15 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     }
 
+    @Override
+    public void reclistOnClick(View view, int position) {
+
+    }
+
     private void showFullScreenLoader() {
         lottieAnimationView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
+        tvhttgd.setVisibility(View.INVISIBLE);
 
         new Handler().postDelayed(new Runnable() {
             @Override

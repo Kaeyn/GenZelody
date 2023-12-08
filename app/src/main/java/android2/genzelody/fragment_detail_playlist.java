@@ -67,10 +67,11 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         this.ACCESS_TOKEN = accessToken;
     }
 
-    public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track) {
+    public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track, String accessToken) {
         // Required empty public constructor
         this.playlist = playlist;
         this.rcmTrack = track;
+        this.ACCESS_TOKEN = accessToken;
     }
 
 
@@ -261,5 +262,10 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     @Override
     public void listOnClick(View view, int position) {
         slidingPanelToggleListener.setTrackLists(playlistTrack, playlist.getName(), position);
+    }
+
+    @Override
+    public void reclistOnClick(View view, int position) {
+        slidingPanelToggleListener.setTrackLists(rcmTrack, playlist.getName(), position);
     }
 }

@@ -62,7 +62,7 @@
             android:id="@+id/edtInputSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/black"
+            android:textColor="#000000"
             android:hint="Bạn muốn nghe gì?"
             android:background="@color/white"
             android:paddingLeft="15dp"
@@ -77,6 +77,16 @@
             android:paddingBottom="50dp"
             android:layout_marginTop="10dp"
             android:paddingLeft="20dp">
+            <TextView
+                android:id="@+id/tvhttgd"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="20dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Hãy tìm tên gì đó">
+            </TextView>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recGridSearch"

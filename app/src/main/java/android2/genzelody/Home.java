@@ -65,6 +65,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
     TextView txtCurTrack, txtcurTrackArtist;
     ImageView imgCurTrack;
     Button btnStopnPlayTrack;
+    Boolean isFisrtLoaded = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,6 +206,10 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         ft.commit();
     }
     public void updateCurrentPlayBox(String img, String name, String artist){
+        if(isFisrtLoaded == true){
+            musicBox.setVisibility(View.VISIBLE);
+            isFisrtLoaded = false;
+        }
         txtCurTrack.setText(name);
         txtcurTrackArtist.setText(artist);
         Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
