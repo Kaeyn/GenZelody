@@ -186,7 +186,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
     }
 
     public void loadPlayTrackFragment(ArrayList<Track> tracks, String name, int index) {
-        Fragment fragment = new Fragment_Play_Track(tracks, name, index);
+        Fragment fragment = new Fragment_Play_Track(tracks, name, index, ACCESS_TOKEN);
         if (fragment instanceof SlidingPanelToggleListener) {
             slidingPanelToggleListener = (SlidingPanelToggleListener) fragment;
         }
