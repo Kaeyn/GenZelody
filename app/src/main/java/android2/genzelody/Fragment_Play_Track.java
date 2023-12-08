@@ -87,6 +87,7 @@ public class Fragment_Play_Track extends Fragment {
     private String mParam1;
     private String mParam2;
     String ACCESS_TOKEN="";
+    View rootView;
     
 
     public Fragment_Play_Track() {
@@ -143,11 +144,19 @@ public class Fragment_Play_Track extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
+        rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
         requestQueue = Volley.newRequestQueue(rootView.getContext());
         // Inflate the layout for this fragment
         addControls(rootView);
         setTrackInfo();
+        addEvents(rootView);
+        return rootView;
+    }
+
+    private void setTrackInfo(){
+        StringImgTrack = tracks.get(index).getImg();
+        Log.d("StringImgTrack", "setTrackInfo: " +StringImgTrack);
+
         Picasso.with(rootView.getContext()).load(StringImgTrack).into(new com.squareup.picasso.Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -164,13 +173,6 @@ public class Fragment_Play_Track extends Fragment {
 
             }
         });
-        addEvents(rootView);
-        return rootView;
-    }
-
-    private void setTrackInfo(){
-        StringImgTrack = tracks.get(index).getImg();
-        Log.d("StringImgTrack", "setTrackInfo: " +StringImgTrack);
 
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
