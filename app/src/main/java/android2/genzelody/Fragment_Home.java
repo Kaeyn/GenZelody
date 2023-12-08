@@ -1,16 +1,14 @@
 package android2.genzelody;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,6 +33,8 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
 
     Custom_Adapter_Grid_MainPage custom_adapter_grid_mainPage;
     RecyclerView recViewDanhSachCuaBan, recViewGoiY, recViewPhoBien, recGridPlayListCuaBan;
+
+    private SlidingPanelToggleListener slidingPanelToggleListener;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,6 +95,17 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
         }
     }
 
@@ -167,11 +178,11 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
     @Override
     public void onClick(View view, int position, String category) {
         if(category.equals("myplaylist")){
-            loadFragment(new fragment_detail_playlist(MyPlayList.get(position), RecommendedTrackList));
+            loadFragment(new fragment_detail_playlist(MyPlayList.get(position),ACCESS_TOKEN));
         } else if (category.equals("feature")) {
-            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position), RecommendedTrackList));
+            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position),ACCESS_TOKEN));
         }else{
-            loadFragment(new Fragment_Play_Track(RecommendedTrackList,"Danh sách phổ biến", position));
+            slidingPanelToggleListener.setTrackLists(RecommendedTrackList, "Danh sách phổ biến", position);
         }
     }
 

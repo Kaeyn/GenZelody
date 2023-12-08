@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -7,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
@@ -29,11 +31,26 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.RandomAccess;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,17 +61,22 @@ public class Fragment_Play_Track extends Fragment {
     TextView tvNameAlbumPlay, tvNameTrackPlay, tvNameArtistPlay, tvTimeStart, tvTimeEnd;
     ImageView imgTrackPlay;
     SeekBar seekBar;
-    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnMore, btnAddLib;
+    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnAddToLibrary, btnSuffleTracks, btnLoopTracks;
     MediaPlayer mediaPlayer;
     Handler handler = new Handler();
     LinearLayout linearLayout;
     int index = 0;
+    boolean isExisted =false;
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
+    RequestQueue requestQueue;
+    Boolean isSuffle = false, isLoop = false;
     private static final long DELAY_TIME = 5000;
     String StringImgTrack;
 
+
+    private SlidingPanelToggleListener slidingPanelToggleListener;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,15 +86,18 @@ public class Fragment_Play_Track extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    String ACCESS_TOKEN="";
+    
 
     public Fragment_Play_Track() {
         // Required empty public constructor
     }
-    public Fragment_Play_Track(ArrayList<Track> tracks, String name, int index) {
+    public Fragment_Play_Track(ArrayList<Track> tracks, String name, int index , String accessToken) {
         // Required empty public constructor
         this.tracks = tracks;
         this.index = index;
         nameAlbum = name;
+        this.ACCESS_TOKEN = accessToken;
     }
 
     /**
@@ -103,9 +128,23 @@ public class Fragment_Play_Track extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
+        }
+    }
+
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
+        requestQueue = Volley.newRequestQueue(rootView.getContext());
         // Inflate the layout for this fragment
         addControls(rootView);
         setTrackInfo();
@@ -143,6 +182,7 @@ public class Fragment_Play_Track extends Fragment {
         for (Artist artist: tracks.get(index).getArtists()) {
             nameArtists += artist.getName()+ " ";
         }
+        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
@@ -168,30 +208,40 @@ public class Fragment_Play_Track extends Fragment {
         //seekbar
         seekBar = rootView.findViewById(R.id.seekBar);
         linearLayout = rootView.findViewById(R.id.lnPlayTrack);
-
-
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
-        btnMore = rootView.findViewById(R.id.btnMore);
+        btnAddToLibrary = rootView.findViewById(R.id.btnAddToLibrary);
         //image button
         btnBackTrack = rootView.findViewById(R.id.btnBackTrack);
         btnPauseTrack = rootView.findViewById(R.id.btnPauseTrack);
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
+        btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
+        btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
         //media player
         mediaPlayer = new MediaPlayer();
     }
     private void startTrack(){
         mediaPlayer.start();
+        checkTrackInLibrary(tracks.get(index).getId());
+        Log.d("Check",isExisted+" whyyyyyyyy");
         Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
         imgTrackPlay.startAnimation(animation);
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
         updateSeekbar();
     }
-    private void stopTrack(){
+    public void stopTrack(){
         handler.removeCallbacks(updater);
         mediaPlayer.pause();
         imgTrackPlay.clearAnimation();
         btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+    }
+
+    public void togglePlayTrack(){
+        if(mediaPlayer.isPlaying()){
+            stopTrack();
+        }else{
+            startTrack();
+        }
     }
     private void applyGradientBackground(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
@@ -224,16 +274,40 @@ public class Fragment_Play_Track extends Fragment {
         return ColorUtils.blendARGB(color, Color.WHITE, factor);
     }
 
+
+
     private void addEvents(View rootView){
         startTrack();
+        btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isSuffle){
+                    btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
+                    isSuffle = false;
+                } else {
+                    btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
+                    isSuffle = true;
+                }
+            }
+        });
+        btnLoopTracks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isLoop){
+                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+                    mediaPlayer.setLooping(false);
+                    isLoop = false;
+                } else {
+                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
+                    mediaPlayer.setLooping(true);
+                    isLoop = true;
+                }
+            }
+        });
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isPlaying()){
-                    stopTrack();
-                }else{
-                    startTrack();
-                }
+                togglePlayTrack();
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -268,7 +342,16 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                nextTrack();
+                System.out.println(isLoop);
+                System.out.println(isSuffle);
+                if(!isLoop){
+                    if(isSuffle){
+                        System.out.println(mp.getCurrentPosition());
+                        randomTrack();
+                    }else{
+                        nextTrack();
+                    }
+                }
             }
         });
         btnBackPage.setOnClickListener(new View.OnClickListener() {
@@ -297,6 +380,22 @@ public class Fragment_Play_Track extends Fragment {
             }
         });
 
+        btnAddToLibrary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isExisted){
+                    addTrackToLibrary(tracks.get(index).getId());
+                    isExisted=true;
+                    Toast.makeText(getContext(),"Them OK",Toast.LENGTH_SHORT).show();
+
+                }
+                else{
+                    removeTrackFromLibrary((tracks.get(index).getId()));
+                    isExisted=false;
+                    Toast.makeText(getContext(),"Xoa OK",Toast.LENGTH_SHORT).show();
+                };
+            }
+        });
         Picasso.with(rootView.getContext()).load(String.valueOf(imgTrackPlay)).into(new com.squareup.picasso.Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -316,16 +415,30 @@ public class Fragment_Play_Track extends Fragment {
 
 
     }
-private void nextTrack(){
-    if(tracks.size() - 1 == index){
-        index = 0;
-    }else {
-        index++;
+    private void randomTrack(){
+        Random r = new Random();
+        int randomIndex = r.nextInt((tracks.size() - 1) +1) + 1;
+        System.out.println(tracks.size());
+        System.out.println(randomIndex);
+        while (index == randomIndex){
+            randomIndex = r.nextInt(tracks.size());
+            System.out.println(randomIndex);
+        }
+        index = randomIndex;
+        stopTrack();
+        setTrackInfo();
+        startTrack();
     }
-    stopTrack();
-    setTrackInfo();
-    startTrack();
-}
+    private void nextTrack(){
+        if(tracks.size() - 1 == index){
+            index = 0;
+        }else {
+            index++;
+        }
+        stopTrack();
+        setTrackInfo();
+        startTrack();
+    }
     private void prepareMediaPlayer(){
         try {
             mediaPlayer = new MediaPlayer();
@@ -371,8 +484,6 @@ private void nextTrack(){
 
             handler.postDelayed(updater, 10); // Update every second
         }
-
-
     }
     private String milliSecondToTimer(long milliSecond){
         String timeString = "";
@@ -396,7 +507,98 @@ private void nextTrack(){
     @Override
     public void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(updater);
+        stopTrack();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopTrack();
+    }
+    private void checkTrackInLibrary(String idTrack)
+    {
+        String apiUrl = "https://api.spotify.com/v1/me/tracks/contains?ids="+idTrack;
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    if (jsonArray.getBoolean(0)) {
+                        isExisted = jsonArray.getBoolean(0);
+                    } else {
+                        isExisted = false;
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Library", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void addTrackToLibrary(String idTrack)
+    {
+        String apiUrl = "https://api.spotify.com/v1/me/tracks?ids="+idTrack;
+
+        StringRequest request = new StringRequest(Request.Method.PUT, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Library","Add to library: "+idTrack);
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Library", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
+
+    }
+    private void removeTrackFromLibrary(String idTrack)
+    {
+        String apiUrl = "https://api.spotify.com/v1/me/tracks?ids="+idTrack;
+
+        StringRequest request = new StringRequest(Request.Method.DELETE, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Library","Remove from library: "+idTrack);
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Library", "Failed to get user playlists. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void generatePalette(View rootView, Bitmap bitmap) {

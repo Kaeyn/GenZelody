@@ -7,7 +7,11 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -23,7 +27,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,11 +42,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements SlidingPanelToggleListener {
 
-    FrameLayout frameFragmentHome;
+    FrameLayout frameFragmentHome, musicBox;
     BottomNavigationView bttNav;
     private String ACCESS_TOKEN = "";
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+
+    private LinearLayout divCurrentTrack;
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
@@ -47,6 +57,14 @@ public class Home extends AppCompatActivity {
     ExecutorService trackExecutor = Executors.newFixedThreadPool(5);
     User user = new User();
     private RequestQueue requestQueue;
+
+    private SlidingPanelToggleListener slidingPanelToggleListener;
+    FragmentManager fm;
+    FragmentTransaction ft;
+
+    TextView txtCurTrack, txtcurTrackArtist;
+    ImageView imgCurTrack;
+    Button btnStopnPlayTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +78,8 @@ public class Home extends AppCompatActivity {
         showFullScreenLoader();
         fetchPlaylistsAsync();
         System.out.println(ACCESS_TOKEN);
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
     }
 
     private CompletableFuture<Void> fetchPlaylistsAsync() {
@@ -87,6 +107,12 @@ public class Home extends AppCompatActivity {
     private void addControls(){
         frameFragmentHome = findViewById(R.id.frameFragmentHome);
         bttNav = findViewById(R.id.bttnav);
+        slidingUpPanelLayout = findViewById(R.id.slidingUpPanel);
+        txtCurTrack = findViewById(R.id.txtTrackNameCurPlay);
+        txtcurTrackArtist = findViewById(R.id.txtTrackArtistCurPlay);
+        imgCurTrack = findViewById(R.id.imgCurPlay);
+        btnStopnPlayTrack = findViewById(R.id.btnStopnPlay);
+        musicBox = findViewById(R.id.musicBox);
     }
 
     private void addEvents(){
@@ -108,14 +134,80 @@ public class Home extends AppCompatActivity {
                 return true;
             }
         });
+
+        musicBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleSlidingPanel();
+            }
+        });
+
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                // Not needed for your case, but you can use it if necessary
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    // Sliding panel collapsed, show musicBox
+                    musicBox.setVisibility(View.VISIBLE);
+                } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    // Sliding panel expanded, hide musicBox
+                    musicBox.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
     }
 
+    private void toggleSlidingPanel(){
+        runOnUiThread(() -> {
+            if (slidingUpPanelLayout != null) {
+                if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    musicBox.setVisibility(View.INVISIBLE);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                } else {
+                    musicBox.setVisibility(View.VISIBLE);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            }
+        });
+    }
+
+
     public void loadFragment(Fragment fragment){
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
         ft.addToBackStack(null);
         ft.commit();
+    }
+
+    public void loadPlayTrackFragment(ArrayList<Track> tracks, String name, int index) {
+        Fragment fragment = new Fragment_Play_Track(tracks, name, index, ACCESS_TOKEN);
+        if (fragment instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) fragment;
+        }
+        btnStopnPlayTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ((Fragment_Play_Track) fragment).togglePlayTrack();
+            }
+        });
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        ft.replace(R.id.frameForPlayTrack, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+    public void updateCurrentPlayBox(String img, String name, String artist){
+        txtCurTrack.setText(name);
+        txtcurTrackArtist.setText(artist);
+        Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
     }
 
     private void getUserFavPlayList(){
@@ -128,7 +220,6 @@ public class Home extends AppCompatActivity {
         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
         MyPlayList.add(playlists);
     }
-
 
     private void getRecommendedTrack(){
         String apiUrl = "https://api.spotify.com/v1/recommendations?limit=7&market=ES&seed_artists=5HZtdKfC4xU0wvhEyYDWiY";
@@ -458,4 +549,17 @@ public class Home extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
     }
+
+
+
+    @Override
+    public void setTrackLists(ArrayList<Track> tracks, String name, int index) {
+        loadPlayTrackFragment(tracks,name,index);
+    }
+
+    @Override
+    public void getCurrentTrack(String img, String name, String artist) {
+        updateCurrentPlayBox(img,name, artist);
+    }
+
 }
