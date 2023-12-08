@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class fragment_detail_playlist extends Fragment implements RecyclerViewClickListener{
-    TextView tvNamePlaylist;
+    TextView tvNamePlaylist, txtTitleRec, txtDesRec;
     ImageView imgPlayListDetail;
     Playlists playlist;
     String namePlaylist = "", imgPlayList = "";
@@ -57,6 +57,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     private String mParam2;
     private SlidingPanelToggleListener slidingPanelToggleListener;
     String ACCESS_TOKEN;
+    Boolean isFromLibrary = true;
 
     public fragment_detail_playlist() {
         // Required empty public constructor
@@ -65,6 +66,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         // Required empty public constructor
         this.playlist = playlist;
         this.ACCESS_TOKEN = accessToken;
+        this.isFromLibrary = true;
     }
 
     public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track, String accessToken) {
@@ -72,6 +74,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         this.playlist = playlist;
         this.rcmTrack = track;
         this.ACCESS_TOKEN = accessToken;
+        this.isFromLibrary = false;
     }
 
 
@@ -124,11 +127,17 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         rvTrackOfPlaylist.setLayoutManager(layoutManagerPhoBien);
         custom_adapter_detail_playlist = new Custom_Adapter_Detail_Playlist(getContext(),playlistTrack, this);
         rvTrackOfPlaylist.setAdapter(custom_adapter_detail_playlist);
+        if(!isFromLibrary){
+            LinearLayoutManager layoutManagerTrackRCM = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            recViewTrackGoiY.setLayoutManager(layoutManagerTrackRCM);
+            custom_adapter_rcm_track = new Custom_Adapter_RCM_Track(getContext(),rcmTrack, this);
+            recViewTrackGoiY.setAdapter(custom_adapter_rcm_track);
+        }else{
+            txtTitleRec.setVisibility(View.INVISIBLE);
+            txtDesRec.setVisibility(View.INVISIBLE);
+            recViewTrackGoiY.setVisibility(View.INVISIBLE);
+        }
 
-        LinearLayoutManager layoutManagerTrackRCM = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recViewTrackGoiY.setLayoutManager(layoutManagerTrackRCM);
-        custom_adapter_rcm_track = new Custom_Adapter_RCM_Track(getContext(),rcmTrack, this);
-        recViewTrackGoiY.setAdapter(custom_adapter_rcm_track);
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -139,6 +148,8 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         btnBack = rootView.findViewById(R.id.btnBack);
         nestedScrollDetailPlaylist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
         recViewTrackGoiY = rootView.findViewById(R.id.recViewTrackGoiY);
+        txtTitleRec = rootView.findViewById(R.id.txtTitleRec);
+        txtDesRec = rootView.findViewById(R.id.txtDescRec);
     }
 
     void addEvent(View rootView) {

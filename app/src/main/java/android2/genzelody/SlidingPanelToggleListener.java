@@ -7,4 +7,6 @@ public interface SlidingPanelToggleListener {
 
     void getCurrentTrack(String img, String name, String artist);
 
+    void toggleSlideUP();
+
 }

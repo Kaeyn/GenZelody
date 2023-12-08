@@ -567,4 +567,9 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         updateCurrentPlayBox(img,name, artist);
     }
 
+    @Override
+    public void toggleSlideUP() {
+        toggleSlidingPanel();
+    }
+
 }
