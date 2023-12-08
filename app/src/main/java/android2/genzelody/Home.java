@@ -221,7 +221,6 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         MyPlayList.add(playlists);
     }
 
-
     private void getRecommendedTrack(){
         String apiUrl = "https://api.spotify.com/v1/recommendations?limit=7&market=ES&seed_artists=5HZtdKfC4xU0wvhEyYDWiY";
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
