@@ -46,7 +46,6 @@ public class Custom_Adapter_Grid_Search_Track extends ArrayAdapter {
         TextView ownertrack = convertView.findViewById(R.id.tvOwnerSearchTrack);
         ownertrack.setText(track.getName());
 
-
         ImageView imgPlaylist = convertView.findViewById(R.id.imgSearchTrack);
 
         try {

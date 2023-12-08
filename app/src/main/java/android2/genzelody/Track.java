@@ -13,7 +13,6 @@ public class Track  implements Parcelable {
     private String id;
     private String name;
     private String idAlbum;
-
     private String img;
     private ArrayList<Artist> artists;
     private String preview_url;

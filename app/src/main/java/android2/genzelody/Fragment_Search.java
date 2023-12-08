@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,24 +69,17 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     ExecutorService trackExecutor = Executors.newFixedThreadPool(1);
 //    ArrayList<Album> albumArrayList = new ArrayList<>();
 //    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    FragmentManager fm;
+    FragmentTransaction ft;
     ImageView imgUser;
     TextView nameUser;
     TextView tvhttgd;
-
     LottieAnimationView lottieAnimationView;
-
     Custom_Adapter_Grid_SearchPage custom_adapter_grid_searchPage;
     RecyclerView recyclerView;
-
     User user = new User();
-
-
-
-
     Custom_Adapter_Grid_Search_Track adapterTrack;
-
     Custom_Adapter_Grid_Search_Artist adapterArtist;
-
     private RequestQueue requestQueue;
 
 
@@ -133,10 +128,10 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         View view = inflater.inflate(R.layout.fragment__search, container, false);
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
+        showFullScreenLoader();
+        fetchPlaylistsAsync("a");
         addEvent();
-
         lottieAnimationView.setVisibility(View.INVISIBLE);
-
 //        searchThings("a");
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -158,8 +153,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     }
 
     void addEvent(){
-        showFullScreenLoader();
-        fetchPlaylistsAsync("a");
+
 
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -533,8 +527,16 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     @Override
     public void onClick(View view, int position, String category) {
+        if(position % 2 != 0)
+        {
+
+        }
+        else {
+
+        }
 
     }
+
 
     @Override
     public void listOnClick(View view, int position) {
