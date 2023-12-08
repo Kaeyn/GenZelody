@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.palette.graphics.Palette;
 
 import android.os.Handler;
@@ -24,11 +22,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,14 +39,12 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.RandomAccess;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -285,6 +279,12 @@ public class Fragment_Play_Track extends Fragment {
                 } else {
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
                     isSuffle = true;
+                    if(isLoop){
+                        btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+                        mediaPlayer.setLooping(false);
+                        isLoop = false;
+                    }
+
                 }
             }
         });
@@ -299,6 +299,10 @@ public class Fragment_Play_Track extends Fragment {
                     btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
                     mediaPlayer.setLooping(true);
                     isLoop = true;
+                    if(isSuffle){
+                        btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
+                        isSuffle = false;
+                    }
                 }
             }
         });
@@ -345,18 +349,11 @@ public class Fragment_Play_Track extends Fragment {
                 if(!isLoop){
                     if(isSuffle){
                         System.out.println(mp.getCurrentPosition());
-                        randomTrack();
+                        randomTrackIndex();
                     }else{
-                        nextTrack();
+                        nextTrackIndex();
                     }
-                    handler.removeCallbacks(updater);
-                    mediaPlayer.pause();
-                    mediaPlayer.stop();
-                    mediaPlayer.reset();
-                    imgTrackPlay.clearAnimation();
-                    btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
-                    setTrackInfo();
-                    startTrack();
+                    startNewTrack();
                 }
             }
         });
@@ -374,15 +371,14 @@ public class Fragment_Play_Track extends Fragment {
                 }else {
                     index--;
                 }
-                stopTrack();
-                setTrackInfo();
-                startTrack();
+                startNewTrack();
             }
         });
         btnNextTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextTrack();
+                nextTrackIndex();
+                startNewTrack();
             }
         });
 
@@ -421,7 +417,7 @@ public class Fragment_Play_Track extends Fragment {
 
 
     }
-    private void randomTrack(){
+    private void randomTrackIndex(){
         Random r = new Random();
         int randomIndex = r.nextInt((tracks.size() - 1) +1) + 1;
         System.out.println(tracks.size());
@@ -432,7 +428,17 @@ public class Fragment_Play_Track extends Fragment {
         }
         index = randomIndex;
     }
-    private void nextTrack(){
+    private void startNewTrack(){
+        handler.removeCallbacks(updater);
+        mediaPlayer.pause();
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+        imgTrackPlay.clearAnimation();
+        btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
+        setTrackInfo();
+        startTrack();
+    }
+    private void nextTrackIndex(){
         if(tracks.size() - 1 == index){
             index = 0;
         }else {
