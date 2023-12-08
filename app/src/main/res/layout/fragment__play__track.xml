@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/lnPlayTrack"
->
+    android:layout_marginTop="30dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -62,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_marginTop="20dp"
         android:paddingHorizontal="33dp">
 
         <androidx.cardview.widget.CardView
@@ -82,40 +83,41 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
+                android:layout_height="140dp"
                 android:layout_weight="6"
                 android:gravity="center_vertical"
+                android:layout_marginVertical="10dp"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvNameTrackPlay"
-                    android:layout_width="match_parent"
+                android:id="@+id/tvNameTrackPlay"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Instagram (feat. Vu Thanh Van)"
                 android:textColor="@color/white"
                 android:textSize="27dp"
                 android:textStyle="bold"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:singleLine="true"
-                    android:scrollHorizontally="true"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit ="marquee_forever"/>
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit ="marquee_forever"/>
 
                 <TextView
-                    android:id="@+id/tvNameArtistPlay"
-                    android:layout_width="match_parent"
+                android:id="@+id/tvNameArtistPlay"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="Double 2T"
                 android:textColor="@color/white"
                 android:textSize="18dp"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:singleLine="true"
-                    android:scrollHorizontally="true"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit ="marquee_forever"/>
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit ="marquee_forever"/>
             </LinearLayout>
 
 
@@ -123,7 +125,8 @@
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -154,6 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
+            android:layout_marginTop="20dp"
             android:paddingHorizontal="40dp">
             <ImageButton
                 android:id="@+id/btnSuffleTracks"
