@@ -58,6 +58,7 @@
         <!-- Add music name, image, or any other content here -->
 
         <LinearLayout
+            android:id="@+id/LinearLayoutMusicBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
