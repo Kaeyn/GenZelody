@@ -86,9 +86,14 @@
             <!--            android:layout_height="500dp"-->
             <!--            android:paddingBottom="100dp"-->
             <!--            />-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recViewTrackGoiY"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="10dp" />
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1000dp"/>
+                android:layout_height="50dp"/>
         </LinearLayout>
     </LinearLayout>
 

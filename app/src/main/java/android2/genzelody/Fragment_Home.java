@@ -167,11 +167,10 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
     @Override
     public void onClick(View view, int position, String category) {
         if(category.equals("myplaylist")){
-            loadFragment(new fragment_detail_playlist(MyPlayList.get(position)));
+            loadFragment(new fragment_detail_playlist(MyPlayList.get(position), RecommendedTrackList));
         } else if (category.equals("feature")) {
-            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position)));
+            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position), RecommendedTrackList));
         }else{
-
             loadFragment(new Fragment_Play_Track(RecommendedTrackList,"Danh sách phổ biến", position));
         }
     }
