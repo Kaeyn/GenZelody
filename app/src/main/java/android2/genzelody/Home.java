@@ -156,6 +156,7 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                updateFavState();
                 if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                     // Sliding panel collapsed, show musicBox
                     musicBox.setVisibility(View.VISIBLE);
@@ -200,8 +201,12 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         btnStopnPlayTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 ((Fragment_Play_Track) fragment).togglePlayTrack();
+                if(((Fragment_Play_Track) fragment).checkIsPlaying() == true){
+                    btnStopnPlayTrack.setImageResource(R.drawable.baseline_pause_24);
+                }else{
+                    btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
+                }
             }
         });
         btnNextPlay.setOnClickListener(new View.OnClickListener() {
@@ -213,6 +218,13 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         btnAddToFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((Fragment_Play_Track) fragment).AddToFav();
+                if(((Fragment_Play_Track) fragment).checkIsFavorite() == true){
+                    btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
+
+                }else{
+                    btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
+                }
 
             }
         });
@@ -222,16 +234,29 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         ft.addToBackStack(null);
         ft.commit();
     }
-    public void updateCurrentPlayBox(String img, String name, String artist){
+    public void updateCurrentPlayBox(String img, String name, String artist, Boolean state){
         if(isFisrtLoaded == true){
             musicBox.setVisibility(View.VISIBLE);
             isFisrtLoaded = false;
         }
+        updateFavState();
         txtCurTrack.setText(name);
         txtcurTrackArtist.setText(artist);
+        if(state){
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
+        }else{
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
         Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
     }
-
+    private void updateFavState(){
+        Fragment_Play_Track fragmentPlayTrack = (Fragment_Play_Track) getSupportFragmentManager().findFragmentById(R.id.frameForPlayTrack);
+        if(((Fragment_Play_Track) fragmentPlayTrack).checkIsFavorite() == true){
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
+        }else{
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
+    }
     private void getUserFavPlayList(){
         String apiUrl = "https://api.spotify.com/v1/me/tracks";
         String id = "0";
@@ -580,9 +605,10 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
     }
 
     @Override
-    public void getCurrentTrack(String img, String name, String artist) {
-        updateCurrentPlayBox(img,name, artist);
+    public void getCurrentTrack(String img, String name, String artist, boolean state) {
+        updateCurrentPlayBox(img,name, artist, state);
     }
+
 
     @Override
     public void toggleSlideUP() {
