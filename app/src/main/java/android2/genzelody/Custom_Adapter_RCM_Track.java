@@ -17,45 +17,46 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class Custom_Adapter_Detail_Playlist extends RecyclerView.Adapter<Custom_Adapter_Detail_Playlist.MyViewHolder> {
+public class Custom_Adapter_RCM_Track extends RecyclerView.Adapter<Custom_Adapter_RCM_Track.MyViewHolder>{
     Context context;
     ArrayList<Track> arrayListTrack;
     RecyclerViewClickListener mListener;
-    TextView tvOwnerTrackOfPlaylist, tvNameTrackOfPlaylist;
-    ImageView imgTrackOfPlaylist;
-    @NonNull
-    @Override
-    public Custom_Adapter_Detail_Playlist.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new Custom_Adapter_Detail_Playlist.MyViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_item_list_track_playlist, parent, false));
-    }
+    TextView tvOwnerTrackRCM, tvNameTrackRCM;
+    ImageView imgTrackRCM;
 
-    public Custom_Adapter_Detail_Playlist(Context context, ArrayList<Track> tracks, RecyclerViewClickListener listener){
+    public Custom_Adapter_RCM_Track(Context context, ArrayList<Track> tracks, RecyclerViewClickListener listener){
         this.context = context;
         this.arrayListTrack = tracks;
         this.mListener = listener;
     }
 
+    @NonNull
     @Override
-    public void onBindViewHolder(@NonNull Custom_Adapter_Detail_Playlist.MyViewHolder holder,  @SuppressLint("RecyclerView") int position) {
+    public Custom_Adapter_RCM_Track.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new Custom_Adapter_RCM_Track.MyViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_item_list_track_recommend, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull Custom_Adapter_RCM_Track.MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Track track = arrayListTrack.get(position);
         ArrayList<Artist> artists = track.getArtists();
 
 
-        tvNameTrackOfPlaylist.setText(track.getName());
+        tvNameTrackRCM.setText(track.getName());
 
         String nameArtist ="";
         for (Artist artist: artists){
             System.out.println(artist.getName());
             nameArtist += artist.getName();
         }
-        tvOwnerTrackOfPlaylist.setText(nameArtist);
+        tvOwnerTrackRCM.setText(nameArtist);
 
         try {
             int drawableResourceId = Integer.parseInt(track.getImg());
             Drawable drawable = ContextCompat.getDrawable(context, drawableResourceId);
-            imgTrackOfPlaylist.setImageDrawable(drawable);
+            imgTrackRCM.setImageDrawable(drawable);
         } catch (NumberFormatException e) {
-            Picasso.with(this.context).load(track.getImg()).resize(100,100).into(imgTrackOfPlaylist);
+            Picasso.with(this.context).load(track.getImg()).resize(100,100).into(imgTrackRCM);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -74,9 +75,9 @@ public class Custom_Adapter_Detail_Playlist extends RecyclerView.Adapter<Custom_
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgTrackOfPlaylist = itemView.findViewById(R.id.imgTrackOfPlaylist);
-            tvOwnerTrackOfPlaylist = itemView.findViewById(R.id.tvOwnerTrackOfPlaylist);
-            tvNameTrackOfPlaylist = itemView.findViewById(R.id.tvNameTrackOfPlaylist);
+            imgTrackRCM = itemView.findViewById(R.id.imgTrackRCM);
+            tvNameTrackRCM = itemView.findViewById(R.id.tvNameTrackRCM);
+            tvOwnerTrackRCM = itemView.findViewById(R.id.tvOwnerTrackRCM);
         }
     }
 }

@@ -3,12 +3,15 @@ package android2.genzelody;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -41,14 +44,15 @@ import java.util.ArrayList;
 public class fragment_detail_playlist extends Fragment implements RecyclerViewClickListener{
     TextView tvNamePlaylist;
     ImageView imgPlayListDetail;
-    ListView lvTrackOfPlaylist;
     Playlists playlist;
     String namePlaylist = "", imgPlayList = "";
     ImageButton btnBack;
     NestedScrollView nestedScrollDetailPlaylist;
     Custom_Adapter_Detail_Playlist custom_adapter_detail_playlist;
-    RecyclerView rvTrackOfPlaylist;
+    Custom_Adapter_RCM_Track custom_adapter_rcm_track;
+    RecyclerView rvTrackOfPlaylist, recViewTrackGoiY;
     ArrayList<Track> playlistTrack;
+    ArrayList<Track> rcmTrack;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -66,6 +70,13 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         // Required empty public constructor
         this.playlist = playlist;
     }
+
+    public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track) {
+        // Required empty public constructor
+        this.playlist = playlist;
+        this.rcmTrack = track;
+    }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -111,12 +122,16 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         addControl(rootView);
         addEvent(rootView);
         playlistTrack = playlist.getTracks();
-//        adapterTrack = new Custom_Adapter_Lv_Track_Playlist(rootView.getContext(),R.layout.layout_item_list_track_playlist,playlistTrack, (RecyclerViewClickListener) this);
-//        lvTrackOfPlaylist.setAdapter(adapterTrack);
+//        System.out.println(playlistTrack);
         LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         rvTrackOfPlaylist.setLayoutManager(layoutManagerPhoBien);
         custom_adapter_detail_playlist = new Custom_Adapter_Detail_Playlist(getContext(),playlistTrack, this);
         rvTrackOfPlaylist.setAdapter(custom_adapter_detail_playlist);
+
+        LinearLayoutManager layoutManagerTrackRCM = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recViewTrackGoiY.setLayoutManager(layoutManagerTrackRCM);
+        custom_adapter_rcm_track = new Custom_Adapter_RCM_Track(getContext(),rcmTrack, this);
+        recViewTrackGoiY.setAdapter(custom_adapter_rcm_track);
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -126,13 +141,14 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         rvTrackOfPlaylist = rootView.findViewById(R.id.rvTrackOfPlaylist);
         btnBack = rootView.findViewById(R.id.btnBack);
         nestedScrollDetailPlaylist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
+        recViewTrackGoiY = rootView.findViewById(R.id.recViewTrackGoiY);
     }
 
     void addEvent(View rootView) {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                goBack();
             }
         });
 
@@ -193,12 +209,31 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
-                int dominantColor = palette.getDominantColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                int defaultColor = getResources().getColor(com.google.android.material.R.color.design_default_color_background);
 
+                // Get the dominant color, or use the default color if not available
+                int dominantColor = palette.getDominantColor(defaultColor);
+
+                // Create a GradientDrawable with a gradient from the dominant color to a lighter shade
+                GradientDrawable gradientDrawable = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{dominantColor, darkerColor(dominantColor)}
+                );
+
+                // Set corner radius and other properties if needed
+                gradientDrawable.setCornerRadius(0f);
+                gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+
+                // Set the GradientDrawable as the background of the LinearLayout
                 LinearLayout linearLayout = rootView.findViewById(R.id.linearActivityArtist);
-                linearLayout.setBackgroundColor(dominantColor);
+                linearLayout.setBackground(gradientDrawable);
             }
         });
+    }
+
+    private int darkerColor(int color) {
+        float factor = 1.0f; // Adjust the factor based on how much you want to lighten the color
+        return ColorUtils.blendARGB(color, Color.BLACK, factor);
     }
     public void loadFragment(Fragment fragment){
         FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -206,6 +241,20 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         ft.replace(R.id.frameFragmentHome, fragment);
         ft.addToBackStack(null);
         ft.commit();
+    }
+
+    public void goBack() {
+        // Get the FragmentManager
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
+        // Check if there are fragments in the back stack
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Pop the top fragment off the back stack
+            fragmentManager.popBackStack();
+        } else {
+            // If the back stack is empty, you may want to handle this situation
+            // For example, you can navigate to a different activity or finish the current activity
+        }
     }
 
     @Override
