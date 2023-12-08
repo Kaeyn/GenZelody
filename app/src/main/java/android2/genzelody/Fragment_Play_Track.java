@@ -27,6 +27,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.RandomAccess;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,13 +39,14 @@ public class Fragment_Play_Track extends Fragment {
     TextView tvNameAlbumPlay, tvNameTrackPlay, tvNameArtistPlay, tvTimeStart, tvTimeEnd;
     ImageView imgTrackPlay;
     SeekBar seekBar;
-    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnMore, btnAddLib;
+    ImageButton btnBackTrack, btnPauseTrack, btnNextTrack, btnBackPage, btnMore, btnAddLib, btnSuffleTracks, btnLoopTracks;
     MediaPlayer mediaPlayer;
     Handler handler = new Handler();
     int index = 0;
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
+    Boolean isSuffle = false, isLoop = false;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -139,10 +142,11 @@ public class Fragment_Play_Track extends Fragment {
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
         btnMore = rootView.findViewById(R.id.btnMore);
-        //image button
         btnBackTrack = rootView.findViewById(R.id.btnBackTrack);
         btnPauseTrack = rootView.findViewById(R.id.btnPauseTrack);
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
+        btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
+        btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
         //media player
         mediaPlayer = new MediaPlayer();
     }
@@ -161,6 +165,32 @@ public class Fragment_Play_Track extends Fragment {
     }
     private void addEvents(){
         startTrack();
+        btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isSuffle){
+                    btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
+                    isSuffle = false;
+                } else {
+                    btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
+                    isSuffle = true;
+                }
+            }
+        });
+        btnLoopTracks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isLoop){
+                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+                    mediaPlayer.setLooping(false);
+                    isLoop = false;
+                } else {
+                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
+                    mediaPlayer.setLooping(true);
+                    isLoop = true;
+                }
+            }
+        });
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,7 +233,15 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                nextTrack();
+                if(!isLoop){
+                    if(isSuffle){                       
+//                        nextTrack();
+
+                        randomTrack();
+                    }else{
+                        nextTrack();
+                    }
+                }
             }
         });
         btnBackPage.setOnClickListener(new View.OnClickListener() {
@@ -231,6 +269,17 @@ public class Fragment_Play_Track extends Fragment {
                 nextTrack();
             }
         });
+    }
+    private void randomTrack(){
+        Random r = new Random();
+        int randomIndex = r.nextInt(tracks.size() - 1);
+        while (index == randomIndex){
+            randomIndex = r.nextInt(tracks.size());
+        }
+        index = randomIndex;
+        stopTrack();
+        setTrackInfo();
+        startTrack();
     }
 private void nextTrack(){
     if(tracks.size() - 1 == index){

@@ -60,8 +60,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="33dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingHorizontal="33dp">
+
         <androidx.cardview.widget.CardView
             android:layout_width="320dp"
             android:layout_height="320dp"
@@ -85,8 +86,8 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="6"
                 android:layout_height="110dp"
+                android:layout_weight="6"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
@@ -95,21 +96,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
+                    android:text="À Lôi"
                     android:textColor="@color/white"
                     android:textSize="27dp"
-                    android:textStyle="bold"
-                    android:text="À Lôi" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvNameArtistPlay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:text="Double 2T"
                     android:textColor="@color/white"
-                    android:textSize="18dp"
-                    android:text="Double 2T" />
+                    android:textSize="18dp" />
             </LinearLayout>
-
 
 
         </LinearLayout>
@@ -120,36 +120,42 @@
             android:layout_height="wrap_content" />
 
         <LinearLayout
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvTimeStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="left"
                 android:layout_weight="1"
-                android:textColor="@color/white"
-                android:text="0:00" />
+                android:gravity="left"
+                android:text="0:00"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/tvTimeEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="right"
                 android:layout_weight="1"
-                android:textColor="@color/white"
-                android:text="1:40" />
+                android:gravity="right"
+                android:text="1:40"
+                android:textColor="@color/white" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="40dp"
-            android:orientation="horizontal">
-
+            android:orientation="horizontal"
+            android:paddingHorizontal="40dp">
+            <ImageButton
+                android:id="@+id/btnSuffleTracks"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/black"
+                app:srcCompat="@drawable/baseline_casino_24" />
             <ImageButton
                 android:id="@+id/btnBackTrack"
                 android:layout_width="wrap_content"
@@ -173,6 +179,15 @@
                 android:layout_weight="1"
                 android:background="@color/black"
                 app:srcCompat="@drawable/baseline_keyboard_double_arrow_right_24" />
+
+
+            <ImageButton
+                android:id="@+id/btnLoopTracks"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/black"
+                app:srcCompat="@drawable/baseline_loop_24_white" />
 
         </LinearLayout>
     </LinearLayout>
