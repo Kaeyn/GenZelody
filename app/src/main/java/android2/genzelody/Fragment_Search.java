@@ -1,6 +1,7 @@
 package android2.genzelody;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -68,6 +70,8 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     ImageView imgUser;
     TextView nameUser;
 
+    LottieAnimationView lottieAnimationView;
+
     Custom_Adapter_Grid_SearchPage custom_adapter_grid_searchPage;
     RecyclerView recyclerView;
 
@@ -81,6 +85,8 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     Custom_Adapter_Grid_Search_Artist adapterArtist;
 
     private RequestQueue requestQueue;
+
+
 
     public Fragment_Search() {
         // Required empty public constructor
@@ -127,8 +133,9 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
         addEvent();
-//        searchThings("a");
+        lottieAnimationView.setVisibility(View.INVISIBLE);
 
+//        searchThings("a");
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         custom_adapter_grid_searchPage = new Custom_Adapter_Grid_SearchPage(getContext(), this);
@@ -139,7 +146,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 
     private void addViewControls(View view){
         edtInputSearch = view.findViewById(R.id.edtInputSearch);
-
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
         edtInputSearch.requestFocus();
         imgUser = view.findViewById(R.id.imgUserSearch);
         nameUser = view.findViewById(R.id.tvNameUserSearch);
@@ -155,6 +162,7 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH ||
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                     // Your function to execute when Enter is pressed
+                    showFullScreenLoader();
 
                     fetchPlaylistsAsync(edtInputSearch.getText().toString());
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -197,9 +205,9 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
             adapterArtist = new Custom_Adapter_Grid_Search_Artist(getContext(),R.layout.layout_item_grid_search_artist,artistArrayList);
             Log.d("artistArrayList", "fetchPlaylistsAsync: "+artistArrayList);
 
-            Thread.sleep(1000);
-            custom_adapter_grid_searchPage.setData(trackArrayList,artistArrayList);
-            recyclerView.setAdapter(custom_adapter_grid_searchPage);
+            Thread.sleep(2000);
+
+
 
 //            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
 //            getPlaylistResult(allPlaylist);
@@ -518,29 +526,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
         }
     }
 
-    private void showFullScreenLoader() {
-        // Inflate the custom layout for the dialog
-        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader_home, null);
-
-        // Create an AlertDialog with a custom layout
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
-        alertDialogBuilder.setView(dialogView);
-        alertDialogBuilder.setCancelable(false); // Prevent dismissal by tapping outside
-
-        // Create and show the AlertDialog
-        AlertDialog fullScreenDialog = alertDialogBuilder.create();
-        fullScreenDialog.show();
-
-        // Use Handler to dismiss the dialog after 5 seconds
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fullScreenDialog.dismiss();
-                // Additional processing if needed
-            }
-        }, 5000); // 5000 milliseconds = 5 seconds
-    }
-
 
     @Override
     public void onClick(View view, int position, String category) {
@@ -551,4 +536,21 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     public void listOnClick(View view, int position) {
 
     }
+
+    private void showFullScreenLoader() {
+        lottieAnimationView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                lottieAnimationView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                custom_adapter_grid_searchPage.setData(trackArrayList, artistArrayList);
+                recyclerView.setAdapter(custom_adapter_grid_searchPage);
+
+            }
+        }, 2500);
+    }
+
 }

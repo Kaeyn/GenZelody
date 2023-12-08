@@ -102,7 +102,7 @@ public class Home extends AppCompatActivity {
                     return true;
                 }
                 else if (idFrame == R.id.library) {
-                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList, user));
+                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList, user, RecommendedTrackList));
                     return true;
                 }
                 return true;
@@ -127,7 +127,6 @@ public class Home extends AppCompatActivity {
         Boolean isPublic = false;
         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
         MyPlayList.add(playlists);
-
     }
 
 

@@ -56,7 +56,6 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
 
             String artistStr = "";
             for (Artist artistItem : track.getArtists()) {
-                Log.d("nameartist", "onBindViewHolder: "+artistItem);
                 artistStr += artistItem.getName()+" - ";
             }
             holder.artist.setText(artistStr.substring(0,artistStr.length()-3));
