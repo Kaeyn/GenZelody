@@ -167,8 +167,6 @@ public class Fragment_Play_Track extends Fragment {
         });
         checkTrackInLibrary(tracks.get(index).getId());
 
-        StringImgTrack = tracks.get(index).getImg();
-
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
         img_url = tracks.get(index).getImg();
@@ -283,12 +281,15 @@ public class Fragment_Play_Track extends Fragment {
         btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(isSuffle){
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
                     isSuffle = false;
                 } else {
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
                     isSuffle = true;
+                    Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.shake);
+                    btnSuffleTracks.startAnimation(animation);
                     if(isLoop){
                         btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
                         mediaPlayer.setLooping(false);
@@ -301,6 +302,8 @@ public class Fragment_Play_Track extends Fragment {
         btnLoopTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate_once);
+                btnLoopTracks.startAnimation(animation);
                 if(isLoop){
                     btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
                     mediaPlayer.setLooping(false);
