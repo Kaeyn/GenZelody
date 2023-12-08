@@ -47,11 +47,11 @@
 
 
             <ImageButton
-                android:id="@+id/btnMore"
+                android:id="@+id/btnAddToLibrary"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginLeft="350dp"
-                android:background="@drawable/baseline_add_circle_outline_24" />
+                android:background="@drawable/outline_do_disturb_on_24" />
         </RelativeLayout>
 
 

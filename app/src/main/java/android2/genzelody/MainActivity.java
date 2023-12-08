@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI);
-        builder.setScopes(new String[]{"streaming", "user-library-read","playlist-read-private"});
+        builder.setScopes(new String[]{"streaming", "user-library-read","playlist-read-private","user-library-modify"});
         AuthorizationRequest request = builder.build();
         AuthorizationClient.openLoginInBrowser(this, request);
     }
