@@ -1,7 +1,9 @@
 package android2.genzelody;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -9,17 +11,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,13 +37,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link Fragment_Search#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Fragment_Search extends Fragment {
+public class Fragment_Search extends Fragment implements RecyclerViewClickListener{
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -52,18 +64,38 @@ public class Fragment_Search extends Fragment {
     private JSONObject searchObject;
     ArrayList<Track> trackArrayList = new ArrayList<>();
     ArrayList<Artist> artistArrayList = new ArrayList<>();
-    ArrayList<Album> albumArrayList = new ArrayList<>();
-    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(1);
+//    ArrayList<Album> albumArrayList = new ArrayList<>();
+//    ArrayList<Playlists> playlistsArrayList = new ArrayList<>();
+    ImageView imgUser;
+    TextView nameUser;
+
+    LottieAnimationView lottieAnimationView;
+
+    Custom_Adapter_Grid_SearchPage custom_adapter_grid_searchPage;
+    RecyclerView recyclerView;
+
+    User user = new User();
+
+
+
+
+    Custom_Adapter_Grid_Search_Track adapterTrack;
+
+    Custom_Adapter_Grid_Search_Artist adapterArtist;
 
     private RequestQueue requestQueue;
+
+
 
     public Fragment_Search() {
         // Required empty public constructor
     }
 
-    public Fragment_Search(String accessToken) {
+    public Fragment_Search(String accessToken, User user, ArrayList<Track> tracks) {
         // Required empty public constructor
         ACCESS_TOKEN = accessToken;
+        this.user = user;
     }
 
     /**
@@ -101,24 +133,41 @@ public class Fragment_Search extends Fragment {
         requestQueue = Volley.newRequestQueue(getContext());
         addViewControls(view);
         addEvent();
+        lottieAnimationView.setVisibility(View.INVISIBLE);
 
+//        searchThings("a");
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        custom_adapter_grid_searchPage = new Custom_Adapter_Grid_SearchPage(getContext(), this);
+//        fetchPlaylistsAsync("a");
+//        showFullScreenLoader();
         return view;
     }
 
     private void addViewControls(View view){
         edtInputSearch = view.findViewById(R.id.edtInputSearch);
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
         edtInputSearch.requestFocus();
+        imgUser = view.findViewById(R.id.imgUserSearch);
+        nameUser = view.findViewById(R.id.tvNameUserSearch);
+        recyclerView = view.findViewById(R.id.recGridSearch);
         showKeyboard();
     }
+
     void addEvent(){
+
         edtInputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH ||
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                     // Your function to execute when Enter is pressed
+                    showFullScreenLoader();
 
-                    searchThings(edtInputSearch.getText().toString());
+                    fetchPlaylistsAsync(edtInputSearch.getText().toString());
+                    InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(edtInputSearch.getWindowToken(), 0);
+
 //                    Log.d("FinalResult", "ohYeah" + fullSearchObject);
 //                    // Return true to indicate that the event has been handled
                     return true;
@@ -127,6 +176,18 @@ public class Fragment_Search extends Fragment {
                 return false;
             }
         });
+
+        Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
+
+    }
+
+    private CompletableFuture<Void> fetchPlaylistsAsync(String search) {
+        return CompletableFuture.runAsync(() -> {
+            searchThings(search);
+//                Thread.sleep(5000);
+
+
+        }, trackExecutor);
     }
 
     private void filterSearch(JSONObject fullJSONObject)  {
@@ -135,20 +196,30 @@ public class Fragment_Search extends Fragment {
             JSONObject allTrack = fullJSONObject.getJSONObject("tracks");
             getTrackResult(allTrack);
             Log.d("allTrack", trackArrayList+"\n"+trackArrayList.size());
+            adapterTrack = new Custom_Adapter_Grid_Search_Track(getContext(),R.layout.layout_item_grid_search_track,trackArrayList);
+
 
             JSONObject allArtist = fullJSONObject.getJSONObject("artists");
             getArtistResult(allArtist);
             Log.d("allArtist",artistArrayList+"\n"+artistArrayList.size());
+            adapterArtist = new Custom_Adapter_Grid_Search_Artist(getContext(),R.layout.layout_item_grid_search_artist,artistArrayList);
+            Log.d("artistArrayList", "fetchPlaylistsAsync: "+artistArrayList);
 
-            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
-            getPlaylistResult(allPlaylist);
-            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
+            Thread.sleep(2000);
 
-            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
-            getAlbumResult(allAlbum);
-            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
+
+
+//            JSONObject allPlaylist = fullJSONObject.getJSONObject("playlists");
+//            getPlaylistResult(allPlaylist);
+//            Log.d("allPlaylist",playlistsArrayList+"\n"+playlistsArrayList.size());
+//
+//            JSONObject allAlbum = fullJSONObject.getJSONObject("albums");
+//            getAlbumResult(allAlbum);
+//            Log.d("allAlbum",albumArrayList+"\n"+albumArrayList.size());
 
         } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -188,55 +259,56 @@ public class Fragment_Search extends Fragment {
             }
 //            System.out.println(artistId+" "+artistName+" "+artistImage);
             Artist newArtist = new Artist(artistId,artistName,artistImage);
+            Log.d("ARTIST", "getArtistResult: "+newArtist.getName());
             artistArrayList.add(newArtist);
         }
         return artistArrayList;
     }
 
-    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
-    {
-        try {
-            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+//    private ArrayList<Playlists> getPlaylistResult (JSONObject PlaylistObject)
+//    {
+//        try {
+//            JSONArray allPlaylist = PlaylistObject.getJSONArray("items");
+//
+//            for (int i = 0; i < allPlaylist.length(); i++) {
+//                JSONObject playlistObject = allPlaylist.getJSONObject(i);
+//                String playlistId = playlistObject.getString("id");
+//                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
+//                String playlistName = playlistObject.getString("name");
+//                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
+//                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
+//                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
+//                playlistsArrayList.add(newPlaylist);
+//            }
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return playlistsArrayList;
+//    }
 
-            for (int i = 0; i < allPlaylist.length(); i++) {
-                JSONObject playlistObject = allPlaylist.getJSONObject(i);
-                String playlistId = playlistObject.getString("id");
-                String playlistImg = playlistObject.getJSONArray("images").getJSONObject(0).getString("url");
-                String playlistName = playlistObject.getString("name");
-                ArrayList<Track> track = getSpecificTrackFromPlaylist(playlistId);
-                Boolean isPublic = Boolean.valueOf(playlistObject.getString("public"));
-                Playlists newPlaylist = new Playlists(playlistId,playlistImg,playlistName, track, isPublic);
-                playlistsArrayList.add(newPlaylist);
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return playlistsArrayList;
-    }
-
-    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
-    {
-        try {
-            JSONArray allAlbum = AlbumObject.getJSONArray("items");
-
-            for (int i = 0; i < allAlbum.length(); i++) {
-                JSONObject albumObject = allAlbum.getJSONObject(i);
-                String albumId = albumObject.getString("id");
-                String albumName = albumObject.getString("name");
-                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
-                String albumReleaseDate = albumObject.getString("release_date");
-                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
-                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
-                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
-                albumArrayList.add(newAlbum);
-            }
-
-        }catch (JSONException e){
-
-        }
-//        System.out.println("hummmmmm "+albumArrayList);
-        return albumArrayList;
-    }
+//    private ArrayList<Album> getAlbumResult (JSONObject AlbumObject )
+//    {
+//        try {
+//            JSONArray allAlbum = AlbumObject.getJSONArray("items");
+//
+//            for (int i = 0; i < allAlbum.length(); i++) {
+//                JSONObject albumObject = allAlbum.getJSONObject(i);
+//                String albumId = albumObject.getString("id");
+//                String albumName = albumObject.getString("name");
+//                String albumImage = albumObject.getJSONArray("images").getJSONObject(0).getString("url");
+//                String albumReleaseDate = albumObject.getString("release_date");
+//                ArrayList<Artist> artists = getArtists(albumObject.getJSONArray("artists"));
+//                ArrayList<Track> tracks = getSpecificTrackFromAlbum(albumId);
+//                Album newAlbum = new Album(albumId,albumName,albumImage,albumReleaseDate, artists, tracks);
+//                albumArrayList.add(newAlbum);
+//            }
+//
+//        }catch (JSONException e){
+//
+//        }
+////        System.out.println("hummmmmm "+albumArrayList);
+//        return albumArrayList;
+//    }
 
     private ArrayList<Track> getSpecificTrackFromPlaylist(String id){
         String apiUrl = "https://api.spotify.com/v1/playlists/"+id+"/tracks";
@@ -398,8 +470,8 @@ public class Fragment_Search extends Fragment {
     private void searchThings(String thing) {
 
         artistArrayList.clear();
-        playlistsArrayList.clear();
-        albumArrayList.clear();
+//        playlistsArrayList.clear();
+//        albumArrayList.clear();
         trackArrayList.clear();
 
         String accessToken = ACCESS_TOKEN;
@@ -455,6 +527,30 @@ public class Fragment_Search extends Fragment {
     }
 
 
+    @Override
+    public void onClick(View view, int position, String category) {
 
+    }
+
+    @Override
+    public void listOnClick(View view, int position) {
+
+    }
+
+    private void showFullScreenLoader() {
+        lottieAnimationView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                lottieAnimationView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                custom_adapter_grid_searchPage.setData(trackArrayList, artistArrayList);
+                recyclerView.setAdapter(custom_adapter_grid_searchPage);
+
+            }
+        }, 2500);
+    }
 
 }

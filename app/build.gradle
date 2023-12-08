@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-                redirectHostName: "TestingSpotifyAPI2",
+                redirectHostName: "TestingSpotifyAPI",
                 redirectSchemeName: "https"
         ]
     }
@@ -53,4 +53,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation "com.airbnb.android:lottie:3.4.0"
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
 }

@@ -18,13 +18,10 @@
         android:theme="@style/Theme.GenZelody"
         tools:targetApi="31">
         <activity
-            android:name=".Activity_Detail_Playlist"
+            android:name=".Loader_Frag"
             android:exported="false" />
         <activity
             android:name=".Activity_Artist"
-            android:exported="false" />
-        <activity
-            android:name=".Activity_PlayTrack"
             android:exported="false" />
         <activity
             android:name=".Home"
@@ -40,7 +37,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="testingspotifyapi2"
+                    android:host="testingspotifyapi"
                     android:scheme="https" />
             </intent-filter>
         </activity>

@@ -23,6 +23,7 @@ public class Custom_LVLib_Adapter extends ArrayAdapter {
     ArrayList<Playlists> arrayList;
     int layoutItem;
 
+
     public Custom_LVLib_Adapter(@NonNull Context context, int resource, @NonNull ArrayList<Playlists> arrayList) {
         super(context, resource, arrayList);
         this.arrayList = arrayList;

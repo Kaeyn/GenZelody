@@ -7,9 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -28,21 +34,35 @@ public class Fragment_Library extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String ACCESS_TOKEN = "";
+    String ACCESS_TOKEN = "";
 
     private ListView listView;
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
 
     Custom_LVLib_Adapter custom_lvLib_adapter;
+    ImageView imgUser;
+    TextView nameUser;
+    User user = new User();
+    ArrayList<Track> tracksRCM;
+
 
     public Fragment_Library() {
         // Required empty public constructor
     }
-    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList) {
+    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList, User user) {
         // Required empty public constructor
         ACCESS_TOKEN = accesssToken;
         MyPlayList = myPlayList;
+        this.user = user;
+    }
+
+    public Fragment_Library(String accesssToken, ArrayList<Playlists> myPlayList, User user, ArrayList<Track> tracks) {
+        // Required empty public constructor
+        ACCESS_TOKEN = accesssToken;
+        MyPlayList = myPlayList;
+        this.user = user;
+        tracksRCM = tracks;
     }
 
 
@@ -89,22 +109,24 @@ public class Fragment_Library extends Fragment {
 
     void addControls(View view){
         listView = view.findViewById(R.id.listPlayListLibs);
+        imgUser = view.findViewById(R.id.imgUserLib);
+        nameUser = view.findViewById(R.id.tvNameUserLib);
     }
 
     void addEvents(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent = new Intent(getContext(), Activity_Detail_Playlist.class);
-                ArrayList<Track> trackList = MyPlayList.get(position).getTracks();
-                intent.putExtra("namePlaylist", MyPlayList.get(position).getName());
-                intent.putExtra("imgPlaylist", MyPlayList.get(position).getImages());
-
-                intent.putParcelableArrayListExtra("tracks", trackList);
-                startActivity(intent);
+                loadFragment(new fragment_detail_playlist(MyPlayList.get(position),ACCESS_TOKEN));
             }
         });
+        Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(imgUser);
+    }
+    public void loadFragment(Fragment fragment){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frameFragmentHome, fragment);
+        ft.commit();
     }
 
 }

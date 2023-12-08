@@ -7,7 +7,11 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -23,7 +27,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,24 +42,33 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements SlidingPanelToggleListener {
 
-    FrameLayout frameFragmentHome;
+    FrameLayout frameFragmentHome, musicBox;
     BottomNavigationView bttNav;
     private String ACCESS_TOKEN = "";
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+
+    private LinearLayout divCurrentTrack;
 
     private ArrayList<Playlists> MyPlayList = new ArrayList<>();
     private ArrayList<Playlists> FeaturePlayList = new ArrayList<>();
-
     private ArrayList<Track> RecommendedTrackList = new ArrayList<>();
-    ExecutorService trackExecutor = Executors.newFixedThreadPool(3);
-
+    ExecutorService trackExecutor = Executors.newFixedThreadPool(5);
+    User user = new User();
     private RequestQueue requestQueue;
+
+    private SlidingPanelToggleListener slidingPanelToggleListener;
+    FragmentManager fm;
+    FragmentTransaction ft;
+
+    TextView txtCurTrack, txtcurTrackArtist;
+    ImageView imgCurTrack;
+    Button btnStopnPlayTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_home);
         addControls();
         addEvents();
@@ -62,20 +78,23 @@ public class Home extends AppCompatActivity {
         showFullScreenLoader();
         fetchPlaylistsAsync();
         System.out.println(ACCESS_TOKEN);
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
     }
 
     private CompletableFuture<Void> fetchPlaylistsAsync() {
         return CompletableFuture.runAsync(() -> {
             try {
-
+                user=getUserInfo();
                 getFeaturePlaylists();
                 Thread.sleep(1500);
                 getUserPlaylists();
                 Thread.sleep(1500);
                 getRecommendedTrack();
                 Thread.sleep(1200);
-                loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
+                loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList,user));
                 Thread.sleep(1000);
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -84,9 +103,16 @@ public class Home extends AppCompatActivity {
         }, trackExecutor);
     }
 
+
     private void addControls(){
         frameFragmentHome = findViewById(R.id.frameFragmentHome);
         bttNav = findViewById(R.id.bttnav);
+        slidingUpPanelLayout = findViewById(R.id.slidingUpPanel);
+        txtCurTrack = findViewById(R.id.txtTrackNameCurPlay);
+        txtcurTrackArtist = findViewById(R.id.txtTrackArtistCurPlay);
+        imgCurTrack = findViewById(R.id.imgCurPlay);
+        btnStopnPlayTrack = findViewById(R.id.btnStopnPlay);
+        musicBox = findViewById(R.id.musicBox);
     }
 
     private void addEvents(){
@@ -95,26 +121,93 @@ public class Home extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int idFrame = item.getItemId();
                 if(idFrame == R.id.home){
-                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList));
+                    loadFragment(new Fragment_Home(ACCESS_TOKEN,MyPlayList,FeaturePlayList,RecommendedTrackList, user));
                     return true;
                 } else if (idFrame == R.id.search) {
-                    loadFragment(new Fragment_Search(ACCESS_TOKEN));
+                    loadFragment(new Fragment_Search(ACCESS_TOKEN, user, RecommendedTrackList));
                     return true;
                 }
                 else if (idFrame == R.id.library) {
-                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList));
+                    loadFragment(new Fragment_Library(ACCESS_TOKEN, MyPlayList, user, RecommendedTrackList));
                     return true;
                 }
                 return true;
             }
         });
+
+        musicBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleSlidingPanel();
+            }
+        });
+
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                // Not needed for your case, but you can use it if necessary
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    // Sliding panel collapsed, show musicBox
+                    musicBox.setVisibility(View.VISIBLE);
+                } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    // Sliding panel expanded, hide musicBox
+                    musicBox.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
     }
 
+    private void toggleSlidingPanel(){
+        runOnUiThread(() -> {
+            if (slidingUpPanelLayout != null) {
+                if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    musicBox.setVisibility(View.INVISIBLE);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                } else {
+                    musicBox.setVisibility(View.VISIBLE);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            }
+        });
+    }
+
+
     public void loadFragment(Fragment fragment){
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
+        ft.addToBackStack(null);
         ft.commit();
+    }
+
+    public void loadPlayTrackFragment(ArrayList<Track> tracks, String name, int index) {
+        Fragment fragment = new Fragment_Play_Track(tracks, name, index, ACCESS_TOKEN);
+        if (fragment instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) fragment;
+        }
+        btnStopnPlayTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ((Fragment_Play_Track) fragment).togglePlayTrack();
+            }
+        });
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        ft.replace(R.id.frameForPlayTrack, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+    public void updateCurrentPlayBox(String img, String name, String artist){
+        txtCurTrack.setText(name);
+        txtcurTrackArtist.setText(artist);
+        Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
     }
 
     private void getUserFavPlayList(){
@@ -126,7 +219,6 @@ public class Home extends AppCompatActivity {
         Boolean isPublic = false;
         Playlists playlists = new Playlists(id, img, name, tracks, isPublic);
         MyPlayList.add(playlists);
-
     }
 
     private void getRecommendedTrack(){
@@ -344,7 +436,7 @@ public class Home extends AppCompatActivity {
 
     private void showFullScreenLoader() {
         // Inflate the custom layout for the dialog
-        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader_home, null);
 
         // Create an AlertDialog with a custom layout
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
@@ -410,8 +502,64 @@ public class Home extends AppCompatActivity {
         return newartist;
     }
 
+    private User getUserInfo()
+    {
+        String apiUrl = "https://api.spotify.com/v1/me";
+        User newUser = new User();
+        StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+                    JSONObject userObject = new JSONObject(response);
+                    String userName = userObject.getString("display_name");
+                    String userImg="https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228";
+                    if(userObject.getJSONArray("images").length()>0){
+                        userImg = userObject.getJSONArray("images").getJSONObject(0).getString("url");
+                    }
+                    System.out.println(userImg+"d");
+                    newUser.setUserName(userName);
+                    newUser.setUserImg(userImg);
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LoginActivity", "Failed to get artist. Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the access token to the request headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + ACCESS_TOKEN);
+                return headers;
+            }
+        };
+
+        // Add the request to the Volley queue
+        requestQueue.add(request);
+        return newUser;
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
     }
+
+
+
+    @Override
+    public void setTrackLists(ArrayList<Track> tracks, String name, int index) {
+        loadPlayTrackFragment(tracks,name,index);
+    }
+
+    @Override
+    public void getCurrentTrack(String img, String name, String artist) {
+        updateCurrentPlayBox(img,name, artist);
+    }
+
 }
