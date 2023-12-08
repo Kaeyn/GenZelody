@@ -2,9 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="160dp"
+    android:layout_width="200dp"
     android:layout_height="wrap_content"
-    android:layout_marginRight="10dp"
     android:layout_marginTop="10dp"
     android:padding="10dp"
     android:orientation="vertical">
@@ -14,13 +13,12 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
-        app:cardCornerRadius="6dp">
+        app:cardCornerRadius="10dp">
 
         <ImageView
             android:id="@+id/imgGridSearch"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/avatars" />
 
