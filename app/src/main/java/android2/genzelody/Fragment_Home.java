@@ -171,7 +171,6 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         } else if (category.equals("feature")) {
             loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position),ACCESS_TOKEN));
         }else{
-
             loadFragment(new Fragment_Play_Track(RecommendedTrackList,"Danh sách phổ biến", position ,ACCESS_TOKEN));
         }
     }

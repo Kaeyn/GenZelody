@@ -67,6 +67,7 @@ public class Fragment_Play_Track extends Fragment {
     //later set
     String preview_url ="", nameTrack="", nameArtists="", nameAlbum="", img_url="";
     ArrayList<Track> tracks = new ArrayList<>();
+    RequestQueue requestQueue;
     Boolean isSuffle = false, isLoop = false;
     private static final long DELAY_TIME = 5000;
 
@@ -166,8 +167,6 @@ public class Fragment_Play_Track extends Fragment {
         //seekbar
         seekBar = rootView.findViewById(R.id.seekBar);
         linearLayout = rootView.findViewById(R.id.lnPlayTrack);
-
-
         //button
         btnBackPage = rootView.findViewById(R.id.btnBackPage);
         btnAddToLibrary = rootView.findViewById(R.id.btnAddToLibrary);
@@ -338,12 +337,13 @@ public class Fragment_Play_Track extends Fragment {
             public void onClick(View view) {
                 if(!isExisted){
                     addTrackToLibrary(tracks.get(index).getId());
-                    checkTrackInLibrary(tracks.get(index).getId());
+                    isExisted=true;
                     Toast.makeText(getContext(),"Them OK",Toast.LENGTH_SHORT).show();
+
                 }
                 else{
                     removeTrackFromLibrary((tracks.get(index).getId()));
-                    checkTrackInLibrary(tracks.get(index).getId());
+                    isExisted=false;
                     Toast.makeText(getContext(),"Xoa OK",Toast.LENGTH_SHORT).show();
                 };
             }
@@ -458,7 +458,7 @@ private void nextTrack(){
         super.onDestroy();
         handler.removeCallbacks(updater);
     }
-    private boolean checkTrackInLibrary(String idTrack)
+    private void checkTrackInLibrary(String idTrack)
     {
         String apiUrl = "https://api.spotify.com/v1/me/tracks/contains?ids="+idTrack;
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
@@ -490,7 +490,6 @@ private void nextTrack(){
             }
         };
         requestQueue.add(request);
-        return isExisted;
     }
 
     private void addTrackToLibrary(String idTrack)
