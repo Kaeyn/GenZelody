@@ -141,6 +141,9 @@ public class Fragment_Library extends Fragment {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
+        Fragment libraryFragment = fm.findFragmentByTag("library");
+        ft.addToBackStack("library");
+        ft.setPrimaryNavigationFragment(libraryFragment);
         ft.commit();
     }
 

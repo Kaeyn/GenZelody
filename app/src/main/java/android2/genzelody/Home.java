@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,7 +27,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
@@ -230,21 +228,13 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         ft.replace(R.id.frameForPlayTrack, fragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack("playtrack");
         ft.commit();
     }
     public void updateCurrentPlayBox(String img, String name, String artist, Boolean state){
         if(isFisrtLoaded == true){
             musicBox.setVisibility(View.VISIBLE);
             isFisrtLoaded = false;
-        } else {
-            Fragment_Play_Track fragmentPlayTrack = (Fragment_Play_Track) getSupportFragmentManager().findFragmentById(R.id.frameForPlayTrack);
-
-            if(((Fragment_Play_Track) fragmentPlayTrack).checkIsPlaying() == true){
-                btnStopnPlayTrack.setImageResource(R.drawable.baseline_pause_24);
-            }else{
-                btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
-            }
         }
         txtCurTrack.setText(name);
         txtcurTrackArtist.setText(artist);

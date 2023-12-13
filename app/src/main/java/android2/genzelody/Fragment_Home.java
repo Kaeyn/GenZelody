@@ -170,7 +170,7 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack("home");
         ft.commit();
     }
 
@@ -180,7 +180,7 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
         if(category.equals("myplaylist")){
             loadFragment(new fragment_detail_playlist(MyPlayList.get(position),ACCESS_TOKEN));
         } else if (category.equals("feature")) {
-            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position), RecommendedTrackList,ACCESS_TOKEN));
+            loadFragment(new fragment_detail_playlist(FeaturePlayList.get(position), RecommendedTrackList,ACCESS_TOKEN, true));
         }else{
             slidingPanelToggleListener.setTrackLists(RecommendedTrackList, "Danh sách phổ biến", position);
         }

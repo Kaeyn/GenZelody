@@ -130,7 +130,6 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
         tvNamePlaylist = rootView.findViewById(R.id.tvNamePlaylist);
         imgPlayListDetail = rootView.findViewById(R.id.imgPlayListDetail);
         rvTrackOfPlaylist = rootView.findViewById(R.id.rvTrackOfPlaylist);
-        btnBack = rootView.findViewById(R.id.btnBack);
         nestedScrollDetailArtist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
         recViewTrackGoiY = rootView.findViewById(R.id.recViewTrackGoiY);
         txtTitleRec = rootView.findViewById(R.id.txtTitleRec);
@@ -138,12 +137,6 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
     }
 
     void addEvent(View rootView) {
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goBack();
-            }
-        });
 
         nestedScrollDetailArtist.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override

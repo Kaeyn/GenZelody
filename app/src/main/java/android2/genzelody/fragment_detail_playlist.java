@@ -61,6 +61,10 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     String ACCESS_TOKEN;
     Boolean isFromLibrary = true;
 
+    Boolean isFromSearch;
+
+    Boolean isFromHome;
+
     public fragment_detail_playlist() {
         // Required empty public constructor
     }
@@ -71,12 +75,13 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         this.isFromLibrary = true;
     }
 
-    public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track, String accessToken) {
+    public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track, String accessToken, Boolean isFromHome) {
         // Required empty public constructor
         this.playlist = playlist;
         this.rcmTrack = track;
         this.ACCESS_TOKEN = accessToken;
         this.isFromLibrary = false;
+        this.isFromHome = isFromHome;
     }
 
 
@@ -147,7 +152,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         tvNamePlaylist = rootView.findViewById(R.id.tvNamePlaylist);
         imgPlayListDetail = rootView.findViewById(R.id.imgPlayListDetail);
         rvTrackOfPlaylist = rootView.findViewById(R.id.rvTrackOfPlaylist);
-        btnBack = rootView.findViewById(R.id.btnBack);
         nestedScrollDetailPlaylist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
         recViewTrackGoiY = rootView.findViewById(R.id.recViewTrackGoiY);
         txtTitleRec = rootView.findViewById(R.id.txtTitleRec);
@@ -155,12 +159,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     }
 
     void addEvent(View rootView) {
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goBack();
-            }
-        });
 
         nestedScrollDetailPlaylist.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -244,27 +242,6 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     private int darkerColor(int color) {
         float factor = 1.0f; // Adjust the factor based on how much you want to lighten the color
         return ColorUtils.blendARGB(color, Color.BLACK, factor);
-    }
-    public void loadFragment(Fragment fragment){
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.frameFragmentHome, fragment);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
-
-    public void goBack() {
-        // Get the FragmentManager
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-
-        // Check if there are fragments in the back stack
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            // Pop the top fragment off the back stack
-            fragmentManager.popBackStack();
-        } else {
-            // If the back stack is empty, you may want to handle this situation
-            // For example, you can navigate to a different activity or finish the current activity
-        }
     }
 
     @Override

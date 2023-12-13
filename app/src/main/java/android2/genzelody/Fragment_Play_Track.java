@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -316,21 +315,7 @@ public class Fragment_Play_Track extends Fragment {
         btnLoopTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate_once);
-                btnLoopTracks.startAnimation(animation);
-                if(isLoop){
-                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
-                    mediaPlayer.setLooping(false);
-                    isLoop = false;
-                } else {
-                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
-                    mediaPlayer.setLooping(true);
-                    isLoop = true;
-                    if(isSuffle){
-                        btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
-                        isSuffle = false;
-                    }
-                }
+                loop();
             }
         });
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
@@ -432,6 +417,23 @@ public class Fragment_Play_Track extends Fragment {
 
 
     }
+    private  void loop(){
+        Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate_once);
+        btnLoopTracks.startAnimation(animation);
+        if(isLoop){
+            btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+            mediaPlayer.setLooping(false);
+            isLoop = false;
+        } else {
+            btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
+            mediaPlayer.setLooping(true);
+            isLoop = true;
+            if(isSuffle){
+                btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
+                isSuffle = false;
+            }
+        }
+    }
     private void randomTrackIndex(){
         Random r = new Random();
         int randomIndex = r.nextInt((tracks.size() - 1) +1) + 1;
@@ -444,6 +446,9 @@ public class Fragment_Play_Track extends Fragment {
         index = randomIndex;
     }
     private void startNewTrack(){
+        btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+        mediaPlayer.setLooping(false);
+        isLoop = false;
         handler.removeCallbacks(updater);
         mediaPlayer.pause();
         mediaPlayer.stop();
@@ -534,11 +539,11 @@ public class Fragment_Play_Track extends Fragment {
                     if (jsonArray.getBoolean(0)) {
                         slidingPanelToggleListener.updateFavState(true);
                         isExisted = jsonArray.getBoolean(0);
-                        btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
+                        btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_25);
                     } else {
                         slidingPanelToggleListener.updateFavState(false);
                         isExisted = false;
-                        btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
+                        btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_border_25);
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
@@ -644,12 +649,12 @@ public class Fragment_Play_Track extends Fragment {
         if(!isExisted){
             addTrackToLibrary(tracks.get(index).getId());
             isExisted=true;
-            btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
+            btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_25);
         }
         else{
             removeTrackFromLibrary((tracks.get(index).getId()));
             isExisted=false;
-            btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
+            btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_border_25);
         };
     }
 
