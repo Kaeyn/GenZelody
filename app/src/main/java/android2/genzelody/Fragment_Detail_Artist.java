@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
@@ -18,6 +19,7 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,6 +117,7 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
         View rootView = inflater.inflate(R.layout.fragment__detail__artist, container, false);
         addControl(rootView);
         addEvent(rootView);
+        showFullScreenLoader();
         LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         rvTrackOfPlaylist.setLayoutManager(layoutManagerPhoBien);
         custom_adapter_detail_playlist = new Custom_Adapter_Detail_Playlist(getContext(),artistTrack, this);
@@ -254,6 +257,23 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
     @Override
     public void reclistOnClick(View view, int position) {
 
+    }
+    private void showFullScreenLoader() {
+        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader_search, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
+        alertDialogBuilder.setView(dialogView);
+        alertDialogBuilder.setCancelable(false);
+
+        AlertDialog fullScreenDialog = alertDialogBuilder.create();
+        fullScreenDialog.show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fullScreenDialog.dismiss();
+            }
+        }, 2000);
     }
 
 }
