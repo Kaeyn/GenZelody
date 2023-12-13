@@ -247,6 +247,12 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         }else{
             btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
         }
+        Fragment_Play_Track fragmentPlayTrack = (Fragment_Play_Track) getSupportFragmentManager().findFragmentById(R.id.frameForPlayTrack);
+        if(((Fragment_Play_Track) fragmentPlayTrack).checkIsPlaying() == true){
+            btnStopnPlayTrack.setImageResource(R.drawable.baseline_pause_24);
+        }else{
+            btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
+        }
         Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
     }
     private void updateFavState(){
