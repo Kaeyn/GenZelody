@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Fragment_Home"
     android:background="@drawable/gradient_backgroundlight"
-    android:padding="10dp"
+    android:padding="15dp"
     android:id="@+id/framelayout_home">
 
 
