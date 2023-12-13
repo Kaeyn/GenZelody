@@ -1,0 +1,8 @@
+<!-- res/drawable/gradient_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Radius in density-independent pixels (dp) -->
+    <gradient
+        android:startColor="#6D040404"
+        android:endColor="#434343"
+        android:angle="90" /> <!-- Gradient angle, 0 means left to right -->
+</shape>
