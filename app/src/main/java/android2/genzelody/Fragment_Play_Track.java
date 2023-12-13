@@ -223,6 +223,7 @@ public class Fragment_Play_Track extends Fragment {
         mediaPlayer = new MediaPlayer();
     }
     private void startTrack(){
+        slidingPanelToggleListener.updatePlayState(true);
         mediaPlayer.start();
         Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
         imgTrackPlay.startAnimation(animation);
@@ -230,6 +231,7 @@ public class Fragment_Play_Track extends Fragment {
         updateSeekbar();
     }
     public void stopTrack(){
+        slidingPanelToggleListener.updatePlayState(false);
         handler.removeCallbacks(updater);
         mediaPlayer.pause();
         imgTrackPlay.clearAnimation();
@@ -530,9 +532,11 @@ public class Fragment_Play_Track extends Fragment {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     if (jsonArray.getBoolean(0)) {
+                        slidingPanelToggleListener.updateFavState(true);
                         isExisted = jsonArray.getBoolean(0);
                         btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
                     } else {
+                        slidingPanelToggleListener.updateFavState(false);
                         isExisted = false;
                         btnAddToLibrary.setImageResource(R.drawable.baseline_heart_broken_24);
                     }
@@ -641,7 +645,6 @@ public class Fragment_Play_Track extends Fragment {
             addTrackToLibrary(tracks.get(index).getId());
             isExisted=true;
             btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_24);
-
         }
         else{
             removeTrackFromLibrary((tracks.get(index).getId()));

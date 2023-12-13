@@ -7,6 +7,10 @@ public interface SlidingPanelToggleListener {
 
     void getCurrentTrack(String img, String name, String artist, boolean state);
 
+    void updatePlayState(Boolean state);
+
+    void updateFavState(Boolean state);
+
     void toggleSlideUP();
 
 }

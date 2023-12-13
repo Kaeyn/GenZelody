@@ -156,7 +156,6 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                updateFavState();
                 if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                     // Sliding panel collapsed, show musicBox
                     musicBox.setVisibility(View.VISIBLE);
@@ -247,7 +246,6 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
                 btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
             }
         }
-        updateFavState();
         txtCurTrack.setText(name);
         txtcurTrackArtist.setText(artist);
         if(state){
@@ -258,9 +256,8 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
 
         Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
     }
-    private void updateFavState(){
-        Fragment_Play_Track fragmentPlayTrack = (Fragment_Play_Track) getSupportFragmentManager().findFragmentById(R.id.frameForPlayTrack);
-        if(((Fragment_Play_Track) fragmentPlayTrack).checkIsFavorite() == true){
+    public void updateFavState(Boolean state){
+        if(state == true){
             btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
         }else{
             btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
@@ -616,6 +613,15 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
     @Override
     public void getCurrentTrack(String img, String name, String artist, boolean state) {
         updateCurrentPlayBox(img,name, artist, state);
+    }
+
+    @Override
+    public void updatePlayState(Boolean state) {
+        if(state == true){
+            btnStopnPlayTrack.setImageResource(R.drawable.baseline_pause_24);
+        }else{
+            btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
+        }
     }
 
 
