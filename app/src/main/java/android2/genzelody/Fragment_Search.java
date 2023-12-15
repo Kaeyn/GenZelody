@@ -472,7 +472,6 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
                 return headers;
             }
         };
-
         // Add the request to the Volley queue
         requestQueue.add(request);
         return newartist;
@@ -488,29 +487,24 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
 //        playlistsArrayList.clear();
 //        albumArrayList.clear();
         trackArrayList.clear();
-//https://api.spotify.com/v1/search?query=tung+la+cua+nhau&type=track&market=ES&locale=vi-VN%2Cvi%3Bq%3D0.9%2Cfr-FR%3Bq%3D0.8%2Cfr%3Bq%3D0.7%2Cen-US%3Bq%3D0.6%2Cen%3Bq%3D0.5&offset=0&limit=20",
         String accessToken = ACCESS_TOKEN;
-//String apiUrl = "https://api.spotify.com/v1/search?query=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&market=ES&locale=vi-VN%2Cvi%3Bq%3D0.9%2Cfr-FR%3Bq%3D0.8%2Cfr%3Bq%3D0.7%2Cen-US%3Bq%3D0.6%2Cen%3Bq%3D0.5&offset=0&limit=10";
 
         String apiUrl = "https://api.spotify.com/v1/search?q=" + thing + "&type=album%2Cartist%2Ctrack%2Cplaylist&limit=10";
         Log.d("searchKey", apiUrl);
         StringRequest request = new StringRequest(Request.Method.GET, apiUrl, new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                // Store the response in the variable
                 apiResponse = response;
                 processApiResponse(apiResponse);
             }
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Handle error response
                 Log.e("Search", "Failed to get user playlists. Error: " + error.getMessage());
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                // Add the access token to the request headers
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer " + accessToken);
                 return headers;
@@ -595,14 +589,11 @@ public class Fragment_Search extends Fragment implements RecyclerViewClickListen
     }
 //    
 
-
     @Override
     public void onClick(View view, int position, String category) {
 
 
     }
-
-
 
 
     @Override

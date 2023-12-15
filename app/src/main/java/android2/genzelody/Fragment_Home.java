@@ -116,14 +116,6 @@ public class Fragment_Home extends Fragment implements RecyclerViewClickListener
 
         addViewControls(rootView);
 
-
-        // Create a list of Track objects with different drawables
-//        List<Album> albumList = new ArrayList<>();
-//        albumList.add(new Album("Bài hát ưa thích",String.valueOf(R.drawable.yeuthich)));
-//        albumList.add(new Album("Tình đầu", String.valueOf(R.drawable.johnweak)));
-//        albumList.add(new Album("SOFAR", String.valueOf(R.drawable.johnweak)));
-//        albumList.add(new Album("Xe đạp", String.valueOf(R.drawable.johnweak)));
-
         Picasso.with(getContext()).load(user.getUserImg()).resize(160,160).into(userImg);
         userName.setText(user.getUserName());
 

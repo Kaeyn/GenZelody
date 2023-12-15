@@ -227,13 +227,11 @@ public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClic
         // Get the FragmentManager
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
-        // Check if there are fragments in the back stack
         if (fragmentManager.getBackStackEntryCount() > 0) {
             // Pop the top fragment off the back stack
             fragmentManager.popBackStack();
         } else {
-            // If the back stack is empty, you may want to handle this situation
-            // For example, you can navigate to a different activity or finish the current activity
+
         }
     }
 
