@@ -46,7 +46,6 @@ public class Custom_Adapter_Grid_Search_Track extends ArrayAdapter {
         TextView ownertrack = convertView.findViewById(R.id.tvOwnerSearchTrack);
         ownertrack.setText(track.getName());
 
-
         ImageView imgPlaylist = convertView.findViewById(R.id.imgSearchTrack);
 
         try {
@@ -57,7 +56,6 @@ public class Custom_Adapter_Grid_Search_Track extends ArrayAdapter {
             // If the image is not a drawable resource ID (assuming it's a URL)
             Picasso.with(this.getContext()).load(track.getImg()).resize(100,100).into(imgPlaylist);
         }
-
 
         return convertView;
     }

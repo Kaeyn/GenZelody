@@ -31,6 +31,7 @@
                 app:itemTextColor="@color/color_item_bottom_nav"
                 tools:ignore="MissingConstraints"
                 app:menu="@menu/bottom_navigation"
+
                 />
 
         </FrameLayout>
@@ -50,13 +51,14 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="56dp"
         android:visibility="invisible"
         android:background="@color/black">
 
         <!-- Add music name, image, or any other content here -->
 
         <LinearLayout
+            android:id="@+id/LinearLayoutMusicBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -64,45 +66,88 @@
             <LinearLayout
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="7dp">
 
-                <ImageView
-                    android:id="@+id/imgCurPlay"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    tools:srcCompat="@tools:sample/avatars" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:cardCornerRadius="10dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/imgCurPlay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        tools:srcCompat="@tools:sample/avatars" />
+
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
+                android:padding="10dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txtTrackNameCurPlay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="TenBaiHat" />
+                    android:textColor="@color/white"
+                    android:textSize="15dp"
+                    android:textStyle="bold"
+                    android:text="TenBaiHat"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit ="marquee_forever"/>
 
                 <TextView
                     android:id="@+id/txtTrackArtistCurPlay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="13dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit ="marquee_forever"
                     android:text="NgheSi" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnStopnPlay"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text="Button" />
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/btnAddToFav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:layout_marginTop="13dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/baseline_favorite_border_24" />
+            <ImageButton
+                android:id="@+id/btnPausePlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/baseline_pause_24" />
+            <ImageButton
+                android:id="@+id/btnNextPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/baseline_skip_next_24" />
 
         </LinearLayout>
 

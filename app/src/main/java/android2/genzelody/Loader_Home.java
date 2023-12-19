@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class Loader_Home extends AppCompatActivity {
 
-    private static final long DELAY_TIME = 5000;
+    private static final long DELAY_TIME = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -13,12 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingRight="5dp"
         android:background="#232323">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:elevation="8dp">
 
             <ImageView

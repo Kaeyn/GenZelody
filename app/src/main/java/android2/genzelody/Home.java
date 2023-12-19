@@ -7,8 +7,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,7 +27,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
@@ -64,7 +63,8 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
 
     TextView txtCurTrack, txtcurTrackArtist;
     ImageView imgCurTrack;
-    Button btnStopnPlayTrack;
+    ImageButton btnStopnPlayTrack, btnAddToFav, btnNextPlay;
+    Boolean isFisrtLoaded = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +110,12 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         slidingUpPanelLayout = findViewById(R.id.slidingUpPanel);
         txtCurTrack = findViewById(R.id.txtTrackNameCurPlay);
         txtcurTrackArtist = findViewById(R.id.txtTrackArtistCurPlay);
+        txtcurTrackArtist.setSelected(true);
+        txtCurTrack.setSelected(true);
         imgCurTrack = findViewById(R.id.imgCurPlay);
-        btnStopnPlayTrack = findViewById(R.id.btnStopnPlay);
+        btnStopnPlayTrack = findViewById(R.id.btnPausePlay);
+        btnAddToFav = findViewById(R.id.btnAddToFav);
+        btnNextPlay = findViewById(R.id.btnNextPlay);
         musicBox = findViewById(R.id.musicBox);
     }
 
@@ -194,22 +198,61 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
         btnStopnPlayTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 ((Fragment_Play_Track) fragment).togglePlayTrack();
+                if(((Fragment_Play_Track) fragment).checkIsPlaying() == true){
+                    btnStopnPlayTrack.setImageResource(R.drawable.baseline_pause_24);
+                }else{
+                    btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
+                }
+            }
+        });
+        btnNextPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((Fragment_Play_Track) fragment).NextTrack();
+            }
+        });
+        btnAddToFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((Fragment_Play_Track) fragment).AddToFav();
+                if(((Fragment_Play_Track) fragment).checkIsFavorite() == true){
+                    btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
+
+                }else{
+                    btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
+                }
+
             }
         });
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         ft.replace(R.id.frameForPlayTrack, fragment);
-        ft.addToBackStack(null);
+        ft.addToBackStack("playtrack");
         ft.commit();
     }
-    public void updateCurrentPlayBox(String img, String name, String artist){
+    public void updateCurrentPlayBox(String img, String name, String artist, Boolean state){
+        if(isFisrtLoaded == true){
+            musicBox.setVisibility(View.VISIBLE);
+            isFisrtLoaded = false;
+        }
         txtCurTrack.setText(name);
         txtcurTrackArtist.setText(artist);
+        if(state){
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
+        }else{
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
+
         Picasso.with(getApplicationContext()).load(img).resize(60,60).into(imgCurTrack);
     }
-
+    public void updateFavState(Boolean state){
+        if(state == true){
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_24);
+        }else{
+            btnAddToFav.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
+    }
     private void getUserFavPlayList(){
         String apiUrl = "https://api.spotify.com/v1/me/tracks";
         String id = "0";
@@ -558,8 +601,40 @@ public class Home extends AppCompatActivity implements SlidingPanelToggleListene
     }
 
     @Override
-    public void getCurrentTrack(String img, String name, String artist) {
-        updateCurrentPlayBox(img,name, artist);
+    public void getCurrentTrack(String img, String name, String artist, boolean state) {
+        updateCurrentPlayBox(img,name, artist, state);
     }
 
+    @Override
+    public void updatePlayState(Boolean state) {
+        if(state == true){
+            btnStopnPlayTrack.setImageResource(R.drawable.baseline_pause_24);
+        }else{
+            btnStopnPlayTrack.setImageResource(R.drawable.baseline_play_arrow_24);
+        }
+    }
+
+
+    @Override
+    public void toggleSlideUP() {
+        toggleSlidingPanel();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment_Play_Track fragmentPlayTrack = (Fragment_Play_Track) getSupportFragmentManager().findFragmentById(R.id.frameForPlayTrack);
+
+        if (fragmentPlayTrack != null && fragmentPlayTrack.onBackPressed() == true) {
+                toggleSlideUP();
+            return;
+        }else{
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+            System.exit(0);
+        }
+        super.onBackPressed();
+    }
 }

@@ -52,29 +52,40 @@ public class Custom_Adapter_Grid_SearchPage extends RecyclerView.Adapter<Custom_
             // Even position, display artist information
             Track track = tracks.get(adjustedPosition);
             holder.tvGridSearch.setText(track.getName());
-            Picasso.with(context.getApplicationContext()).load(track.getImg()).resize(320, 320).into(holder.imgGridSearcht);
+            Picasso.with(context.getApplicationContext()).load(track.getImg()).resize(400, 400).into(holder.imgGridSearcht);
 
             String artistStr = "";
             for (Artist artistItem : track.getArtists()) {
+                Log.d("nameartist", "onBindViewHolder: "+artistItem);
                 artistStr += artistItem.getName()+" - ";
             }
             holder.artist.setText(artistStr.substring(0,artistStr.length()-3));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.reclistOnClick(view, adjustedPosition);
+                }
+            });
 
         } else {
-
-
             Artist artist = artists.get(adjustedPosition);
             holder.tvGridSearch.setText(artist.getName());
             holder.artist.setText("Nghệ sĩ");
-            Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(320, 320).into(holder.imgGridSearcht);
+            Log.d("ImgArtist", "onBindViewHolder: "+artist.getImage());
+            if(artist.getImage()!=""){
+                Picasso.with(context.getApplicationContext()).load(artist.getImage()).resize(400, 400).into(holder.imgGridSearcht);
+            } else {
+                holder.imgGridSearcht.setImageResource(R.drawable.avt);
+            }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.listOnClick(view, adjustedPosition);
+                }
+            });
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.listOnClick(view, position);
-            }
-        });
+
     }
 
 

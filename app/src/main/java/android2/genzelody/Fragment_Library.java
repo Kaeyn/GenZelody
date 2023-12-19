@@ -1,5 +1,6 @@
 package android2.genzelody;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,6 +48,7 @@ public class Fragment_Library extends Fragment {
     User user = new User();
     ArrayList<Track> tracksRCM;
 
+    SlidingPanelToggleListener slidingPanelToggleListener;
 
     public Fragment_Library() {
         // Required empty public constructor
@@ -95,6 +98,18 @@ public class Fragment_Library extends Fragment {
 
     }
 
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SlidingPanelToggleListener) {
+            slidingPanelToggleListener = (SlidingPanelToggleListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement PlayTrackClickListener");
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -126,6 +141,9 @@ public class Fragment_Library extends Fragment {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentHome, fragment);
+        Fragment libraryFragment = fm.findFragmentByTag("library");
+        ft.addToBackStack("library");
+        ft.setPrimaryNavigationFragment(libraryFragment);
         ft.commit();
     }
 

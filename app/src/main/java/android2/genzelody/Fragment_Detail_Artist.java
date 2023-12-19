@@ -34,56 +34,43 @@ import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link fragment_detail_playlist#newInstance} factory method to
+ * Use the {@link Fragment_Detail_Artist#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_detail_playlist extends Fragment implements RecyclerViewClickListener{
+public class Fragment_Detail_Artist extends Fragment implements RecyclerViewClickListener{
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     TextView tvNamePlaylist, txtTitleRec, txtDesRec;
     ImageView imgPlayListDetail;
-    Playlists playlist;
+    Artist artist;
     String namePlaylist = "", imgPlayList = "";
     ImageButton btnBack;
-    NestedScrollView nestedScrollDetailPlaylist;
+    NestedScrollView nestedScrollDetailArtist;
     Custom_Adapter_Detail_Playlist custom_adapter_detail_playlist;
     Custom_Adapter_RCM_Track custom_adapter_rcm_track;
     RecyclerView rvTrackOfPlaylist, recViewTrackGoiY;
     ArrayList<Track> playlistTrack;
-    ArrayList<Track> rcmTrack;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    ArrayList<Track> artistTrack;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    public Fragment_Detail_Artist() {
+        // Required empty public constructor
+    }
     private SlidingPanelToggleListener slidingPanelToggleListener;
     String ACCESS_TOKEN;
-    Boolean isFromLibrary = true;
 
-    Boolean isFromSearch;
-
-    Boolean isFromHome;
-
-    public fragment_detail_playlist() {
+    public Fragment_Detail_Artist(ArrayList<Track> artistTopTracks, Artist theArtist, String accessToken) {
         // Required empty public constructor
-    }
-    public fragment_detail_playlist(Playlists playlist, String accessToken) {
-        // Required empty public constructor
-        this.playlist = playlist;
+        this.artistTrack = artistTopTracks;
         this.ACCESS_TOKEN = accessToken;
-        this.isFromLibrary = true;
+        this.artist = theArtist;
     }
-
-    public fragment_detail_playlist(Playlists playlist, ArrayList<Track> track, String accessToken, Boolean isFromHome) {
-        // Required empty public constructor
-        this.playlist = playlist;
-        this.rcmTrack = track;
-        this.ACCESS_TOKEN = accessToken;
-        this.isFromLibrary = false;
-        this.isFromHome = isFromHome;
-    }
-
 
     /**
      * Use this factory method to create a new instance of
@@ -91,11 +78,11 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment fragment_detail_playlist.
+     * @return A new instance of fragment Fragment_Detail_Artist.
      */
     // TODO: Rename and change types and number of parameters
-    public static fragment_detail_playlist newInstance(String param1, String param2) {
-        fragment_detail_playlist fragment = new fragment_detail_playlist();
+    public static Fragment_Detail_Artist newInstance(String param1, String param2) {
+        Fragment_Detail_Artist fragment = new Fragment_Detail_Artist();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -111,6 +98,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -125,25 +113,15 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail_playlist, container, false);
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment__detail__artist, container, false);
         addControl(rootView);
         addEvent(rootView);
-        playlistTrack = playlist.getTracks();
-//        System.out.println(playlistTrack);
+        showFullScreenLoader();
         LinearLayoutManager layoutManagerPhoBien = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         rvTrackOfPlaylist.setLayoutManager(layoutManagerPhoBien);
-        custom_adapter_detail_playlist = new Custom_Adapter_Detail_Playlist(getContext(),playlistTrack, this);
+        custom_adapter_detail_playlist = new Custom_Adapter_Detail_Playlist(getContext(),artistTrack, this);
         rvTrackOfPlaylist.setAdapter(custom_adapter_detail_playlist);
-        if(!isFromLibrary){
-            LinearLayoutManager layoutManagerTrackRCM = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-            recViewTrackGoiY.setLayoutManager(layoutManagerTrackRCM);
-            custom_adapter_rcm_track = new Custom_Adapter_RCM_Track(getContext(),rcmTrack, this);
-            recViewTrackGoiY.setAdapter(custom_adapter_rcm_track);
-        }else{
-            txtTitleRec.setVisibility(View.INVISIBLE);
-            txtDesRec.setVisibility(View.INVISIBLE);
-            recViewTrackGoiY.setVisibility(View.INVISIBLE);
-        }
 
         // Inflate the layout for this fragment
         return rootView;
@@ -152,7 +130,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         tvNamePlaylist = rootView.findViewById(R.id.tvNamePlaylist);
         imgPlayListDetail = rootView.findViewById(R.id.imgPlayListDetail);
         rvTrackOfPlaylist = rootView.findViewById(R.id.rvTrackOfPlaylist);
-        nestedScrollDetailPlaylist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
+        nestedScrollDetailArtist = rootView.findViewById(R.id.nestedScrollDetailPlaylist);
         recViewTrackGoiY = rootView.findViewById(R.id.recViewTrackGoiY);
         txtTitleRec = rootView.findViewById(R.id.txtTitleRec);
         txtDesRec = rootView.findViewById(R.id.txtDescRec);
@@ -160,7 +138,7 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
     void addEvent(View rootView) {
 
-        nestedScrollDetailPlaylist.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+        nestedScrollDetailArtist.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 // Calculate the scale factor based on the scroll position
@@ -182,8 +160,8 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
             }
         });
 
-        namePlaylist = playlist.getName();
-        imgPlayList = playlist.getImages();
+        namePlaylist = artist.getName();
+        imgPlayList = artist.getImage();
         try {
             int drawableResourceId = Integer.parseInt(imgPlayList);
             Drawable drawable = ContextCompat.getDrawable(rootView.getContext(), drawableResourceId);
@@ -244,6 +222,19 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
         return ColorUtils.blendARGB(color, Color.BLACK, factor);
     }
 
+
+    public void goBack() {
+        // Get the FragmentManager
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Pop the top fragment off the back stack
+            fragmentManager.popBackStack();
+        } else {
+
+        }
+    }
+
     @Override
     public void onClick(View view, int position, String category) {
 
@@ -251,12 +242,29 @@ public class fragment_detail_playlist extends Fragment implements RecyclerViewCl
 
     @Override
     public void listOnClick(View view, int position) {
-        slidingPanelToggleListener.setTrackLists(playlistTrack, playlist.getName(), position);
+        slidingPanelToggleListener.setTrackLists(artistTrack, artist.getName(), position);
     }
 
     @Override
     public void reclistOnClick(View view, int position) {
-        slidingPanelToggleListener.setTrackLists(rcmTrack, playlist.getName(), position);
+
+    }
+    private void showFullScreenLoader() {
+        View dialogView = getLayoutInflater().inflate(R.layout.activity_loader_search, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
+        alertDialogBuilder.setView(dialogView);
+        alertDialogBuilder.setCancelable(false);
+
+        AlertDialog fullScreenDialog = alertDialogBuilder.create();
+        fullScreenDialog.show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fullScreenDialog.dismiss();
+            }
+        }, 2000);
     }
 
 }

@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.palette.graphics.Palette;
 
 import android.os.Handler;
@@ -23,14 +22,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -42,14 +38,12 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.RandomAccess;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,6 +66,7 @@ public class Fragment_Play_Track extends Fragment {
     RequestQueue requestQueue;
     Boolean isSuffle = false, isLoop = false;
     private static final long DELAY_TIME = 5000;
+    String StringImgTrack;
 
 
     private SlidingPanelToggleListener slidingPanelToggleListener;
@@ -85,6 +80,7 @@ public class Fragment_Play_Track extends Fragment {
     private String mParam1;
     private String mParam2;
     String ACCESS_TOKEN="";
+    View rootView;
     
 
     public Fragment_Play_Track() {
@@ -141,7 +137,7 @@ public class Fragment_Play_Track extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
+        rootView = inflater.inflate(R.layout.fragment__play__track, container, false);
         requestQueue = Volley.newRequestQueue(rootView.getContext());
         // Inflate the layout for this fragment
         addControls(rootView);
@@ -151,19 +147,42 @@ public class Fragment_Play_Track extends Fragment {
     }
 
     private void setTrackInfo(){
+        StringImgTrack = tracks.get(index).getImg();
+        Picasso.with(rootView.getContext()).load(StringImgTrack).into(new com.squareup.picasso.Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                generatePalette(rootView, bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
+        checkTrackInLibrary(tracks.get(index).getId());
+
         preview_url = tracks.get(index).getPreview_url();
         nameTrack = tracks.get(index).getName();
         img_url = tracks.get(index).getImg();
         nameArtists = "";
+
+
         tvTimeStart.setText("0:00");
         seekBar.setProgress(0);
         for (Artist artist: tracks.get(index).getArtists()) {
-            nameArtists += artist.getName()+ " ";
+            nameArtists += artist.getName()+ ", ";
         }
-        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists);
+        nameArtists = (nameArtists.substring(0, nameArtists.length() - 2));
+
         tvNameAlbumPlay.setText(nameAlbum);
         tvNameTrackPlay.setText(nameTrack);
         tvNameArtistPlay.setText(nameArtists);
+
         try {
             int drawableResourceId = Integer.parseInt(img_url);
             Drawable drawable = ContextCompat.getDrawable(getContext(), drawableResourceId);
@@ -173,6 +192,7 @@ public class Fragment_Play_Track extends Fragment {
             Picasso.with(this.getContext()).load(img_url).resize(860,860).into(imgTrackPlay);
         }
         prepareMediaPlayer();
+        slidingPanelToggleListener.getCurrentTrack(img_url, nameTrack, nameArtists, isExisted);
     }
     private void addControls(View rootView){
         //text view
@@ -195,19 +215,22 @@ public class Fragment_Play_Track extends Fragment {
         btnNextTrack = rootView.findViewById(R.id.btnNextTrack);
         btnSuffleTracks = rootView.findViewById(R.id.btnSuffleTracks);
         btnLoopTracks = rootView.findViewById(R.id.btnLoopTracks);
+        tvNameTrackPlay.setSelected(true);
+        tvNameArtistPlay.setSelected(true);
+
         //media player
         mediaPlayer = new MediaPlayer();
     }
     private void startTrack(){
+        slidingPanelToggleListener.updatePlayState(true);
         mediaPlayer.start();
-        checkTrackInLibrary(tracks.get(index).getId());
-        Log.d("Check",isExisted+" whyyyyyyyy");
         Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate);
         imgTrackPlay.startAnimation(animation);
         btnPauseTrack.setImageResource(R.drawable.baseline_pause_circle_outline_24);
         updateSeekbar();
     }
     public void stopTrack(){
+        slidingPanelToggleListener.updatePlayState(false);
         handler.removeCallbacks(updater);
         mediaPlayer.pause();
         imgTrackPlay.clearAnimation();
@@ -220,6 +243,18 @@ public class Fragment_Play_Track extends Fragment {
         }else{
             startTrack();
         }
+    }
+    public Boolean checkIsPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
+    public Boolean checkIsFavorite(){
+        return isExisted;
+    }
+
+    public void NextTrack(){
+        nextTrackIndex();
+        startNewTrack();
     }
     private void applyGradientBackground(Bitmap bitmap) {
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
@@ -259,27 +294,28 @@ public class Fragment_Play_Track extends Fragment {
         btnSuffleTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(isSuffle){
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
                     isSuffle = false;
                 } else {
                     btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24_pink);
                     isSuffle = true;
+                    Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.shake);
+                    btnSuffleTracks.startAnimation(animation);
+                    if(isLoop){
+                        btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+                        mediaPlayer.setLooping(false);
+                        isLoop = false;
+                    }
+
                 }
             }
         });
         btnLoopTracks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isLoop){
-                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
-                    mediaPlayer.setLooping(false);
-                    isLoop = false;
-                } else {
-                    btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
-                    mediaPlayer.setLooping(true);
-                    isLoop = true;
-                }
+                loop();
             }
         });
         btnPauseTrack.setOnClickListener(new View.OnClickListener() {
@@ -322,17 +358,19 @@ public class Fragment_Play_Track extends Fragment {
             public void onCompletion(MediaPlayer mp) {
                 if(!isLoop){
                     if(isSuffle){
-                        randomTrack();
+                        System.out.println(mp.getCurrentPosition());
+                        randomTrackIndex();
                     }else{
-                        nextTrack();
+                        nextTrackIndex();
                     }
+                    startNewTrack();
                 }
             }
         });
         btnBackPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goBack();
+                slidingPanelToggleListener.toggleSlideUP();
             }
         });
         btnBackTrack.setOnClickListener(new View.OnClickListener() {
@@ -343,32 +381,21 @@ public class Fragment_Play_Track extends Fragment {
                 }else {
                     index--;
                 }
-                stopTrack();
-                setTrackInfo();
-                startTrack();
+                startNewTrack();
             }
         });
         btnNextTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextTrack();
+                nextTrackIndex();
+                startNewTrack();
             }
         });
 
         btnAddToLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isExisted){
-                    addTrackToLibrary(tracks.get(index).getId());
-                    isExisted=true;
-                    Toast.makeText(getContext(),"Them OK",Toast.LENGTH_SHORT).show();
-
-                }
-                else{
-                    removeTrackFromLibrary((tracks.get(index).getId()));
-                    isExisted=false;
-                    Toast.makeText(getContext(),"Xoa OK",Toast.LENGTH_SHORT).show();
-                };
+                AddToFav();
             }
         });
         Picasso.with(rootView.getContext()).load(String.valueOf(imgTrackPlay)).into(new com.squareup.picasso.Target() {
@@ -390,7 +417,24 @@ public class Fragment_Play_Track extends Fragment {
 
 
     }
-    private void randomTrack(){
+    private  void loop(){
+        Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.rotate_once);
+        btnLoopTracks.startAnimation(animation);
+        if(isLoop){
+            btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+            mediaPlayer.setLooping(false);
+            isLoop = false;
+        } else {
+            btnLoopTracks.setImageResource(R.drawable.baseline_loop_24);
+            mediaPlayer.setLooping(true);
+            isLoop = true;
+            if(isSuffle){
+                btnSuffleTracks.setImageResource(R.drawable.baseline_casino_24);
+                isSuffle = false;
+            }
+        }
+    }
+    private void randomTrackIndex(){
         Random r = new Random();
         int randomIndex = r.nextInt((tracks.size() - 1) +1) + 1;
         System.out.println(tracks.size());
@@ -400,42 +444,34 @@ public class Fragment_Play_Track extends Fragment {
             System.out.println(randomIndex);
         }
         index = randomIndex;
-        stopTrack();
+    }
+    private void startNewTrack(){
+        btnLoopTracks.setImageResource(R.drawable.baseline_loop_24_white);
+        mediaPlayer.setLooping(false);
+        isLoop = false;
+        handler.removeCallbacks(updater);
+        mediaPlayer.pause();
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+        imgTrackPlay.clearAnimation();
+        btnPauseTrack.setImageResource(R.drawable.baseline_play_circle_24);
         setTrackInfo();
         startTrack();
     }
-private void nextTrack(){
-    if(tracks.size() - 1 == index){
-        index = 0;
-    }else {
-        index++;
+    private void nextTrackIndex(){
+        if(tracks.size() - 1 == index){
+            index = 0;
+        }else {
+            index++;
+        }
     }
-    stopTrack();
-    setTrackInfo();
-    startTrack();
-}
     private void prepareMediaPlayer(){
         try {
-            mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(preview_url);
             mediaPlayer.prepare();
             tvTimeEnd.setText(milliSecondToTimer(mediaPlayer.getDuration()));
         } catch (IOException e) {
             Log.d("prepareMediaPlayer: ", ""+e);
-        }
-    }
-    public void goBack() {
-        // Get the FragmentManager
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-
-        // Check if there are fragments in the back stack
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            // Pop the top fragment off the back stack
-            stopTrack();
-            fragmentManager.popBackStack();
-        } else {
-            // If the back stack is empty, you may want to handle this situation
-            // For example, you can navigate to a different activity or finish the current activity
         }
     }
     private Runnable updater = new Runnable() {
@@ -457,7 +493,7 @@ private void nextTrack(){
                 }
             });
 
-            handler.postDelayed(updater, 10); // Update every second
+            handler.postDelayed(updater, 1); // Update every second
         }
     }
     private String milliSecondToTimer(long milliSecond){
@@ -490,6 +526,8 @@ private void nextTrack(){
         super.onPause();
         stopTrack();
     }
+
+
     private void checkTrackInLibrary(String idTrack)
     {
         String apiUrl = "https://api.spotify.com/v1/me/tracks/contains?ids="+idTrack;
@@ -499,9 +537,13 @@ private void nextTrack(){
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     if (jsonArray.getBoolean(0)) {
+                        slidingPanelToggleListener.updateFavState(true);
                         isExisted = jsonArray.getBoolean(0);
+                        btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_25);
                     } else {
+                        slidingPanelToggleListener.updateFavState(false);
                         isExisted = false;
+                        btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_border_25);
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
@@ -575,5 +617,51 @@ private void nextTrack(){
         };
         requestQueue.add(request);
     }
+
+    private void generatePalette(View rootView, Bitmap bitmap) {
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(Palette palette) {
+                int defaultColor = getResources().getColor(com.google.android.material.R.color.design_default_color_background);
+
+                int dominantColor = palette.getDominantColor(defaultColor);
+
+                GradientDrawable gradientDrawable = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{dominantColor, darkerColor(dominantColor)}
+                );
+
+                gradientDrawable.setCornerRadius(0f);
+                gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+
+                LinearLayout linearLayout = rootView.findViewById(R.id.lnPlayTrack);
+                linearLayout.setBackground(gradientDrawable);
+            }
+        });
+    }
+
+    private int darkerColor(int color) {
+        float factor = 1.0f;
+        return ColorUtils.blendARGB(color, Color.BLACK, factor);
+    }
+
+    public void AddToFav(){
+        if(!isExisted){
+            addTrackToLibrary(tracks.get(index).getId());
+            isExisted=true;
+            btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_25);
+        }
+        else{
+            removeTrackFromLibrary((tracks.get(index).getId()));
+            isExisted=false;
+            btnAddToLibrary.setImageResource(R.drawable.baseline_favorite_border_25);
+        };
+    }
+
+    public boolean onBackPressed() {
+
+        return true;
+    }
+
 
 }
